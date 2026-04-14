@@ -1,0 +1,1447 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<script src="js/jquery-1.9.1.min"></script>
+</head>
+<body>
+
+<div id="wrapper" style="border: solid 1px; left: 50%; top: 50%; margin-top: -256px; margin-left: -256px; position: absolute;">
+</div>
+<span style="padding: 10px; top:50%; margin-top: -300px; width: 512px; margin-left: -256px; left: 50%; position: absolute; font-size: 2em;" id="mouseCoords">Sektoria ei valittu.</span>
+
+<div id="info" style="background: rgba(200,200,200,0.8); padding: 4px; position: absolute; margin-left: -256px; left: 50%; bottom: 10px; width: 512px; height: 128px; border: 1px solid; position: absolute;">
+	<div style="border: solid 1px; width: 32px; height: 32px; background: gray; float: left;"></div>
+	<div style="padding-left: 4px; border: dotted 1px; width: 466px; height: 32px; float: left;">Ottelukehä</div>
+
+	<div style="border: solid 1px; width: 32px; height: 32px; background: pink; float: left;"></div>
+	<div style="padding-left: 4px; border: dotted 1px; width: 466px; height: 32px; float: left;">Katsomot</div>
+
+</div>
+
+<div id="gladiaattoriLista" style="font-family: Sans-Serif, Arial; font-size: 0.8em; background: rgba(225,225,225,0.8); padding: 4px; max-width: 300px; border: solid 1px; 
+left: 25%; top: 50%; margin-top: -256px; margin-left: -256px; position: absolute;">
+</div>
+
+<div style="background: rgba(200,200,200,0.8); top: 50%; margin-top: -256px; font-family: Sans-Serif, Arial; font-size: 0.6em; border: solid 1px; position: absolute; width: 300px; height: 400px; right: 10px; padding:10px;">
+<button onclick="raportti()">Tulosta raportti</button>
+<!--<button onclick="drawGladiators()">Piirrä gladiaattorit</button>-->
+<p>
+<div id="raporttiField" style="overflow: auto; height: 350px;"></div>
+</div>
+
+
+
+
+<div id="timebuttonsHolder" style="border: 1px solid; position: relative; width: 78px; height: 119px; background: url('playbuttons_black_78_119.png');">
+
+<div class="timebutton selected" id="button_pause" style="border: 1px solid; background: rgba(128,128,255,0.75); opacity: 0.0; left: 3px; top: 3px; width: 68px; height: 19px; position: absolute;"></div>
+
+<span id="kilpailuTime" style="font-size: 12px; color: white; border: 1px solid; background: black; left: 3px; padding-top: 2px; top: 24px; width: 68px; height: 19px; position: absolute;">hh:mm:ss.000</span>
+
+<div class="timebutton" id="button_slowplay" style="border: 1px solid; background: rgba(128,255,128,0.75); left: 3px; top: 48px; width: 34px; height: 19px; position: absolute;"></div>
+<div class="timebutton" id="button_play" style="border: 1px solid; background: rgba(255,128,128,0.75); left: 37px; top: 48px; width: 34px; height: 19px; position: absolute;"></div>
+
+<div class="timebutton" id="button_fastplay" style="border: 1px solid; background: rgba(255,128,255,0.75); left: 3px; top: 71px; width: 34px; height: 19px; position: absolute;"></div>
+<div class="timebutton" id="button_superfastplay" style="border: 1px solid; background: rgba(128,255,255,0.75); left: 37px; top: 71px; width: 34px; height: 19px; position: absolute;"></div>
+
+<div class="timebutton" id="button_ultrasuperfastplay" style="border: 1px solid; background: rgba(255,255,128,0.75); left: 3px; top: 94px; width: 68px; height: 19px; position: absolute;"></div>
+
+</div>
+
+<div id="F1_Lap" style="position: absolute; width: 238px; height: 40px; background: url('lap_238_40.png'); left: 50%; top:4px; ">
+<span id="F1_Lap_text" style="font-size: 20px; top: 8px; position: relative; left: 116px; width: 92px; height: 30px; font-family: Sans-Serif, Arial; color: white;"></span>
+</div>
+
+<div id="popup" style="display: none; padding: 4px; border: solid 1px; position: absolute; width: 320px; height: 64px; background: rgba(255,255,255,0.95); font-family: Sans-Serif, Arial; font-size: 0.6em;">
+</div>
+
+<div id="tilanneSeuranta" style="position: absolute; width: 420px; height: 240px; background: black; bottom: 5px; right: 5px; color: white;">
+<div style="border: solid 1px; background: lightgray; color: black; padding: 2px; width: 414px; height: 20px; font-family: Sans-Serif, Arial; position: relative;">TILANNESEURANTA</div>
+<div id="tilanneSeurantaField" style="background: black; padding: 2px; width: 410px; height: 210px; position: relative; overflow: auto;"></div>
+
+</div>
+
+<button id="restart">Restart</button>
+<p>
+<button id="debug01">Skip 3 LAPS</button>
+
+<script>
+
+$("body").on("mouseup", "#restart", function(){
+    location.reload();
+});
+
+$("body").on("mouseup", "#debug01", function(){
+  
+    var maxkierros = kilpailu.getMaxKierros();
+	var johtokierros = kilpailu.getKierrosLuku();
+	
+	
+	
+	if (johtokierros+3 < maxkierros)
+	{
+		for (var i=0; i<gladiaattoritLista.length; i++)
+		{
+			var gladiaattori = gladiaattoritLista[i];	
+			var kierros = gladiaattori.getKierrosNumero();
+			gladiaattori.setKierrosNumero( gladiaattori.getKierrosNumero()+3 );
+		}
+		kilpailu.setKierrosNumero( kilpailu.getSijoituksenGladiaattoriObject(1).getKierrosNumero() );  
+
+	}
+	
+});
+
+$("body").on("mouseenter", "div#info", function(){
+  if ( $(this).offset().top < ( $('div#wrapper').offset().top + $('div#wrapper').height() ) )
+  {
+    $(this).css("display","none");
+  }
+});
+$("body").on("mouseleave", "div#wrapper", function(){
+
+    $('div#info').css("display","block");
+
+});
+
+var nopeus = 0;
+var mousePos;
+var aikaJana;
+        var valittuNopeus = 0;
+
+	    var timeButtons = new Array ('#button_pause','#button_slowplay', 
+		'#button_play', '#button_fastplay', '#button_superfastplay', 
+		'#button_ultrasuperfastplay' );
+			
+		var timeDesc = new Array ( 'Pause', 'Slow Play', 'Play', 'Fast Play', 'Super Fast Play', 'Ultra Super Fast Play'  )	
+			
+		$("body").on("mouseenter", ".timebutton", function(){
+		  if ( ! $(this).hasClass("selected") )
+		  {
+		    $(this).css("opacity","0.25");
+		  }
+		  
+		  for (var i=0; i<6; i++)
+		  {
+			if ( timeButtons[i] == '#'+$(this).attr('id') )
+			{	  
+			  naytaTimeNappiKuvaus( $(this), timeDesc[i] );	  
+		    }
+		  }
+		  
+		  
+		});
+
+		$("body").on("mouseleave", ".timebutton", function(){
+		  if ( ! $(this).hasClass("selected") )
+		  {
+		    $(this).css("opacity","0.75");
+			naytaTimeNappiKuvaus(false,false);
+		  }
+		});
+	
+		$("body").on("mouseup", ".timebutton", function(){
+		  if ( ! $(this).hasClass("selected") )
+		  {
+
+			
+		    for (var i=0; i<6; i++)
+			{
+			  if  ( $(timeButtons[i]).hasClass("selected") )
+			  {
+				  $(timeButtons[i]).removeClass("selected");
+				  $(timeButtons[i]).css("opacity","0.75");
+			  }
+			  
+			  if ( timeButtons[i] == '#'+$(this).attr('id') )
+			  {
+				valittuNopeus = i;
+
+				switch(valittuNopeus)
+				{
+					case 1:
+					  nopeus = 7;
+					  break;
+					case 2:
+					  nopeus = 5;
+					  break;
+					case 3:
+					  nopeus = 3;
+					  break;
+					case 4:
+					  nopeus = 2;
+					  break;
+					case 5:
+					  nopeus = 1;
+					  break;
+					default:
+					  nopeus = 0;
+
+				}
+
+			  }
+			}
+			
+		    $(this).css("opacity","0.0");
+			$(this).addClass('selected');
+			naytaTimeNappiKuvaus(false,false);
+		  }
+		  
+		});
+
+		
+function lopeta() 
+{
+  window.clearInterval ( aikaJana );
+  valittuNopeus = 0;
+  $('#timebuttonsHolder').css('display','none');
+}
+
+
+		
+	var gladiaattoritLista = new Array();
+	
+	var gladiators = new Array(
+		'Sebastian Vettel','Red Bull Racing',
+		'Kimi Räikkönen','Lotus',
+		'Mark Webber','Red Bull Racing',
+		'Lewis Hamilton','Mercedes',
+		'Felipe Massa','Ferrari',
+		'Fernando Alonso','Ferrari',
+		'Nico Rosberg','Mercedes',
+		'Romain Grosjean','Lotus',
+		'Adrian Sutil','Force India',
+		'Paul di Resta','Force India',
+		'Nico Hulkenberg','Sauber',
+		'Sergio Perez','McLaren',
+		'Jenson Button','McLaren',
+		'Jean-Eric Vergne','Toro Rosso',
+		'Valtteri Bottas','Williams',
+		'Esteban Gutierrez','Sauber',
+		'Jules Bianchi','Marussia',
+		'Charles Pic','Caterham',
+		'Giedo van der Garde','Caterham',
+		'Max Chilton','Marussia',
+		'Daniel Ricciardo','Toro Rosso',
+		'Pastor Maldonado','Williams'
+	);
+
+	var i = gladiators.length, j, tempi, tempj, tempi2, tempj2;
+	while ( --i ) 
+	{
+		if (i % 2 == 0 )
+		{
+			 j = Math.floor( Math.random() * ( i + 1 ) );
+			 if (j % 2 == 0 )
+			 {
+				 tempi = gladiators[i];
+				 tempi2 = gladiators[i+1];
+				 tempj = gladiators[j];
+				 tempj2 = gladiators[j+1];
+				 
+				 gladiators[i] = tempj;
+				 gladiators[j] = tempi;
+				 gladiators[i+1] = tempj2;
+				 gladiators[j+1] = tempi2;
+			 }
+		}
+	}
+	
+	var teamColors = new Array(
+		'Red Bull Racing','pink',
+		'Lotus','yellow',
+		'Ferrari','red',
+		'Williams','blue',
+		'Toro Rosso','lightblue',
+		'Marussia','darkred',
+		'Caterham','darkgreen',
+		'Sauber','darkblue',
+		'McLaren','lightgray',
+		'Force India','orange',
+		'Mercedes','silver'
+	);
+	
+	var cellcolor = 'rgba(64,64,64,0.8)';
+	var j = 0;
+	for (var i=0; i<gladiators.length; i++)
+	{
+		if (i % 2 == 0 )
+		{
+			if (cellcolor == 'rgba(64,64,64,0.8)' )
+			{
+				cellcolor = 'rgba(128,128,128,0.8)';
+
+			}
+			else
+			{
+				cellcolor = 'rgba(64,64,64,0.8)';		
+
+			}
+			
+		}
+		
+		if (i % 2 == 0)
+		{
+			j++;
+
+			divitys3 = document.createElement('div');	
+			divitys3.style.background = getTeamColor( gladiators[i+1] );
+			divitys3.style.width = '15px';
+			divitys3.style.height = '15px';
+			divitys3.style.cssFloat = 'left';
+			divitys3.id = "gladiatorName"+j+"Icon";
+			divitys3.style.marginTop = '2px';
+			divitys3.style.marginRight = '2px';
+			
+			divitys3.style.border = "1px";
+			divitys3.style.borderTopStyle = "solid";
+			divitys3.style.borderRightStyle = "solid";
+			divitys3.style.borderLeftStyle = "solid";
+			divitys3.style.borderBottomStyle = "solid";
+			
+			document.getElementById('gladiaattoriLista').appendChild(divitys3);
+
+			divitys = document.createElement('div');	
+			divitys.style.background = cellcolor;
+			divitys.style.width = '138px';
+			divitys.style.height = '18px';
+			divitys.style.cssFloat = 'left';
+			divitys.style.paddingLeft = '4px';
+			divitys.style.paddingTop = '2px';
+			divitys.innerHTML = gladiators[i];
+			divitys.id = "gladiatorName"+j;
+			document.getElementById('gladiaattoriLista').appendChild(divitys);	
+			
+		}
+		else
+		{
+			divitys2 = document.createElement('div');	
+			divitys2.style.background = cellcolor;
+			divitys2.style.width = '138px';
+			divitys2.style.height = '18px';
+			divitys2.style.cssFloat = 'left';
+			divitys2.style.paddingTop = '2px';
+			divitys2.innerHTML = gladiators[i];
+			divitys2.id = "gladiatorName"+j+"Team";
+			document.getElementById('gladiaattoriLista').appendChild(divitys2);
+			divitys2.style.color = getTeamColor( gladiators[i] );
+			divitys2.style.textShadow = "1px 1px 1px rgba(0,0,0,0.95)";
+			divitys2.style.mozTextShadow = "1px 1px 1px rgba(0,0,0,0.95)";
+			divitys2.style.webkitTextShadow = "1px 1px 1px rgba(0,0,0,0.95)";
+
+			var gladiaattori = new Gladiaattori();
+			gladiaattori.setJarjestysRadalla(j);
+			gladiaattori.setSijoitusKilpailussa(j);
+			gladiaattori.setKierrosNumero(1);
+			gladiaattori.setKokoNimi(gladiators[i-1]);
+			gladiaattori.setTallinNimi(gladiators[i]);
+			gladiaattori.setSijaintiRataSektorilla(j*2);
+			var sijainti = ( 0-(j/2) * 0.1 ).toFixed(2);
+			gladiaattori.setAikaSijaintiRadalla(sijainti);
+			gladiaattoritLista.push(gladiaattori);
+			
+			
+			
+		}
+		
+		
+		
+	}
+
+
+
+
+function drawGladiators()
+{
+	var myCanvas = document.getElementById('areena');
+	var ctx = myCanvas.getContext('2d');
+	
+	for (var i=0; i<gladiaattoritLista.length; i++)
+	{
+
+		var gladiaattori = gladiaattoritLista[i];	
+
+		drawGladiator(ctx, 512,512, datalist, gladiaattori, 170);
+	}
+	
+	
+	
+}
+
+function haeGladiaattoriSektorilta(gladLista,sektori)
+{
+
+
+	for (var i=0; i<gladLista.length; i++)
+	{
+		var glad = gladLista[i];
+
+		if ( glad.getSijaintiRataSektorilla() == sektori )
+		{
+			
+			return glad;
+		
+		}
+		
+	}
+	
+	return false;
+	
+}
+
+	
+function drawGladiator(ctx, w, h, datalist, gladiator, radius)
+{
+
+	number = gladiator.getSijaintiRataSektorilla();
+	vari = getTeamColor( gladiator.getTallinNimi() ); 
+	//var radius = h / 2 - 5;
+	var cCenterx = w / 2;
+	var cCentery = h / 2;
+	var center = {
+		x: cCenterx,
+		y: cCentery
+	};
+	var total = 0;
+	for(x=0; x < datalist.length; x++) { total += datalist[x]; }; 
+	var lastend=0;
+	var offset = Math.PI / 2;
+  
+	for(var x=0; x < datalist.length; x++)
+	{
+		var thispart = datalist[x]; 
+		var arcsector = Math.PI * (2 * thispart / total);
+
+		if (x==number)
+		{
+
+			var startDegrees = ( lastend - offset ) * (180/Math.PI)+90;
+			var endDegrees = ( lastend + arcsector - offset ) * (180/Math.PI)+90;
+
+			degree = startDegrees + (endDegrees-startDegrees)/2;
+			var point = getPointAt(center, radius, degree);
+
+			
+			
+			ctx.beginPath();
+			ctx.moveTo(point.x, point.y);
+			ctx.arc(point.x, point.y, 5, 0 , 2 * Math.PI, false);
+			ctx.closePath();
+			ctx.fillStyle = vari;
+			ctx.fill();			
+
+			ctx.beginPath();
+			ctx.arc(point.x, point.y, 5, 0 , 2 * Math.PI, false);
+			ctx.closePath();
+			ctx.fillStyle = 'black';
+			ctx.stroke();
+			
+		} 
+
+		lastend += arcsector;	
+	} 
+}
+	
+	
+function raportti()
+{
+	var raportti = "";
+	for (var i=0; i<gladiaattoritLista.length; i++)
+	{
+		var gladiaattori = gladiaattoritLista[i];		
+		raportti = raportti + gladiaattori.report() + "<p>";
+	}
+	document.getElementById('raporttiField').innerHTML = raportti;
+}
+
+	
+function raporttiGladiaattori(gladLista,glad,point)
+{
+
+	if (gladLista != false)
+	{
+		var raportti = glad.report();
+		document.getElementById('popup').innerHTML = raportti;
+		
+		document.getElementById('popup').style.left = point.x + 32 + 'px';
+		document.getElementById('popup').style.top = point.y + 32 + 'px';
+		document.getElementById('popup').style.display = "block";
+		document.getElementById('popup').style.height = '64px';
+		document.getElementById('popup').style.width = '320px';
+	}
+	else
+	{
+		document.getElementById('popup').style.display = "none";	
+	}
+	
+}
+
+function naytaTimeNappiKuvaus(nappi,kuvaus)
+{
+	if (nappi != false)
+	{
+		var ax = nappi.offset().left;
+		var ay = nappi.offset().top;
+      
+		document.getElementById('popup').innerHTML = kuvaus;
+		document.getElementById('popup').style.left = ax + 32 + 'px';
+		document.getElementById('popup').style.top = ay + 32 + 'px';		
+		document.getElementById('popup').style.display = "block";
+		document.getElementById('popup').style.height = '16px';
+		document.getElementById('popup').style.width = '128px';
+	}
+	else
+	{
+		document.getElementById('popup').style.display = "none";		
+	}
+	
+}
+
+function msToTime(s) {
+
+  function addZ(n) {
+    return (n<10? '0':'') + n;
+  }
+
+
+  function addZZ(n) {
+    return (n<100? '0':'') + n;
+  }
+
+
+  var ms = s % 1000;
+  s = (s - ms) / 1000;
+  var secs = s % 60;
+  s = (s - secs) / 60;
+  var mins = s % 60;
+  var hrs = (s - mins) / 60;
+
+  
+
+  return addZ(hrs) + ':' + addZ(mins) + ':' + addZ(secs) + '.' + addZ(addZZ(ms));
+}
+
+var tulostetutRaportit = new Array();
+
+function tulostetut(param)
+{
+
+  for (var i=0; i<tulostetutRaportit.length; i++)
+  {
+	if ( tulostetutRaportit[i] == param )
+	{
+	  return true;
+	}
+  }
+  
+  tulostetutRaportit.push(param);
+  return false;
+  
+}
+
+function kilpailuRaportti(kilpailuObject)
+{
+  var raportti = '';
+  
+  if ( kilpailuObject.getKilpailuAikaLuku() == 0 )
+  {
+  
+    if ( tulostetut('TERVETULOA') == false )
+	{
+		lisaa('Tervetuloa seuraamaan Tammilaakson osakilpailua.');    
+		lisaa('Gladiaattorit ovat kerääntyneet jo taistelusektoreihin.');
+		
+		lisaa( 
+		  'Kimi Räikkönen lähtee taisteluun sektorista ' + kilpailuObject.getGladiaattorinSijoitus('Kimi Räikkönen') 
+		  + ' ja Valtteri Bottas sektorista ' +  kilpailuObject.getGladiaattorinSijoitus('Valtteri Bottas') + '.'
+		);  
+		
+
+		if (kilpailuObject.getSijoituksenGladiaattoriObject(1).getTallinNimi() == kilpailuObject.getSijoituksenGladiaattoriObject(2).getTallinNimi())
+		{
+			lisaa( 'Molemmat ' + kilpailuObject.getSijoituksenGladiaattoriObject(1).getTallinNimi() + ' -gladiaattorit ovat ensimmäisessä rivissä. '
+			+ kilpailuObject.getSijoituksenGladiaattori(1) + ' lähtee taisteluun paalupaikalta.' );
+			
+		}
+		else
+		{
+			lisaa( kilpailuObject.getSijoituksenGladiaattori(1) + ' lähtee taisteluun paalupaikalta.' );
+		}
+		
+	
+		lisaa ( 'Kisa alkaa Suomen aikaan yhdeksältä. Sää Tammelassa on erinomainen.' );
+
+		lisaa ( 'Kaikki valmista aloitukseen.' );
+	}
+	
+  }
+  else
+  {
+    if ( kilpailuObject.getKierrosLuku() > kilpailuObject.getMaxKierros() )
+	{
+	  if ( tulostetut('KILPAILUN_VOITTAA') == false )
+	  {
+	    lisaa ( 'Viimeinen kierros: ' + kilpailuObject.getSijoituksenGladiaattori(1) + ' voittaa kilpailun.' );
+	  }
+	  
+	  if ( kilpailuObject.getSijoituksenGladiaattoriObject(4).getKierrosNumero() > kilpailuObject.getMaxKierros() )
+	  {
+	    if ( tulostetut('NELJA_ENSIMMAISTA_MAALISSA') == false )
+	    {
+		  lisaa ( 
+			kilpailuObject.getSijoituksenGladiaattori(2) + ' on kakkonen, ' 
+			+ kilpailuObject.getSijoituksenGladiaattori(3) + ' kolmas, '
+            + kilpailuObject.getSijoituksenGladiaattori(4) + ' neljäs.'			
+		  );
+		}
+	  }
+	  
+	  if ( kilpailuObject.getSijoituksenGladiaattoriObject(6).getKierrosNumero() > kilpailuObject.getMaxKierros() )
+	  {
+	    if ( tulostetut('KUUSI_ENSIMMAISTA_MAALISSA') == false )
+	    {
+		  lisaa ( 
+			kilpailuObject.getSijoituksenGladiaattori(5) + ' tulee viidenneksi ja ' 
+			+ kilpailuObject.getSijoituksenGladiaattori(6) + ' on kuudes.'
+            		
+		  );
+		}
+	  }
+
+	  if ( kilpailuObject.getSijoituksenGladiaattoriObject(22).getKierrosNumero() > kilpailuObject.getMaxKierros() )
+	  {
+	    if ( tulostetut('KAIKKI_MAALISSA') == false )
+	    {
+		  lisaa ( 
+			'Kiitos kaikille seurasta. Arenamanagerin live-seuranta on jälleen "äänessä" viikon kuluttua, kun MM-pisteitä jaetaan Albaniassa.' 
+		  );
+		  lopeta();
+		}
+	  }
+	  
+	  
+	}
+	
+	
+  }
+
+}
+
+function lisaa(param)
+{
+	divitys = document.createElement('div');	
+	divitys.style.background = 'black';
+	divitys.style.width = '390px';
+	//divitys.style.height = '20px';
+	divitys.style.cssFloat = 'left';
+	divitys.style.marginTop = '4px';
+	divitys.style.marginRight = '2px';
+	//divitys.style.top = '0px';
+	divitys.style.border = "0px";
+	divitys.style.borderTopStyle = "solid";
+	divitys.style.borderRightStyle = "solid";
+	divitys.style.borderLeftStyle = "solid";
+	divitys.style.borderBottomStyle = "solid";
+	divitys.style.position = "relative";
+	divitys.style.fontFamily= "sans-serif,arial";
+	divitys.style.fontSize= "0.8em";
+	divitys.innerHTML = param;
+	$('div#tilanneSeurantaField').prepend(divitys);
+
+}
+
+function Kilpailu()
+{
+	var kierrosNumero = 1;
+	var maxKierrosNumero = 54;
+	var kilpailuAika = 0;
+        var kilpailuObject = this;
+        var timeStep = 100; //100 ms
+	this.getKierros = function()
+	{
+	    var temp;
+		if ( kierrosNumero > maxKierrosNumero )
+		{
+		  temp = maxKierrosNumero;
+		}
+		else
+		{
+		  temp = kierrosNumero;
+		}
+		if ( temp == maxKierrosNumero )
+		{
+		  return "FINAL LAP";
+		}
+		else
+		{
+		  return temp + ' / ' + maxKierrosNumero;
+		 }
+	}
+	
+	this.getKierrosLuku = function()
+	{
+	    var temp = kierrosNumero; // palautetaan myös ruutulippukierroksen jälkeiset kierrokset
+		return parseInt(temp);
+	}
+	
+	this.getMaxKierros = function()
+	{
+	  return parseInt(maxKierrosNumero);
+	}
+	
+        this.getKilpailuAika = function()
+        {
+          return msToTime( kilpailuAika );        
+		}
+        this.getKilpailuAikaLuku = function()
+        {
+          return kilpailuAika;        
+        }
+
+		
+        this.runAika = function(param)
+        {
+
+		    var j=0;
+			var pituus=gladiaattoritLista.length;
+		    while (j <= param)
+		    {
+		
+			   kilpailuAika = kilpailuAika + timeStep; //+100 ms
+			   for (var i=0; i<pituus; i++)
+			   {
+				 var glad = gladiaattoritLista[i];
+				 glad.increaseAikaSijaintiRadalla(timeStep);
+			   }
+			   
+			   j++;
+			   
+			}
+        }
+
+        this.getKierrosNumero = function()
+        {
+           return kierrosNumero;
+        }
+
+        this.setKierrosNumero = function(param)
+        {
+          kierrosNumero = param;
+        }
+
+		this.getGladiaattorinSijoitus = function(gladiaattorinNimi)
+		{
+		    var temp = false;
+			for (var i=0; i<gladiaattoritLista.length; i++)
+			{
+				glad = gladiaattoritLista[i];
+				if ( glad.getKokoNimi() == gladiaattorinNimi )
+				{
+				  temp = sijoitusToText( glad.getSijoitusKilpailussa() );
+				  break;
+				}
+			}
+			return temp;
+		}
+		
+		this.getSijoituksenGladiaattori = function(sijoituksenLuku)
+		{
+		  var temp = false;
+		  for (var i=0; i<gladiaattoritLista.length; i++)
+		  {
+		    glad = gladiaattoritLista[i];	  
+			if ( glad.getSijoitusKilpailussa() == sijoituksenLuku )
+			{
+			  temp = glad.getKokoNimi();
+			  break;
+			}
+		  }
+		  return temp;
+		}
+
+		this.getSijoituksenGladiaattoriObject = function(sijoituksenLuku)
+		{
+		  var temp = false;
+		  for (var i=0; i<gladiaattoritLista.length; i++)
+		  {
+		    glad = gladiaattoritLista[i];	  
+			if ( glad.getSijoitusKilpailussa() == sijoituksenLuku )
+			{
+			  temp = glad;
+			  break;
+			}
+		  }
+		  return temp;
+		}
+
+		
+}
+
+function sijoitusToText( param )
+{
+  var luvut = new Array ( 'yksi', 'kaksi', 'kolme', 'neljä', 'viisi', 'kuusi', 'seitsemän', 'kahdeksan', 'yhdeksän', 'kymmenen' );
+  if ( param < 11 )
+  {
+    return luvut[param-1];
+  }
+  return param;
+  
+}
+	
+function Gladiaattori()
+{
+	var kierrosNumero;
+	var sijoitusKilpailussa;
+	var jarjestysRadalla;
+	var sijaintiRataSektorilla;
+	var kokoNimi;
+	var tallinNimi;
+	var aikaSijaintiRadalla;
+        var gladiaattoriObject = this;
+        var kilpailuObject;
+
+        this.init = function(param)
+        {
+          kilpailuObject = param;
+        }
+
+	this.getAikaSijaintiRadalla = function()
+	{
+		return aikaSijaintiRadalla;
+	}
+	this.setAikaSijaintiRadalla = function(param)
+	{
+		aikaSijaintiRadalla = param;
+	}
+	this.increaseAikaSijaintiRadalla = function(param)
+        {
+                var temp = parseFloat ( param/1000 );
+                aikaSijaintiRadalla = parseFloat(aikaSijaintiRadalla) + temp;
+                aikaSijaintiRadalla = aikaSijaintiRadalla.toFixed(2);
+
+                if (aikaSijaintiRadalla >= 60)
+                {
+                  aikaSijaintiRadalla = (aikaSijaintiRadalla - 60);
+                  gladiaattoriObject.setKierrosNumero( gladiaattoriObject.getKierrosNumero() + 1 );
+                  if ( gladiaattoriObject.getKierrosNumero() > kilpailuObject.getKierrosNumero() )
+                  {
+                    kilpailuObject.setKierrosNumero( gladiaattoriObject.getKierrosNumero() );      
+                  }
+                }
+        }
+	this.getSijaintiRataSektorilla = function()
+	{
+		return sijaintiRataSektorilla;
+	}
+	this.setSijaintiRataSektorilla = function(param)
+	{
+		sijaintiRataSektorilla = param;
+	}
+	
+	this.getJarjestysRadalla = function()
+	{
+		return jarjestysRadalla;
+	}
+	this.setJarjestysRadalla = function(param)
+	{
+		jarjestysRadalla = param;
+	}
+	
+	this.getSijoitusKilpailussa = function()
+	{
+		return sijoitusKilpailussa;
+	}
+	this.setSijoitusKilpailussa = function(param)
+	{
+		sijoitusKilpailussa = param;
+	}
+	
+	this.getKierrosNumero = function()
+	{
+		return kierrosNumero;
+	}
+	this.setKierrosNumero = function(param)
+	{
+		kierrosNumero = param;
+	}
+
+	this.getKokoNimi = function()
+	{
+		return kokoNimi;
+	}
+	this.setKokoNimi = function(param)
+	{
+		kokoNimi = param;
+	}
+	
+	this.getTallinNimi = function()
+	{
+		return tallinNimi;
+	}
+	this.setTallinNimi = function(param)
+	{
+		tallinNimi = param;
+	}
+	
+	this.report = function()
+	{
+		var raportti = "Nimi:" + this.getKokoNimi() + ", Talli:" + this.getTallinNimi() + ", Kierrosnumero:" + this.getKierrosNumero() + ", Järjestys radalla:" + this.getJarjestysRadalla()
+		+ ", Sijoitus kilpailussa:" + this.getSijoitusKilpailussa() + ", Sijainti sektorilla:" + this.getSijaintiRataSektorilla()
+		+ ", aikasijainti radalla:" + this.getAikaSijaintiRadalla()+ "/60.0";
+		return raportti;
+	}
+	
+}
+
+	
+function getTeamColor(team)
+{
+
+	for (var j=0; j<teamColors.length; j=j+2)
+	{
+		if (j % 2 == 0 )
+		{
+			var name = teamColors[j];
+			if (team == name)
+			{
+			  return teamColors[j+1];
+			}
+		}
+	}
+	
+}
+
+	var valittuSektori;
+	
+	img = document.createElement('canvas');
+	img.id = "areena";
+	img.width= 512;
+	img.height= 512;
+	document.getElementById('wrapper').appendChild(img);
+
+	var myCanvas = document.getElementById('areena');
+	var ctx = myCanvas.getContext('2d');
+ 
+	ctx.beginPath();
+	ctx.moveTo(256,256);
+	ctx.arc(256, 256, 256, Math.PI/2 + 0.25 * Math.PI , Math.PI/2 + 0.75 * Math.PI, false);
+	ctx.closePath();
+	ctx.fillStyle = 'pink';
+	ctx.fill();
+
+	ctx.beginPath();
+	ctx.moveTo(256,256);
+	ctx.arc(256, 256, 256, Math.PI + Math.PI/2 + 0.25 * Math.PI , Math.PI + Math.PI/2 + 0.75 * Math.PI, false);
+	ctx.closePath();
+	ctx.fillStyle = 'pink';
+	ctx.fill();	
+ 
+	piirraYmpyra(ctx,220,'rgb(0,0,0)',1);
+	piirraYmpyra(ctx,216,'rgb(128,128,128)',1);
+
+
+	var datalist= new Array(); 
+	for (var i=0; i<60; i++)
+	{
+		datalist.push(1);
+	}
+	var colist = new Array();
+	for (var i=0; i<60; i=i+5)
+	{
+		colist.push('#213435');
+		colist.push('#46685B');
+		colist.push('#648A64');
+		colist.push('#A6B985');
+  	    colist.push('#E1E3AC');
+	
+
+	
+	}
+	
+
+	pie(ctx, 512, 512, datalist, 180); 
+
+	//piirraYmpyra(ctx,160,'rgb(0,0,0)',1);
+	piirraYmpyra(ctx,159,'rgb(128,128,128)',1);
+
+	for (var i=0; i<5; i++)
+	{
+		if  (i<colist.length)
+		{
+			var vari = colist[i];
+			var divitys = document.createElement('div'); 
+			divitys.style.border = "solid 1px";
+			divitys.style.width = "32px";
+			divitys.style.height = "32px";
+			divitys.style.background = vari;
+			divitys.style.cssFloat = "left";
+			document.getElementById('info').appendChild(divitys);
+		}
+	}
+	var divitys = document.createElement('div'); 
+	divitys.style.border = "dotted 1px";
+	divitys.style.width = "330px";
+	divitys.style.height = "32px";
+	divitys.style.paddingLeft = "4px";
+	divitys.style.cssFloat = "left";
+	divitys.innerHTML = "Taistelusektorit";
+	document.getElementById('info').appendChild(divitys);
+
+	drawGladiators();
+	var kilpailu = new Kilpailu();
+	for (var i=0; i<gladiaattoritLista.length; i++)
+        {
+           glad = gladiaattoritLista[i];
+           glad.init(kilpailu);
+        }
+
+
+
+kilpailuRaportti(kilpailu);
+
+	
+
+function paivitaAikaKentta()
+{
+  $('#kilpailuTime').html( kilpailu.getKilpailuAika() );
+  document.getElementById('F1_Lap_text').innerHTML = kilpailu.getKierros();
+  kilpailuRaportti(kilpailu);
+}	
+
+function isInsideSector(point, center, sectorStart, sectorEnd, radiusSquared) {
+	var relPoint = {
+	  x: point.x - center.x,
+	  y: point.y - center.y
+	};
+
+	return !areClockwise(sectorStart, relPoint) &&
+		   areClockwise(sectorEnd, relPoint) &&
+		   isWithinRadius(relPoint, radiusSquared);
+}
+
+function areClockwise(v1, v2) {
+	return -v1.x*v2.y + v1.y*v2.x > 0;
+}
+
+function isWithinRadius(v, radiusSquared) {
+	return v.x*v.x + v.y*v.y <= radiusSquared;
+}
+
+function piirraYmpyra(ctx,radius,color,mode)
+{
+	ctx.beginPath();
+	ctx.moveTo(256,256);
+	ctx.arc(256, 256, radius, 0 , 2 * Math.PI, false);
+	ctx.closePath();
+	ctx.fillStyle = color;
+	if (mode == 0)
+	{
+		ctx.stroke();
+	}
+	else
+	{
+		ctx.fill();
+	}
+}
+
+function pie(ctx, w, h, datalist, radius)
+{
+  //var radius = h / 2 - 5;
+  var centerx = w / 2;
+  var centery = h / 2;
+  var total = 0;
+  for(x=0; x < datalist.length; x++) { total += datalist[x]; }; 
+  var lastend=0;
+  var offset = Math.PI / 2;
+  for(x=0; x < datalist.length; x++)
+  {
+    var thispart = datalist[x]; 
+    ctx.beginPath();
+    if ( x < colist.length )
+	{
+		ctx.fillStyle = colist[x];
+	}
+	else
+	{
+		if ( x % 2 == 0 )
+		{
+			ctx.fillStyle = 'darkgray';
+		}
+		else
+		{
+			ctx.fillStyle = 'white';
+
+		}
+		
+	}
+	
+    ctx.moveTo(centerx,centery);
+    var arcsector = Math.PI * (2 * thispart / total);
+    ctx.arc(centerx, centery, radius, lastend - offset, lastend + arcsector - offset, false);
+    ctx.lineTo(centerx, centery);
+	//ctx.fillStyle = 'black';
+    ctx.fill();
+    ctx.closePath();		
+    lastend += arcsector;	
+  }
+}
+
+function getPointAt(center, radius, angle) {
+    // Please note that the angle is given in radians;
+    // if given in degrees uncomment the line below
+    angle *= Math.PI / 180;
+    return {x: center.x + Math.sin(Math.PI - angle) * radius,
+        y: center.y + Math.cos(Math.PI - angle) * radius};
+}
+
+function distanceBetween( point1, point2 )
+{
+	var xs = 0;
+	var ys = 0;
+	 
+	xs = point2.x - point1.x;
+	xs = xs * xs;
+	 
+	ys = point2.y - point1.y;
+	ys = ys * ys;
+	 
+	return Math.sqrt( xs + ys );
+}
+
+function angle(center, p1) {
+    var p0 = {x: center.x, y: center.y - Math.sqrt(Math.abs(p1.x - center.x) * Math.abs(p1.x - center.x)
+            + Math.abs(p1.y - center.y) * Math.abs(p1.y - center.y))};
+    return (2 * Math.atan2(p1.y - p0.y, p1.x - p0.x)) * 180 / Math.PI;
+}
+
+function pieceOfPie(ctx, w, h, datalist, number, radius)
+{
+	//var radius = h / 2 - 5;
+	var centerx = w / 2;
+	var centery = h / 2;
+	var total = 0;
+	for(x=0; x < datalist.length; x++) { total += datalist[x]; }; 
+	var lastend=0;
+	var offset = Math.PI / 2;
+  
+	for(var x=0; x < datalist.length; x++)
+	{
+		var thispart = datalist[x]; 
+
+			ctx.beginPath();
+
+			if ( x < colist.length )
+			{
+				ctx.fillStyle = colist[x];
+			}
+			else
+			{
+				if ( x % 2 == 0 )
+				{
+					ctx.fillStyle = 'darkgray';
+				}
+				else
+				{
+					ctx.fillStyle = 'white';
+
+				}
+				
+			}
+			
+			ctx.moveTo(centerx,centery);
+			var arcsector = Math.PI * (2 * thispart / total);
+
+		if (x==number)
+		{
+			ctx.arc(centerx, centery, radius, lastend - offset, lastend + arcsector - offset, false);
+			ctx.lineTo(centerx, centery);
+
+			var startDegrees = ( lastend - offset ) * (180/Math.PI)+90;
+			var endDegrees = ( lastend + arcsector - offset ) * (180/Math.PI)+90;
+
+
+			ctx.fill();
+			ctx.closePath();
+
+			var glad = haeGladiaattoriSektorilta(gladiaattoritLista, valittuSektori);
+			if (glad != false)
+			{
+				drawGladiator(ctx, 512,512, datalist, glad, 170);
+			}		
+		
+
+		} 
+		else 
+		{
+			ctx.closePath();		
+		}
+		lastend += arcsector;	
+	} 
+}
+
+function checkMouseOnPie(ctx, w, h, datalist, angle, radius, mousePoint)
+{
+
+	//var radius = h / 2 - 5;
+	var cCenterx = w / 2;
+	var cCentery = h / 2;
+	var total = 0;
+	for(var px=0; px < datalist.length; px++) { total += datalist[px]; }; 
+	var lastend=0;
+	var offset = Math.PI / 2;
+  
+	for(var cx=0; cx < datalist.length; cx++)
+	{
+		var thispart = datalist[cx]; 
+		var arcsector = Math.PI * (2 * thispart / total);
+		var startDegrees = Math.round ( ( lastend - offset ) * (180/Math.PI)+90 );
+		var endDegrees = Math.round ( ( lastend + arcsector - offset ) * (180/Math.PI)+90 );
+        
+
+
+
+
+		ctx.beginPath();
+
+		ctx.moveTo(cCenterx,cCentery);
+
+		var center = {
+			x: cCenterx,
+			y: cCentery
+		};
+		
+		var ax = findPosX( document.getElementById('areena') );
+		var ay = findPosY( document.getElementById('areena') );
+
+		
+		var distance = distanceBetween(center,mousePoint);
+		if ( angle >= startDegrees && angle <= endDegrees && valittuSektori != cx && distance>=160 && distance<=180 )
+		{
+           
+			if ( valittuSektori != undefined )
+			{
+				ctx.closePath();
+				pieceOfPie(ctx, 512, 512, datalist, valittuSektori, 180); 
+				ctx.beginPath();
+				ctx.moveTo(cCenterx,cCentery);
+			}
+
+
+			valittuSektori = cx;
+
+
+
+			ctx.arc(cCenterx, cCentery, radius, lastend - offset, lastend + arcsector - offset, false);
+			ctx.lineTo(cCenterx, cCentery);
+			ctx.fillStyle = 'red';
+			ctx.fill();
+			ctx.closePath();
+
+			degree = startDegrees + (endDegrees-startDegrees)/2;
+			var point = getPointAt(center, radius-8, degree);
+
+			ctx.beginPath();
+			ctx.moveTo(point.x, point.y);
+			ctx.arc(point.x, point.y, 5, 0 , 2 * Math.PI, false);
+			ctx.closePath();
+			ctx.fillStyle = 'rgba(0,0,0,0.33)';
+			ctx.fill();
+			
+			piirraYmpyra(ctx,159,'rgb(128,128,128)',1);
+
+			var glad = haeGladiaattoriSektorilta(gladiaattoritLista, valittuSektori);
+			if (glad != false)
+			{
+				drawGladiator(ctx, 512,512, datalist, glad, 170);
+				point.x = point.x + ax;
+				point.y = point.y + ay;
+				raporttiGladiaattori(datalist, glad,point);
+			}
+			else
+			{
+				raporttiGladiaattori(false,false,false);
+			}
+			
+			
+		}
+		else if ( (distance<160 || distance>180) && valittuSektori != undefined && valittuSektori != false )
+		{
+			raporttiGladiaattori(false,false,false);
+			pieceOfPie(ctx, 512, 512, datalist, valittuSektori, 180); 		
+			piirraYmpyra(ctx,159,'rgb(128,128,128)',1);
+			valittuSektori = undefined;
+		}
+		
+		ctx.closePath();
+
+		lastend += arcsector;	
+	} 
+	
+
+
+
+
+
+	//piirraYmpyra(ctx,160,'rgb(0,0,0)',1);
+	
+}
+
+
+function getMousePos(canvas, evt) {
+	var rect = canvas.getBoundingClientRect();
+	return {
+	x: evt.clientX - rect.left,
+	y: evt.clientY - rect.top
+	};
+}
+
+myCanvas.addEventListener('mousemove', function(evt) {
+	
+	mousePos = getMousePos(myCanvas, evt);
+//	var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
+
+	var center = {
+		x: 256,
+		y: 256
+	};
+	var point = {
+		x: mousePos.x,
+		y: mousePos.y
+	};
+	
+	var mouseAngle = Math.floor( angle(center,point) );
+//    message = message + ',' + mouseAngle + ',' + valittuSektori;
+
+				
+	checkMouseOnPie( ctx, 512, 512, datalist, mouseAngle, 180, point ); 
+
+	if ( valittuSektori != undefined )
+	{
+		var message = "Sektori #"+valittuSektori;
+		
+		document.getElementById('mouseCoords').innerHTML = message;	
+	}
+	else
+	{
+		var message = "Sektoria ei valittu.";
+		document.getElementById('mouseCoords').innerHTML = message;	
+	}
+
+
+	
+
+}, false);
+
+
+function findPosX(obj)
+  {
+    var curleft = 0;
+    if(obj.offsetParent)
+        while(1) 
+        {
+          curleft += obj.offsetLeft;
+          if(!obj.offsetParent)
+            break;
+          obj = obj.offsetParent;
+        }
+    else if(obj.x)
+        curleft += obj.x;
+    return curleft;
+  }
+
+  function findPosY(obj)
+  {
+    var curtop = 0;
+    if(obj.offsetParent)
+        while(1)
+        {
+          curtop += obj.offsetTop;
+          if(!obj.offsetParent)
+            break;
+          obj = obj.offsetParent;
+        }
+    else if(obj.y)
+        curtop += obj.y;
+    return curtop;
+  }
+
+
+
+var time = new Array();
+for(i=0;i<1000;i++)
+{
+  time.push(0);
+}
+
+function draw()
+{
+
+  time[0]++;  
+  
+  time[100]++;
+  if (time[100]==100) { time[100]=0; }
+  
+  time[50]++;
+  if (time[50]==50) { time[50]=0; }
+
+  time[10]++;
+  if (time[10]==10) { time[10]=0; }
+
+  time[7]++;
+  if (time[7]==7) { time[7]=0; }
+  
+  time[6]++;
+  if (time[6]==6) { time[6]=0; }
+  
+  time[5]++;
+  if (time[5]==5) { time[5]=0; }
+  
+  time[4]++;
+  if (time[4]==4) { time[4]=0; }
+  
+  time[3]++;
+  if (time[3]==3) { time[3]=0; }
+  
+  time[2]++;
+  if (time[2]==2) { time[2]=0; }
+
+ 
+  // time[2]==0 --> setInterval(f, 40)
+  if (  time[2]==0 )
+  {
+    paivitaAikaKentta();
+  }
+  
+  if (valittuNopeus > 0 )
+  {
+  
+    if ( time[nopeus] == 0 )
+	{
+	  if ( nopeus == 1 )
+	  {
+	    kilpailu.runAika(40);
+		
+      }
+	  else
+	  {
+	    kilpailu.runAika(0);
+	  }
+	  
+	}
+	  
+  }
+  
+  
+  setTimeout("draw()",20); // 50 FPS
+}  
+
+setTimeout("draw()",20); // 50 FPS
+  
+</script>
+
+
+
+
+</body>
+</html>

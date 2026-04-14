@@ -1,0 +1,359 @@
+<html>
+<head>
+<script src="js/pixastic.custom.js"></script>
+<script src="js/pixi.js"></script>
+<script src="js/jquery-2.1.1.min.js"></script>
+
+<style>
+
+.buttonHair {
+	color: #ff0000;
+	width: 128px; 
+	height: 32px; 
+	background: no-repeat; 
+	margin: 10px; 
+	padding: 10px; 
+	border: solid; 
+	border-width: 2px; 
+	background-size: contain;
+}
+
+</style>
+</head>
+
+
+<body>
+<div>
+	
+	<div style="float: left;">
+		<div>Image #1:</div>
+		<div onclick="setHairTo('s_hair.png');" class="buttonHair" style="background: url(s_hair.png);">s_hair.png</div>
+		<div onclick="setHairTo('tmp_s_hair_01.png');" class="buttonHair" style="background: url(tmp_s_hair_01.png);">tmp_s_hair_01.png</div>
+		<div onclick="setHairTo('filter.png');" class="buttonHair" style="background: url(filter.png);">filter.png</div>
+		<div onclick="setHairTo('s_hair_white_test.png');" class="buttonHair" style="background: url(s_hair_white_test.png);">s_hair_white_test.png</div>
+		<div onclick="setHairTo('s_hair_white.png');" class="buttonHair" style="background: url(s_hair_white.png);">s_hair_white.png</div>
+		<div onclick="setHairTo('s_hair_lines_neg_trim.png');" class="buttonHair" style="background: url(s_hair_lines_neg_trim.png);">s_hair_lines_neg_trim.png</div>
+	</div>
+</div>
+<p>
+<div>
+	
+	<div style="float: right;">
+		<div>Image #2:</div>
+		<div onclick="setHair2To('s_hair.png');" class="buttonHair" style="background: url(s_hair.png);">s_hair.png</div>
+		<div onclick="setHair2To('tmp_s_hair_01.png');" class="buttonHair" style="background: url(tmp_s_hair_01.png);">tmp_s_hair_01.png</div>
+		<div onclick="setHair2To('filter.png');" class="buttonHair" style="background: url(filter.png);">filter.png</div>
+		<div onclick="setHair2To('s_hair_white_test.png');" class="buttonHair" style="background: url(s_hair_white_test.png);">s_hair_white_test.png</div>
+		<div onclick="setHair2To('s_hair_white.png');" class="buttonHair" style="background: url(s_hair_white.png);">s_hair_white.png</div>
+		<div onclick="setHair2To('s_hair_lines_neg_trim.png');" class="buttonHair" style="background: url(s_hair_lines_neg_trim.png);">s_hair_lines_neg_trim.png</div>
+	</div>
+</div>
+<p>	
+Blend mode:
+<button id="buttonNormal" onclick="setBlendModeTo(PIXI.blendModes.NORMAL)">Normal</button>
+<button id="buttonMultiply" onclick="setBlendModeTo(PIXI.blendModes.MULTIPLY)">Multiply</button>
+<button id="buttonScreen" onclick="setBlendModeTo(PIXI.blendModes.SCREEN)">Screen</button>
+<button id="buttonAdd" onclick="setBlendModeTo(PIXI.blendModes.ADD)">Add</button>
+<button id="buttonAdd" onclick="" disabled>Lighten</button>
+<button id="buttonAdd" onclick="" disabled>Darken</button>
+<p>
+Stage background color:
+<button id="buttonBlack" onclick="setStageColor(0x000000)">Black</button>
+<button id="buttonWhite" onclick="setStageColor(0xFFFFFF)">White</button>
+<p>
+Filters:
+<button id="buttonFiltersOn" onclick="turnOnFilters()">ON</button>
+<button id="buttonFiltersOff" onclick="turnOffFilters()">OFF</button>
+<p>
+<script>
+
+/// smoke shader..
+    var uniforms = {};
+
+    uniforms.resolution = { type: '2f', value: { x: 800, y: 600 } };
+    uniforms.alpha = { type: '1f', value: 1.0 };
+    uniforms.shift = { type: '1f', value: 1.6 };
+    uniforms.time = { type: '1f', value: 0 };
+    uniforms.speed = { type: '2f', value: { x: 0.7, y: 0.4 } };
+
+    var fragmentSrc = [
+
+        "precision mediump float;",
+        "uniform vec2      resolution;",
+        "uniform float     time;",
+        "uniform float     alpha;",
+        "uniform vec2      speed;",
+        "uniform float     shift;",
+
+        "float rand(vec2 n) {",
+            "return fract(cos(dot(n, vec2(12.9898, 4.1414))) * 43758.5453);",
+        "}",
+
+        "float noise(vec2 n) {",
+            "const vec2 d = vec2(0.0, 1.0);",
+            "vec2 b = floor(n), f = smoothstep(vec2(0.0), vec2(1.0), fract(n));",
+            "return mix(mix(rand(b), rand(b + d.yx), f.x), mix(rand(b + d.xy), rand(b + d.yy), f.x), f.y);",
+        "}",
+
+        "float fbm(vec2 n) {",
+            "float total = 0.0, amplitude = 1.0;",
+            "for (int i = 0; i < 4; i++) {",
+                "total += noise(n) * amplitude;",
+                "n += n;",
+                "amplitude *= 0.5;",
+            "}",
+            "return total;",
+        "}",
+
+        "void main() {",
+
+            "const vec3 c1 = vec3(126.0/255.0, 0.0/255.0, 97.0/255.0);",
+            "const vec3 c2 = vec3(173.0/255.0, 0.0/255.0, 161.4/255.0);",
+            "const vec3 c3 = vec3(0.2, 0.0, 0.0);",
+            "const vec3 c4 = vec3(164.0/255.0, 1.0/255.0, 214.4/255.0);",
+            "const vec3 c5 = vec3(0.1);",
+            "const vec3 c6 = vec3(0.9);",
+
+            "vec2 p = gl_FragCoord.xy * 8.0 / resolution.xx;",
+            "float q = fbm(p - time * 0.1);",
+            "vec2 r = vec2(fbm(p + q + time * speed.x - p.x - p.y), fbm(p + q - time * speed.y));",
+            "vec3 c = mix(c1, c2, fbm(p + r)) + mix(c3, c4, r.x) - mix(c5, c6, r.y);",
+            "float grad = gl_FragCoord.y / resolution.y;",
+            "gl_FragColor = vec4(c * cos(shift * gl_FragCoord.y / resolution.y), 1.0);",
+            "gl_FragColor.xyz *= 1.0-grad;",
+        "}"
+    ];
+
+
+
+    var coolFilter = new PIXI.AbstractFilter(fragmentSrc, uniforms);
+
+    var uniforms = {};
+    uniforms.uScan = {type: 'sampler2D', value:new PIXI.Texture.fromImage("scan.png")};
+    uniforms.power = { type: '1f', value: 3/630 };
+    uniforms.noise = { type: '1f', value: 0.2 };
+    
+    //// grain filter..
+    
+    var fragmentSrc = [
+
+        'precision mediump float;',
+        'varying vec2 vTextureCoord;',
+        'varying vec4 vColor;',
+        'uniform sampler2D uScan;',
+        'uniform sampler2D uSampler;',
+        'uniform float noise;',
+        'uniform float power;',
+
+        'float rand(vec2 co) {',
+        '    return fract(sin(dot(co.xy ,vec2(12.9898,78.233 * noise))) * 43758.5453);',
+        '}',
+        
+        'void main(void) {',
+        '   vec2 cord = vTextureCoord;',
+        '   cord.y += noise * 0.001;',
+
+        '   float off = (-0.5 + texture2D(uScan, cord * vec2(1.0, 1.0/8.0)).g) * (power/630.0);',
+     //   '   vec4 color = texture2D(uSampler, vTextureCoord + vec2(off, 0.0));',
+
+        '    vec4 color = texture2D(uSampler, vTextureCoord);',
+            
+        '    float diff = (rand(vTextureCoord) - 0.5) * 0.2;',
+        '    color.r += diff;',
+        '    color.g += diff;',
+        '    color.b += diff;',
+            
+
+        
+
+        '   gl_FragColor = color;',
+       // '   gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0.2126*gl_FragColor.r + 0.7152*gl_FragColor.g + 0.0722*gl_FragColor.b), 1.0);',
+       // '   gl_FragColor = gl_FragColor;',
+        '}'
+    ];
+
+    var scanFilter = new PIXI.AbstractFilter(fragmentSrc, uniforms);
+	
+
+    // create an new instance of a pixi stage
+    var stage = new PIXI.Stage(0xFFFFFF);
+
+	// get the resolution of the screen pixi is on (if retina this will be 2)
+	var myDisplayResolution = 1; //window.devicePixelRatio;
+ 
+	
+	var rendererOptions = {
+		antialiasing:true,
+		transparent:false,
+		resolution:myDisplayResolution
+	}
+	
+    // create a renderer instance.
+    var renderer = PIXI.autoDetectRenderer(960, 800, rendererOptions);
+	
+	// add the renderer view element to the DOM
+    document.body.appendChild(renderer.view);
+ 
+    requestAnimFrame( animate );
+
+	var texture = PIXI.Texture.fromImage( "s_hair.png" );
+	var sprite1 = new PIXI.Sprite(texture);
+	sprite1.position.x = 16;
+	sprite1.position.y = 0;
+	sprite1.scale.x = 0.5;
+	sprite1.scale.y = 0.5;
+	
+	var texture = PIXI.Texture.fromImage( "tmp_s_hair_01.png" );
+	var sprite2 = new PIXI.Sprite(texture);
+	sprite2.position.x = 450;
+	sprite2.position.y = 0;
+	sprite2.scale.x = 0.5;
+	sprite2.scale.y = 0.5;
+
+	var texture = PIXI.Texture.fromImage( "s_hair.png" );
+	var bottomLayerSprite = new PIXI.Sprite(texture);
+	bottomLayerSprite.position.x = 0;
+	bottomLayerSprite.position.y = 0;
+
+	var texture = PIXI.Texture.fromImage( "tmp_s_hair_01.png" );
+	var topLayerSprite = new PIXI.Sprite(texture);
+	topLayerSprite.position.x = 0;
+	topLayerSprite.position.y = 0;
+
+	// shaders
+	//var shader = coolFilter;
+ 
+	// apply it to the sprite, easy peasy!
+	//sprite2.shader = shader;
+	//topLayerSprite.shader = shader;
+
+	var mainCamera = new PIXI.DisplayObjectContainer();
+	mainCamera.position.x = 16; 
+	mainCamera.position.y = 140;
+ 	
+	stage.addChild(sprite1);
+	stage.addChild(sprite2);
+	stage.addChild(mainCamera);
+	
+	mainCamera.addChild(bottomLayerSprite);
+	mainCamera.addChild(topLayerSprite);	
+
+	setBlendModeTo(PIXI.blendModes.MULTIPLY);
+
+	var filtersOn = false;
+	
+	turnOnFilters();
+	
+	function turnOffFilters() {
+		mainCamera.filters = "";
+		filtersOn = false;
+		document.getElementById("buttonFiltersOn").disabled = false; 
+		document.getElementById("buttonFiltersOff").disabled = true; 
+		
+	}
+	
+	function turnOnFilters() {
+		mainCamera.filters = [scanFilter];
+		filtersOn = true;
+		document.getElementById("buttonFiltersOn").disabled = true; 
+		document.getElementById("buttonFiltersOff").disabled = false; 		
+	}
+	
+	
+
+	function animate() {
+	   
+		if ( filtersOn )
+		{
+			//count += 0.01;
+
+			//coolFilter.uniforms.time.value = count;
+			//coolFilter.syncUniforms();
+
+			count2 ++;
+
+			if(count2 > 150)
+			{
+				count2 = 0;
+				ease = ( Math.random() * 30) /// 630;
+			}
+
+			ease *= 0.9;
+
+			scanFilter.uniforms.power.value += (ease -  scanFilter.uniforms.power.value ) * 0.3;
+
+			ease =  0.8 + Math.random() * 0.2;
+
+			mainCamera.alpha += (ease - mainCamera.alpha ) * 0.1
+			scanFilter.uniforms.noise.value += 0.1;
+			scanFilter.uniforms.noise.value %= 1;
+			scanFilter.syncUniforms();
+
+			//var count = 0;
+
+			var count2 = 0;
+			var ease = 0;
+		}
+		
+		renderer.render(stage);
+		
+		requestAnimFrame(animate);
+	}
+  	
+	
+	function setStageColor(color) {
+		stage.setBackgroundColor(color);
+	}
+	
+	function setHair2To(img)
+	{
+		var texture = PIXI.Texture.fromImage( img );
+		topLayerSprite.setTexture(texture); 
+		sprite2.setTexture(texture); 
+	}
+	
+	function setHairTo(img)
+	{
+		var texture = PIXI.Texture.fromImage( img );
+		bottomLayerSprite.setTexture(texture); 
+		sprite1.setTexture(texture); 
+	}	
+	
+	function setBlendModeTo(blendMode) 
+	{
+
+		document.getElementById("buttonMultiply").disabled = false; 
+		document.getElementById("buttonNormal").disabled = false;
+		document.getElementById("buttonScreen").disabled = false; 
+		document.getElementById("buttonAdd").disabled = false; 
+
+		if (blendMode == PIXI.blendModes.NORMAL)
+		{
+			document.getElementById("buttonNormal").disabled = true;
+
+		}
+		else if (blendMode == PIXI.blendModes.MULTIPLY)
+		{
+			document.getElementById("buttonMultiply").disabled = true; 
+		}
+		else if (blendMode == PIXI.blendModes.SCREEN)
+		{
+			document.getElementById("buttonScreen").disabled = true; 
+		}
+		else if (blendMode == PIXI.blendModes.ADD)
+		{
+			document.getElementById("buttonAdd").disabled = true; 
+		}			
+		
+		topLayerSprite.blendMode = blendMode;
+		
+	}
+	
+</script>
+
+
+</body>
+
+
+
+</html>
