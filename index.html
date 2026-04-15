@@ -39,6 +39,28 @@
             color: #003d82;
             text-decoration: underline;
         }
+        .description {
+            font-size: 0.9em;
+            color: #555;
+            margin-top: 8px;
+            line-height: 1.4;
+        }
+        /* Tag Styles */
+        .tag {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7em;
+            color: #fff;
+            margin-left: 6px;
+            font-weight: bold;
+            vertical-align: middle;
+            text-transform: lowercase;
+        }
+        .tag-jquery { background-color: #0769AD; } /* Official jQuery blue */
+        .tag-pixi { background-color: #E72264; } /* Pixi.js magenta */
+        .tag-pixastic { background-color: #e67e22; } /* Orange for Pixastic */
+        .tag-stats { background-color: #27ae60; } /* Green for stats.js */
     </style>
 </head>
 <body>
@@ -47,13 +69,54 @@
     <p>Select a file below to open it:</p>
 
     <ul>
-        <li><a href="arena.html">Arena</a></li>
-        <li><a href="blendmodes.html">Blend Modes</a></li>
-        <li><a href="blendmodes_pixi.js.html">Blend Modes (Pixi.js)</a></li>
-        <li><a href="cartoon.html">Cartoon</a></li>
-        <li><a href="cartoonpixi08.html">Cartoon Pixi 08 (Pixi.js)</a></li>
-        <li><a href="fps_timeline.html">FPS Timeline</a></li>
-        <li><a href="pixihexagon12.html">Pixi Hexagon 12 (Pixi.js)</a></li>
+        <li>
+            <a href="arena.html">Arena</a>
+            <span class="tag tag-jquery">jQuery v1.9.1</span>
+            <div class="description">
+                A <strong>browser-based 2D simulation</strong> of the <strong>2013 Formula 1 season</strong>, presented with a unique <strong>"gladiator arena"</strong> theme in Finnish. Features include a <strong>circular radar-style track</strong>, <strong>color-coded</strong> driver dots, custom <strong>playback controls</strong>, and <strong>live text commentary</strong>.
+            </div>
+        </li>
+        <li>
+            <a href="blendmodes_pixi.js.html">Blend Modes Pixi</a>
+            <span class="tag tag-pixastic">Pixastic.js</span>
+            <span class="tag tag-pixi">Pixi.js v2.1.0</span>
+            <span class="tag tag-jquery">jQuery v2.1.1</span>
+            <div class="description">
+                An interactive <strong>WebGL prototype</strong> for testing image <strong>blend modes</strong> and visual <strong>filters</strong>. Built with Pixi.js and Pixastic.js, it lets users experiment with combining graphical layers using different <strong>hardware-accelerated</strong> and <strong>software-calculated</strong> blend modes, stage backgrounds, and custom animated <strong>scanline shaders</strong>.
+            </div>
+        </li>
+        <li>
+            <a href="cartoon.html">Cartoon</a>
+            <span class="tag tag-pixastic">Pixastic.js</span>
+            <div class="description">
+                A 2D web-based <strong>character creation</strong> prototype. Users can customize a female portrait's hair, facial features, eye color, and background. This standard version relies entirely on the <strong>HTML5 Canvas API</strong> and Pixastic.js for <strong>software-calculated image blending</strong>.
+            </div>
+        </li>
+        <li>
+            <a href="cartoonpixi08.html">Cartoon Pixi</a>
+            <span class="tag tag-pixastic">Pixastic.js</span>
+            <span class="tag tag-pixi">Pixi.js v2.1.0</span>
+            <span class="tag tag-jquery">jQuery v2.1.1</span>
+            <div class="description">
+                An updated <strong>WebGL-accelerated</strong> version of the character creator using <strong>Pixi.js</strong>. It serves as a <strong>transitional prototype</strong>, moving rendering to the <strong>GPU</strong> for better performance, while implementing custom workarounds (mixing <strong>2D Canvas and WebGL</strong>) for advanced blend modes like <strong>'Lighten'</strong> that weren't natively supported at the time.
+            </div>
+        </li>
+        <li>
+            <a href="fps_timeline.html">FPS Timeline</a>
+            <span class="tag tag-stats">stats.js</span>
+            <div class="description">
+                A browser-based performance and timing prototype testing the <strong>decoupling</strong> of animation <strong>rendering</strong> from underlying <strong>game logic speeds</strong>. It features an HTML5 Canvas with bouncing circles, a stats.js <strong>FPS monitor</strong>, and custom UI controls to <strong>independently adjust</strong> the visual frame rate and the simulation logic multipliers.
+            </div>
+        </li>
+        <li>
+            <a href="pixihexagon12.html">Pixi Hexagon 12</a>
+            <span class="tag tag-pixi">Pixi.js v2.1.0</span>
+            <span class="tag tag-jquery">jQuery v2.1.1</span>
+            <span class="tag tag-stats">stats.js</span>
+            <div class="description">
+                An interactive 2D <strong>hexagonal map rendering</strong> prototype built using Pixi.js. Features include dynamic <strong>XML map data</strong> loading, <strong>biome-based</strong> tile generation, a <strong>minimap</strong> with camera panning, <strong>mouse-wheel zooming</strong>, live <strong>coordinate tracking</strong>, custom <strong>hexagonal math</strong>, and a <strong>path-drafting tool</strong>.
+            </div>
+        </li>
     </ul>
 
 </body>
