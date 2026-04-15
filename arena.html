@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html>
+<html lang="fi">
 <head>
 <script src="js/jquery-1.9.1.min"></script>
 </head>
@@ -12,7 +12,7 @@
 
 <div id="info" style="background: rgba(200,200,200,0.8); padding: 4px; position: absolute; margin-left: -256px; left: 50%; bottom: 10px; width: 512px; height: 128px; border: 1px solid; position: absolute;">
 	<div style="border: solid 1px; width: 32px; height: 32px; background: gray; float: left;"></div>
-	<div style="padding-left: 4px; border: dotted 1px; width: 466px; height: 32px; float: left;">Ottelukeh‰</div>
+	<div style="padding-left: 4px; border: dotted 1px; width: 466px; height: 32px; float: left;">Ottelukeh√§</div>
 
 	<div style="border: solid 1px; width: 32px; height: 32px; background: pink; float: left;"></div>
 	<div style="padding-left: 4px; border: dotted 1px; width: 466px; height: 32px; float: left;">Katsomot</div>
@@ -25,7 +25,7 @@ left: 25%; top: 50%; margin-top: -256px; margin-left: -256px; position: absolute
 
 <div style="background: rgba(200,200,200,0.8); top: 50%; margin-top: -256px; font-family: Sans-Serif, Arial; font-size: 0.6em; border: solid 1px; position: absolute; width: 300px; height: 400px; right: 10px; padding:10px;">
 <button onclick="raportti()">Tulosta raportti</button>
-<!--<button onclick="drawGladiators()">Piirr‰ gladiaattorit</button>-->
+<!--<button onclick="drawGladiators()">Piirr√§ gladiaattorit</button>-->
 <p>
 <div id="raporttiField" style="overflow: auto; height: 350px;"></div>
 </div>
@@ -204,7 +204,7 @@ function lopeta()
 	
 	var gladiators = new Array(
 		'Sebastian Vettel','Red Bull Racing',
-		'Kimi R‰ikkˆnen','Lotus',
+		'Kimi R√§ikk√∂nen','Lotus',
 		'Mark Webber','Red Bull Racing',
 		'Lewis Hamilton','Mercedes',
 		'Felipe Massa','Ferrari',
@@ -550,27 +550,27 @@ function kilpailuRaportti(kilpailuObject)
     if ( tulostetut('TERVETULOA') == false )
 	{
 		lisaa('Tervetuloa seuraamaan Tammilaakson osakilpailua.');    
-		lisaa('Gladiaattorit ovat ker‰‰ntyneet jo taistelusektoreihin.');
+		lisaa('Gladiaattorit ovat ker√§√§ntyneet jo taistelusektoreihin.');
 		
 		lisaa( 
-		  'Kimi R‰ikkˆnen l‰htee taisteluun sektorista ' + kilpailuObject.getGladiaattorinSijoitus('Kimi R‰ikkˆnen') 
+		  'Kimi R√§ikk√∂nen l√§htee taisteluun sektorista ' + kilpailuObject.getGladiaattorinSijoitus('Kimi R√§ikk√∂nen') 
 		  + ' ja Valtteri Bottas sektorista ' +  kilpailuObject.getGladiaattorinSijoitus('Valtteri Bottas') + '.'
 		);  
 		
 
 		if (kilpailuObject.getSijoituksenGladiaattoriObject(1).getTallinNimi() == kilpailuObject.getSijoituksenGladiaattoriObject(2).getTallinNimi())
 		{
-			lisaa( 'Molemmat ' + kilpailuObject.getSijoituksenGladiaattoriObject(1).getTallinNimi() + ' -gladiaattorit ovat ensimm‰isess‰ riviss‰. '
-			+ kilpailuObject.getSijoituksenGladiaattori(1) + ' l‰htee taisteluun paalupaikalta.' );
+			lisaa( 'Molemmat ' + kilpailuObject.getSijoituksenGladiaattoriObject(1).getTallinNimi() + ' -gladiaattorit ovat ensimm√§isess√§ riviss√§. '
+			+ kilpailuObject.getSijoituksenGladiaattori(1) + ' l√§htee taisteluun paalupaikalta.' );
 			
 		}
 		else
 		{
-			lisaa( kilpailuObject.getSijoituksenGladiaattori(1) + ' l‰htee taisteluun paalupaikalta.' );
+			lisaa( kilpailuObject.getSijoituksenGladiaattori(1) + ' l√§htee taisteluun paalupaikalta.' );
 		}
 		
 	
-		lisaa ( 'Kisa alkaa Suomen aikaan yhdeks‰lt‰. S‰‰ Tammelassa on erinomainen.' );
+		lisaa ( 'Kisa alkaa Suomen aikaan yhdeks√§lt√§. S√§√§ Tammelassa on erinomainen.' );
 
 		lisaa ( 'Kaikki valmista aloitukseen.' );
 	}
@@ -592,7 +592,7 @@ function kilpailuRaportti(kilpailuObject)
 		  lisaa ( 
 			kilpailuObject.getSijoituksenGladiaattori(2) + ' on kakkonen, ' 
 			+ kilpailuObject.getSijoituksenGladiaattori(3) + ' kolmas, '
-            + kilpailuObject.getSijoituksenGladiaattori(4) + ' nelj‰s.'			
+            + kilpailuObject.getSijoituksenGladiaattori(4) + ' nelj√§s.'			
 		  );
 		}
 	  }
@@ -614,7 +614,7 @@ function kilpailuRaportti(kilpailuObject)
 	    if ( tulostetut('KAIKKI_MAALISSA') == false )
 	    {
 		  lisaa ( 
-			'Kiitos kaikille seurasta. Arenamanagerin live-seuranta on j‰lleen "‰‰ness‰" viikon kuluttua, kun MM-pisteit‰ jaetaan Albaniassa.' 
+			'Kiitos kaikille seurasta. Arenamanagerin live-seuranta on j√§lleen "√§√§ness√§" viikon kuluttua, kun MM-pisteit√§ jaetaan Albaniassa.' 
 		  );
 		  lopeta();
 		}
@@ -681,7 +681,7 @@ function Kilpailu()
 	
 	this.getKierrosLuku = function()
 	{
-	    var temp = kierrosNumero; // palautetaan myˆs ruutulippukierroksen j‰lkeiset kierrokset
+	    var temp = kierrosNumero; // palautetaan my√∂s ruutulippukierroksen j√§lkeiset kierrokset
 		return parseInt(temp);
 	}
 	
@@ -780,7 +780,7 @@ function Kilpailu()
 
 function sijoitusToText( param )
 {
-  var luvut = new Array ( 'yksi', 'kaksi', 'kolme', 'nelj‰', 'viisi', 'kuusi', 'seitsem‰n', 'kahdeksan', 'yhdeks‰n', 'kymmenen' );
+  var luvut = new Array ( 'yksi', 'kaksi', 'kolme', 'nelj√§', 'viisi', 'kuusi', 'seitsem√§n', 'kahdeksan', 'yhdeks√§n', 'kymmenen' );
   if ( param < 11 )
   {
     return luvut[param-1];
@@ -886,7 +886,7 @@ function Gladiaattori()
 	
 	this.report = function()
 	{
-		var raportti = "Nimi:" + this.getKokoNimi() + ", Talli:" + this.getTallinNimi() + ", Kierrosnumero:" + this.getKierrosNumero() + ", J‰rjestys radalla:" + this.getJarjestysRadalla()
+		var raportti = "Nimi:" + this.getKokoNimi() + ", Talli:" + this.getTallinNimi() + ", Kierrosnumero:" + this.getKierrosNumero() + ", J√§rjestys radalla:" + this.getJarjestysRadalla()
 		+ ", Sijoitus kilpailussa:" + this.getSijoitusKilpailussa() + ", Sijainti sektorilla:" + this.getSijaintiRataSektorilla()
 		+ ", aikasijainti radalla:" + this.getAikaSijaintiRadalla()+ "/60.0";
 		return raportti;
