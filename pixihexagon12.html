@@ -9,7 +9,7 @@
 			background-color: #000000;
 		}
 	</style>
-	<script src="js/pixi1.0.0.js"></script>
+	<script src="js/pixi.js"></script>
 	<script src="js/jquery-1.9.1.min"></script>
         <script src="js/stats.js"></script>
 </head>
@@ -653,7 +653,8 @@ setInterval( function () {
 						alien.scale.y = kerroin;
 
 						// enable the bunny to be interactive.. this will allow it to respond to mouse and touch events		
-						alien.setInteractive(true);
+						alien.interactive = true;
+
 						// this button mode will mean the hand cursor appears when you rollover the bunny with your mouse
 						alien.buttonMode = true;
 
@@ -1047,7 +1048,8 @@ setInterval( function () {
 					alien.scale.y = kerroin;
 
 					// enable the bunny to be interactive.. this will allow it to respond to mouse and touch events		
-					alien.setInteractive(true);
+					alien.interactive = true;
+
 					// this button mode will mean the hand cursor appears when you rollover the bunny with your mouse
 					alien.buttonMode = true;
 
