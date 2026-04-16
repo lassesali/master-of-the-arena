@@ -1,0 +1,7 @@
+docs/
+feature_prototypes/
+gui/
+protos/
+*.php
+*.flippage
+*.new
