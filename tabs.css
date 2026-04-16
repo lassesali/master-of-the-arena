@@ -1,0 +1,209 @@
+.tabText {
+  position: absolute;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.tabContainer {
+  left: 13%;
+  top: 15%;
+  width: 70%;
+  height: 75%;
+  position: absolute; 
+}
+
+
+#tabBottom01, #tabBottom02, #tabBottom03, #tabBottomManagersOffice, #tabBottom05, #tabBottom06, #tabBottom07 {
+  height: 9.375%;
+  font-family: Arial;
+  font-weight: Bold;
+  font-size: 1.4em;
+  color: Black;
+  position: absolute;
+  top: 91.66667%;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+  display: block;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+  text-shadow: 2px 2px 2px rgba(0,0,0, 0.25);
+}
+
+#tabBottom01 {
+  background: url(gui/bottomtableftcorner.png);
+  width: 10.78125%;
+  background-size: 100%; 
+}
+
+#tabBottom07 {
+  background: url(gui/bottomtabrightcorner.png);
+  width: 10.9375%;
+  background-size: 100%;
+}
+
+#tabBottom01.mouseenter {
+  background: url(gui/bottomtableftcornerhl.png);
+  background-size: 100%; 
+}
+
+#tabBottom07.mouseenter{
+  background: url(gui/bottomtabrightcornerhl.png);
+  background-size: 100%;
+}
+
+#tabBottom02, #tabBottom03, #tabBottomManagersOffice, #tabBottom05, #tabBottom06 {
+  background: url(gui/bottomtab.png);
+  //width: 15.15625%;
+  width: 25%;
+  background-size: 100%; 
+}
+
+#tabBottom01 {
+  left: 0px;
+}
+
+#tabBottom02 {
+  left: 13%;
+}
+
+#tabBottom03 {
+  left: 26.5625%;
+}
+  
+#tabBottomManagersOffice {
+  left: 38.1875%;
+}
+
+#tabBottom05 {
+  left: 57.8125%;
+}
+
+#tabBottom06 {
+  left: 64%;
+}
+
+#tabBottom07 {
+  left: 89.0625%;
+}
+
+#tabBottomManagersOffice .alink, #tabBottom01 .alink, #tabBottom02 .alink , #tabBottom03 .alink, #tabBottom05 .alink, #tabBottom06 .alink, #tabBottom07 .alink {
+  color: black;
+  display: block;
+  text-decoration: none;
+  height: 9.375%;
+  line-height: 3.0em;
+  text-indent: 1.4em;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+}
+
+.secondLine {
+  margin-top: -1.5em;
+  display: block;
+  line-height: 8.0em;
+  text-indent: 1.4em;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+}
+    
+
+
+  #tabBottomManagersOffice.selected {
+    background: url(gui/bottomtab5selected.png);
+    background-size: 100%;
+
+  }
+
+
+div#tabBottom01.r640x480 {
+  background: url(gui/bottomtableftcorner_640x480.png);
+  background-size: 100%; 
+}
+
+div#tabBottom07.r640x480 {
+  background: url(gui/bottomtabrightcorner_640x480.png);
+  background-size: 100%;
+}
+
+div#tabBottom01.mouseenter.r640x480 {
+  background: url(gui/bottomtableftcornerhl_640x480.png);
+  background-size: 100%; 
+}
+
+div#tabBottom07.mouseenter.r640x480 {
+  background: url(gui/bottomtabrightcornerhl_640x480.png);
+  background-size: 100%;
+}
+
+div#tabBottom02.r640x480, div#tabBottom03.r640x480, div#tabBottomManagersOffice.r640x480, div#tabBottom05.r640x480, div#tabBottom06.r640x480 {
+  background: url(gui/bottomtab_640x480.png);
+  background-size: 100%; 
+}
+
+div#tabBottomManagersOffice.selected.r640x480 {
+  background: url(gui/bottomtab5selected_640x480.png);
+  background-size: 100%;
+}
+
+div#tabBottom02.mouseenter {
+  background: url(gui/bottomtab2.png);
+  background-size: 100%; 
+}
+
+div#tabBottom03.mouseenter {
+  background: url(gui/bottomtab3.png);
+  background-size: 100%; 
+}
+
+div#tabBottomManagersOffice.mouseenter {
+  background: url(gui/bottomtab5.png);
+  background-size: 100%; 
+}
+
+div#tabBottom05.mouseenter {
+  background: url(gui/bottomtab6.png);
+  background-size: 100%; 
+}
+
+div#tabBottom06.mouseenter {
+  background: url(gui/bottomtab7.png);
+  background-size: 100%; 
+}
+
+div#tabBottom02.mouseenter.r640x480 {
+  background: url(gui/bottomtab2_640x480.png);
+  background-size: 100%; 
+}
+
+div#tabBottom03.mouseenter.r640x480 {
+  background: url(gui/bottomtab3_640x480.png);
+  background-size: 100%; 
+}
+
+div#tabBottomManagersOffice.mouseenter.r640x480 {
+  background: url(gui/bottomtab5_640x480.png);
+  background-size: 100%; 
+}
+
+div#tabBottom05.mouseenter.r640x480 {
+  background: url(gui/bottomtab6_640x480.png);
+  background-size: 100%; 
+}
+
+div#tabBottom06.mouseenter.r640x480 {
+  background: url(gui/bottomtab7_640x480.png);
+  background-size: 100%; 
+}

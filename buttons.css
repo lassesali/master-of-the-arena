@@ -1,0 +1,188 @@
+  .buttonText {
+    line-height: 200%;
+	//line-height: 3em;
+	height: 100%;
+	width: 100%;
+	top: 0;
+	left: 0;
+	position: absolute;
+	white-space: nowrap;
+  }
+
+  #buttonConfirmDesign, #buttonClose, #buttonTest, #buttonAutoBuild, #buttonRemoveItem, 
+  #buttonLoginWithFacebook, #buttonOK, #buttonLoginWithGoogle, #buttonLogin, #buttonSignUp, #buttonAudioSwitch, #buttonFullscreenSwitch  {
+/*	height: 4.16676%; */
+        height: 6.35696821515892%;
+	font-family: Arial;
+	font-weight: Bold;
+	font-size: 1.6em;
+	color: black;
+	position: absolute;
+	margin: 0;
+	padding: 0;
+	text-align: center;
+	display: block;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        box-shadow: 4px 0 10px rgba(0,0,0,0.25);
+        -moz-box-shadow: 4px 0 10px rgba(0,0,0,0.25);
+        -webkit-box-shadow: 4px 0 10px rgba(0,0,0,0.25);
+        text-shadow: 2px 2px 2px rgba(0,0,0, 0.25);
+  }
+   
+
+  #buttonLogin, #buttonLoginWithFacebook, #buttonSignUp, #buttonLoginWithGoogle {
+    font-size: 1.4em; // override font-size
+  }
+
+  #buttonLogin, #buttonLoginWithFacebook, #buttonSignUp {
+    top: 62%;
+  }
+
+  #buttonLogin {
+    left: 17.96875%;
+  }
+
+  #buttonLoginWithGoogle, #buttonLoginWithFacebook {
+    left: 38.59375%;
+  }
+
+  div#buttonLoginWithFacebook.facebook {
+    left: 64.0625%;
+  }
+
+  #buttonLoginWithGoogle {
+    top: 75.55012%;
+  }
+
+  #buttonSignUp {
+    left: 64.0625%;
+  }
+
+  #buttonConfirmDesign, #buttonClose {
+	top: 80%;
+  }
+
+  #buttonOK {
+    top: 68.75%;
+    left: 42.5%;
+  }
+
+  #buttonConfirmDesign {
+    left: 44.0625%;
+  }
+  
+  #buttonConfirmDesign, #buttonLoginWithFacebook, #buttonLoginWithGoogle {
+    background: url(gui/btn02.png);
+    background-size: 100% 100%;
+    width: 20.9375%;
+  }
+  
+  #buttonConfirmDesign.mouseenter, #buttonLoginWithFacebook.mouseenter, #buttonLoginWithGoogle.mouseenter {
+    background: url(gui/btn02hl.png);
+    background-size: 100% 100%;
+  }
+  
+  #buttonConfirmDesign.mousedown, #buttonLoginWithFacebook.mousedown, #buttonLoginWithGoogle.mousedown {
+    background: url(gui/btn02down.png);
+    background-size: 100% 100%;
+  }
+  
+  
+  #buttonClose, #buttonTest, #buttonAutoBuild, #buttonRemoveItem, #buttonOK, #buttonLogin, #buttonSignUp {
+    background: url(gui/btn01.png);
+    background-size: 100% 100%;
+    width: 16.25%;
+  }
+  
+  #buttonClose.mouseenter, #buttonTest.mouseenter, #buttonAutoBuild.mouseenter, #buttonRemoveItem.mouseenter, #buttonOK.mouseenter, 
+  #buttonLogin.mouseenter, #buttonSignUp.mouseenter {
+    background: url(gui/btn01hl.png);
+    background-size: 100% 100%;
+  }
+  
+  #buttonClose.mousedown, #buttonTest.mousedown, #buttonAutoBuild.mousedown, #buttonRemoveItem.mousedown, #buttonOK.mousedown, 
+  #buttonLogin.mousedown, #buttonSignUp.mousedown {
+    background: url(gui/btn01down.png);
+    background-size: 100% 100%;
+  }
+  
+  #buttonClose {
+  	left: 75.9375%;
+  }
+    
+  #buttonAutoBuild {
+	left: 25%;
+	top: 42%;
+  }
+
+  #buttonRemoveItem {
+	left: 28.75%;
+	top: 54%;
+  }
+
+  #buttonFullscreenSwitch {
+    left: 93.86759581881533%;
+    top: 0.20833%;
+    background: url(gui/btnfullscreen.png);
+    background-size: 100% 100%;
+    width: 5.92334494773519%;
+    height: 8.05555555555556%;  
+  }
+
+  #buttonFullscreenSwitch.mouseenter {
+    background: url(gui/btnfullscreenhl.png);
+    background-size: 100% 100%;
+  }
+
+  #buttonFullscreenSwitch.mousedown {
+    background: url(gui/btnfullscreendown.png);
+    background-size: 100% 100%;
+  }
+
+  #buttonAudioSwitch {
+    left: 85%;
+    top: 0.20833%;
+    background: url(gui/btnaudioon.png);
+    background-size: 100% 100%;
+    width: 5.92334494773519%;
+    height: 8.05555555555556%;
+  }
+
+  #buttonAudioSwitch.mouseenter {
+    background: url(gui/btnaudioonhl.png);
+    background-size: 100% 100%;
+  }
+
+  #buttonAudioSwitch.mousedown {
+    background: url(gui/btnaudioondown.png);
+    background-size: 100% 100%;
+  }
+
+  #buttonAudioSwitch.switchOff {
+    background: url(gui/btnaudiooff.png);
+    background-size: 100% 100%;
+  }
+
+  #buttonAudioSwitch.mouseenter.switchOff {
+    background: url(gui/btnaudiooffhl.png);
+    background-size: 100% 100%;
+  }
+
+  #buttonAudioSwitch.mousedown.switchOff {
+    background: url(gui/btnaudiooffdown.png);
+    background-size: 100% 100%;
+  }
+
+  #buttonRemoveItem.disabled {
+    background: url(gui/btn01disabled.png);
+    background-size: 100% 100%;
+    color: gray;
+    text-shadow: 0 0 0 rgba(0,0,0,0);
+
+  }
+  

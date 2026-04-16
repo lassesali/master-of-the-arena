@@ -1,0 +1,34 @@
+.textInput01 {
+  	//width: 166px; //25.9375%;
+	//height: 31px; //6.4583333%;
+        width: 70%;
+        height: 80%;
+	background: none;
+	border: none;
+	color: #000000;
+	margin-top: 1%;
+	margin-left: 7%;
+        font-size: 2.0em;
+}
+
+#inputUserName {
+  top: 30.38631%;
+}
+
+#inputPassword {
+  top: 47.83374%;
+}
+
+#inputUserName, #inputPassword {
+  position: absolute;
+  left: 5%;
+  width: 29.375%;
+  height: 9.0%;
+  background: url(gui/textfield_01.png) no-repeat;
+  background-size: contain;
+}
+
+input:focus {
+  outline:none;
+}
+

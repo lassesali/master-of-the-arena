@@ -1,0 +1,25 @@
+<!-- Copyright (c) 2014 Lasse Sali. This project is licensed under the MIT License. -->
+
+<html>
+
+	<background>
+	  <id>backgroundWelcome</id>
+
+	  <text>
+	  	<id>textWelcome</id>
+	  </text>
+	  <text>
+	    <id>textPlayerName</id>
+	  </text>
+	  
+	</background>
+	
+	
+   	<button>
+		<id>buttonOK</id>
+		<type>normal</type>
+	</button>
+
+</html>
+
+

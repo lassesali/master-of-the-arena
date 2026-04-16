@@ -1,0 +1,82 @@
+#backgroundContracts {
+  left: 4.6875%;
+  top: 20.20833%;
+  background: url(gui/background02_1920x1080.png);
+  background-size: 100% 100%;
+  width: 90.625%;
+  height: 66.667%;
+  position: absolute;
+}
+
+#backgroundWelcome {
+  left: 25%;
+  top: 21.6667%;
+  background: url(gui/background04_1920x1080.png);
+  background-size: 100% 100%;
+  width: 50%;
+  height: 56.667%;
+  position: absolute;
+}
+
+#backgroundContainer {
+  left: 0;
+  top: 5.833%;
+  background: url(gui/background_blk_01_1920x1080.png);
+  background-size: 100% 100%;
+  width: 100%;
+  /* height: 84.79167%; */
+  height: 85.208333%;
+  position: absolute;
+}
+
+#backgroundContainerInner {
+  left: 1.5625%;
+  top: 10%;
+  background: url(gui/background_tab1sel_1920x1080.png);
+  background-size: 100% 100%;
+  width: 97.03125%;
+  height: 78.33333%;
+  position: absolute;
+  /* x10,y53-5, 621 x 376 */
+
+}
+
+
+#backgroundLoginContainer {
+  left: 0;
+  top: 5.833%;
+  background: url(gui/background_03_1920x1080.png);
+  background-size: 100% 100%;
+  width: 100%;
+  /* height: 84.79167%; */
+  height: 85.208333%;
+  position: absolute;
+}
+
+
+div#backgroundContracts.r640x480 {
+  background: url(gui/background02_640x480.png);
+  background-size: 100% 100%;
+}
+
+div#backgroundWelcome.r640x480 {
+  background: url(gui/background04_640x480.png);
+  background-size: 100% 100%;
+}
+
+div#backgroundContainer.r640x480 {
+  /* background: url(gui/background_new_01_640x480.png); */
+  /* background-size: 100% 100%; */
+}
+
+div#backgroundContainerInner.r640x480 {
+  /* background: url(gui/background_new_01_640x480.png); */
+  /* background-size: 100% 100%; */
+}
+
+div#backgroundLoginContainer.r640x480 {
+  background: url(gui/background_03_640x480.png);
+  background-size: 100% 100%;
+}
+
+

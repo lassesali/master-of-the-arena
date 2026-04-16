@@ -1,0 +1,10 @@
+<!-- Copyright (c) 2014 Lasse Sali. This project is licensed under the MIT License. -->
+
+<html>
+   	<button>
+	  <id>buttonAudioSwitch</id>
+	</button>
+   	<button>
+	  <id>buttonFullscreenSwitch</id>
+	</button>
+</html>

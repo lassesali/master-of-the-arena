@@ -1,0 +1,18 @@
+<!-- Copyright (c) 2014 Lasse Sali. This project is licensed under the MIT License. -->
+
+<html>
+	<background>
+	  <id>backgroundWelcome</id>
+
+	  <!-- Invalid browser found. -->
+	  <text>
+	  	<id>textWelcome</id>
+	    <value>02</value>
+	  </text>
+	  
+	</background>
+   
+
+</html>
+
+

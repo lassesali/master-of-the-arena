@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Datatable xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <LocalizationPair Name="%textWelcome">WELCOME TO ARENA MANAGER</LocalizationPair>
+  <LocalizationPair Name="%textWelcome02">Invalid browser found.</LocalizationPair>
+  <LocalizationPair Name="%buttonOK">OK</LocalizationPair>
+  <LocalizationPair Name="%textUserLogin">USER LOGIN</LocalizationPair>
+  <LocalizationPair Name="%textUserLogin02">ARENA MANAGER</LocalizationPair>
+  <LocalizationPair Name="%textUserName">Username:</LocalizationPair>
+  <LocalizationPair Name="%textPassword">Password:</LocalizationPair>
+  <LocalizationPair Name="%textRegisterLabel">REGISTER FOR FREE</LocalizationPair>
+  <LocalizationPair Name="%textRegisterSubLabel">Tulin, Taistelin, Tapoin</LocalizationPair>
+  <LocalizationPair Name="%textRegisterDescription">ͦ Train gladiators, lead an team.
+  ͦ Compete in a series of 
+  gladiatorial games. 
+  ͦ Win gladiatorial games, 
+  win championships.</LocalizationPair>
+  <LocalizationPair Name="%buttonLoginWithFacebook">LOGIN WITH FACEBOOK</LocalizationPair>  
+  <LocalizationPair Name="%buttonLoginWithFacebook02">PLAY NOW!</LocalizationPair>  
+  <LocalizationPair Name="%buttonLoginWithGoogle">LOGIN WITH GOOGLE</LocalizationPair>  
+  <LocalizationPair Name="%buttonLogin">LOGIN</LocalizationPair>  
+  <LocalizationPair Name="%buttonSignUp">SIGNUP</LocalizationPair>  
+  <LocalizationPair Name="%bgContractsManagersofficeText">MANAGER'S OFFICE</LocalizationPair>  
+  <LocalizationPair Name="%bgContractsAdditemstocontractText">ADD ITEMS TO CONTRACT</LocalizationPair>  
+  <LocalizationPair Name="%bgContractsSelectediteminformationText">SELECTED ITEM INFORMATION:</LocalizationPair>  
+  <LocalizationPair Name="%bgContractsTopleveldetailsText">TOP LEVEL DETAILS:</LocalizationPair>  
+  <LocalizationPair Name="%buttonConfirmDesign">CONFIRM DESIGN</LocalizationPair>  
+  <LocalizationPair Name="%buttonClose">CLOSE</LocalizationPair>  
+  <LocalizationPair Name="%buttonAutoBuild">AUTO-BUILD</LocalizationPair>  
+  <LocalizationPair Name="%buttonRemoveItem">REMOVE ITEM</LocalizationPair>  
+  <LocalizationPair Name="%tabBottomManagersOffice">MANAGER'S
+  OFFICE</LocalizationPair>  
+  <LocalizationPair Name="%tabBottom01"> </LocalizationPair>  
+  <LocalizationPair Name="%tabBottom02"> </LocalizationPair>  
+  <LocalizationPair Name="%tabBottom03"> </LocalizationPair>  
+  <LocalizationPair Name="%tabBottom05"> </LocalizationPair>  
+  <LocalizationPair Name="%tabBottom06"> </LocalizationPair>  
+  <LocalizationPair Name="%tabBottom07"> </LocalizationPair> 
+  <LocalizationPair Name="%textPlayerName">$PlayerFirstName</LocalizationPair> 
+  <LocalizationPair Name="%topTabContracts">CONTRACTS</LocalizationPair> 
+</Datatable>
+
+		
+

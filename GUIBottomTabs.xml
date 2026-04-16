@@ -1,0 +1,29 @@
+<!-- Copyright (c) 2014 Lasse Sali. This project is licensed under the MIT License. -->
+
+<html>
+	<tab>
+	  <id>tabBottomManagersOffice</id>
+	  <type>normal</type>
+	  <vector>
+		<x>0.494845</x>
+		<y>0.49</y>
+		<size>1.8</size>
+		<scalex>1.2</scalex>
+		<scaley>0.8</scaley>
+		<effect>whitewithshadow</effect>
+	  </vector>	  
+	</tab>
+	
+	
+	<tab>
+	  <id>tabBottom02</id>
+	  <type>normal</type>
+	</tab>
+	
+	<tab>
+	  <id>tabBottom06</id>
+	  <type>normal</type>
+	</tab>
+	
+	
+</html>

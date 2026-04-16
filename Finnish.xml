@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Datatable xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <LocalizationPair Name="%textWelcome">TERVETULOA ARENA MANAGERIIN</LocalizationPair>
+  <LocalizationPair Name="%textWelcome02">Väärä selain.</LocalizationPair>
+  <LocalizationPair Name="%buttonOK">OK</LocalizationPair>
+  <LocalizationPair Name="%textUserLogin">KIRJAUTUMINEN</LocalizationPair>
+  <LocalizationPair Name="%textUserLogin02">ARENA MANAGER</LocalizationPair>
+  <LocalizationPair Name="%textUserName">Käyttäjätunnus:</LocalizationPair>
+  <LocalizationPair Name="%textPassword">Salasana:</LocalizationPair>
+  <LocalizationPair Name="%textRegisterLabel">REKISTERÖIDY</LocalizationPair>
+  <LocalizationPair Name="%textRegisterSubLabel">Tulin, Taistelin, Tapoin</LocalizationPair>
+  <LocalizationPair Name="%textRegisterDescription">ͦ Kouluta gladiaattoreja, 
+  johda joukkuetta.
+  ͦ Kilpaile gladiaattorisarjassa. 
+  ͦ Voita otteluita, 
+  voita maailmanmestaruuksia.</LocalizationPair>
+  <LocalizationPair Name="%buttonLoginWithFacebook">KIRJAUDU FACEBOOKILLA</LocalizationPair>  
+  <LocalizationPair Name="%buttonLoginWithFacebook02">PELAA HETI!</LocalizationPair>  
+  <LocalizationPair Name="%buttonLoginWithGoogle">KIRJAUDU GOOGLELLA</LocalizationPair>  
+  <LocalizationPair Name="%buttonLogin">KIRJAUDU</LocalizationPair>  
+  <LocalizationPair Name="%buttonSignUp">REKISTERÖIDY</LocalizationPair>  
+  <LocalizationPair Name="%bgContractsManagersofficeText">MANAGERIN TOIMISTO</LocalizationPair>  
+  <LocalizationPair Name="%bgContractsAdditemstocontractText">LISÄÄ EHTOJA SOPIMUKSEEN</LocalizationPair>  
+  <LocalizationPair Name="%bgContractsSelectediteminformationText">LISÄTIETOJA VALITUSTA EHDOSTA:</LocalizationPair>  
+  <LocalizationPair Name="%bgContractsTopleveldetailsText">YKSITYISKOHDAT:</LocalizationPair>  
+  <LocalizationPair Name="%buttonConfirmDesign">VAHVISTA</LocalizationPair>  
+  <LocalizationPair Name="%buttonClose">SULJE</LocalizationPair>  
+  <LocalizationPair Name="%buttonAutoBuild">LUO AUTOMAATTISESTI</LocalizationPair>  
+  <LocalizationPair Name="%buttonRemoveItem">POISTA EHTO</LocalizationPair>  
+  <LocalizationPair Name="%tabBottomManagersOffice">MANAGERIN
+  TOIMISTO</LocalizationPair>  
+  <LocalizationPair Name="%tabBottom01"> </LocalizationPair>  
+  <LocalizationPair Name="%tabBottom02"> </LocalizationPair>  
+  <LocalizationPair Name="%tabBottom03"> </LocalizationPair>  
+  <LocalizationPair Name="%tabBottom05"> </LocalizationPair>  
+  <LocalizationPair Name="%tabBottom06"> </LocalizationPair>  
+  <LocalizationPair Name="%tabBottom07"> </LocalizationPair>  
+  <LocalizationPair Name="%textPlayerName">$PlayerFirstName</LocalizationPair> 
+  <LocalizationPair Name="%topTabContracts">CONTRACTS</LocalizationPair> 
+</Datatable>
+
+
+
+
+
+
+		
+

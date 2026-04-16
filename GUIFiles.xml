@@ -1,0 +1,20 @@
+<!-- Copyright (c) 2014 Lasse Sali. This project is licensed under the MIT License. -->
+
+<?xml version="1.0" encoding="utf-8"?>
+<Datatable xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+	<GUIFiles>
+		<GUIFile Name="GuiBottomTabs" File="GUIBottomTabs.xml" />
+		<GUIFile Name="GuiManagersOffice" File="GUIManagersOffice.xml" />
+		<GUIFile Name="GuiUserWelcome" File="GUIUserWelcome.xml" />
+		<GUIFile Name="GuiTopButtons" File="GUITopButtons.xml" />
+		<GUIFile Name="GuiInvalidBrowser" File="GUIInvalidBrowser.xml" />
+		<Condition Object="Game" IsTrue="isRunFromFacebook">
+			<GUIFile Name="GuiUserLogin" File="GUIUserLoginFB.xml" />
+			<Else>
+				<GUIFile Name="GuiUserLogin" File="GUIUserLogin.xml" />
+			</Else>
+		</Condition>
+	</GUIFiles>
+	
+</Datatable>
