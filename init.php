@@ -2,7 +2,7 @@
 session_start(); 
 
 /*
- * Copyright (c) 2014 Lasse Sali.
+ * Copyright (c) 2013-2014 Lasse Sali.
  * This project is licensed under the MIT License.
  */
 $sessid = session_id();

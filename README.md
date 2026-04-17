@@ -1,9 +1,9 @@
 This project is licensed under the MIT License - see the LICENSE file for details. 
-Copyright (c) 2014 Lasse Sali.
+Copyright (c) 2013-2014 Lasse Sali.
 
-# Master of the Arena (2014)
+# Master of the Arena (2013-2014)
 
-Master of the Arena is a client-server prototype for a web-browser game, originally developed and optimized for the browser ecosystem of 2014 (specifically Firefox and Chrome). 
+Master of the Arena is a client-server prototype for a web-browser game, originally developed and optimized for the browser ecosystem of 2013 (specifically Firefox and Chrome). 
 
 This project serves as a time capsule of early HTML5 web game development, demonstrating a custom-built data communication flow and game loop without relying on modern frameworks. It showcases foundational skills in full-stack architecture, utilizing raw AJAX and XML to bridge the gap between a graphical frontend and a database-driven backend.
 
@@ -31,7 +31,7 @@ Rather than relying on pre-built frameworks, the core of this prototype is a bes
 * **Raw Full-Stack Auth & Session Management:**
   The frontend state is tightly coupled with a PHP/MySQL backend. The engine handles complex handshake logic to manage sessions, integrating directly with legacy Facebook SDK and Google OpenID (`LightOpenID`) OAuth flows. Raw PHP endpoints query the database and return user data via JSON to dynamically inject profile pictures and names into the DOM upon successful authentication.
   
-## 🛠️ Tech Stack (Circa 2014)
+## 🛠️ Tech Stack (Circa 2013)
 
 **Client-Side (Frontend):**
 * HTML5
@@ -41,10 +41,10 @@ Rather than relying on pre-built frameworks, the core of this prototype is a bes
 * jQuery v1.9.1 (DOM Manipulation & AJAX)
 
 **Server-Side (Backend):**
-* PHP
+* PHP 5.4
 * MySQL
 
-## 🛠️ Feature Prototypes (2014)
+## 🛠️ Feature Prototypes (2013-2014)
 
 **🕹️ Play the live prototypes here:** [https://lassesali.github.io/master-of-the-arena/](https://lassesali.github.io/master-of-the-arena/)
 
