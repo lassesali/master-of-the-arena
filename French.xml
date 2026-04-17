@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2013-2014 Lasse Sali. This project is licensed under the MIT License. -->
+
+<Datatable xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <LocalizationPair Name="%textWelcome">BIENVENUE À ARENA MANAGER</LocalizationPair>
+  <LocalizationPair Name="%textWelcome02">Navigateur non valide trouvés.</LocalizationPair>
+  <LocalizationPair Name="%buttonOK">OK</LocalizationPair>
+  <LocalizationPair Name="%textUserLogin">SE CONNECTER</LocalizationPair>
+  <LocalizationPair Name="%textUserLogin02">ARENA MANAGER</LocalizationPair>
+  <LocalizationPair Name="%textUserName">Nom d'utilisateur:</LocalizationPair>
+  <LocalizationPair Name="%textPassword">Mot de passe:</LocalizationPair>
+  <LocalizationPair Name="%textRegisterLabel">INSCRIPTION GRATUITEMENT</LocalizationPair>
+  <LocalizationPair Name="%textRegisterSubLabel">Tulin, Taistelin, Tapoin</LocalizationPair>
+  <LocalizationPair Name="%textRegisterDescription">ͦ Formez gladiateurs, 
+  conduirez une équipe.
+  ͦ Participez dans une série de
+  matches de gladiateurs
+  ͦ Triomphez des jeux de gladiateurs,
+  triomphez dans des championnats.</LocalizationPair>
+  <LocalizationPair Name="%buttonLoginWithFacebook">CONNEXION AVEC FACEBOOK</LocalizationPair>  
+  <LocalizationPair Name="%buttonLoginWithFacebook02">JOUEZ MAINTENANT!</LocalizationPair>  
+  <LocalizationPair Name="%buttonLoginWithGoogle">CONNEXION AVEC GOOGLE</LocalizationPair>  
+  <LocalizationPair Name="%buttonLogin">SE CONNECTER</LocalizationPair>  
+  <LocalizationPair Name="%buttonSignUp">INSCRIPTION</LocalizationPair>  
+  <LocalizationPair Name="%bgContractsManagersofficeText">BUREAU DU MANAGER</LocalizationPair>  
+  <LocalizationPair Name="%bgContractsAdditemstocontractText">AJOUTEZ DES ÉLÉMENTS AU CONTRAT</LocalizationPair>  
+  <LocalizationPair Name="%bgContractsSelectediteminformationText">INFORMATIONS DE L'ÉLÉMENT SÉLECTIONNÉ:</LocalizationPair>  
+  <LocalizationPair Name="%bgContractsTopleveldetailsText">DÉTAILS DE HAUT NIVEAU:</LocalizationPair>  
+  <LocalizationPair Name="%buttonConfirmDesign">CONFIRMEZ LA CONCEPTION</LocalizationPair>  
+  <LocalizationPair Name="%buttonClose">FERMEZ</LocalizationPair>  
+  <LocalizationPair Name="%buttonAutoBuild">AUTO-GÉNÉREZ</LocalizationPair>  
+  <LocalizationPair Name="%buttonRemoveItem">SUPPRIMEZ L'ÉLÉMENT </LocalizationPair>  
+  <LocalizationPair Name="%tabBottomManagersOffice">BUREAU DU
+  MANAGER</LocalizationPair>  
+  <LocalizationPair Name="%tabBottom01"> </LocalizationPair>  
+  <LocalizationPair Name="%tabBottom02"> </LocalizationPair>  
+  <LocalizationPair Name="%tabBottom03"> </LocalizationPair>  
+  <LocalizationPair Name="%tabBottom05"> </LocalizationPair>  
+  <LocalizationPair Name="%tabBottom06"> </LocalizationPair>  
+  <LocalizationPair Name="%tabBottom07"> </LocalizationPair> 
+  <LocalizationPair Name="%textPlayerName">$PlayerFirstName</LocalizationPair> 
+  <LocalizationPair Name="%topTabContracts">CONTRACTS</LocalizationPair>   
+</Datatable>
+

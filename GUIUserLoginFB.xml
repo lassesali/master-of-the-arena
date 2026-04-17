@@ -1,0 +1,48 @@
+<html>
+<!-- Copyright (c) 2013-2014 Lasse Sali. This project is licensed under the MIT License. -->
+
+	<background>
+	
+	  <id>backgroundLoginContainer</id>
+
+	  <!-- ARENA MANAGER -->
+	  <text>
+	    <id>textUserLogin</id>
+	    <value>02</value>
+		<vector>
+		  <x>0.19</x>
+		  <y>0.09</y>
+		  <size>3.4</size>
+		  <scalex>1.2</scalex>
+		  <scaley>0.8</scaley>
+		</vector>
+	  </text>
+
+      <!-- PLAY FOR FREE -->
+	  <text>
+	    <id>textRegisterLabel</id>
+	  </text>
+
+      <!-- Tulin, Taistelin, Tapoin -->
+	  <text>
+	    <id>textRegisterSubLabel</id>
+	  </text>
+
+      <!-- Become a Lanista. -->
+	  <text>
+	    <id>textRegisterDescription</id>
+	  </text>
+
+	</background>
+
+	<!-- PLAY NOW -->
+   	<button>
+		<id>buttonLoginWithFacebook</id>
+		<state>facebook</state>
+		<type>normal</type>
+		<value>02</value>
+	</button>
+
+
+
+</html>

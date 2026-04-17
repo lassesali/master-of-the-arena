@@ -1,0 +1,81 @@
+<html>
+<!-- Copyright (c) 2013-2014 Lasse Sali. This project is licensed under the MIT License. -->
+
+	<background>
+	  <id>backgroundLoginContainer</id>
+
+	  <!-- USER LOGIN -->
+	  <text>
+	    <id>textUserLogin</id>
+		<vector>
+		  <x>0.19</x>
+		  <y>0.09</y>
+		  <size>3.4</size>
+		  <scalex>1.2</scalex>
+		  <scaley>0.8</scaley>
+		</vector>
+	  </text>
+
+      <!-- Username: -->
+	  <text>
+	    <id>textUserName</id>
+	  </text>
+
+      <!-- Password: -->
+	  <text>
+	    <id>textPassword</id>
+	  </text>
+
+      <!-- REGISTER FOR FREE -->
+	  <text>
+	    <id>textRegisterLabel</id>
+	  </text>
+
+      <!-- Tulin, Taistelin, Tapoin -->
+	  <text>
+	    <id>textRegisterSubLabel</id>
+	  </text>
+
+      <!-- Become a Lanista. -->
+	  <text>
+	    <id>textRegisterDescription</id>
+	  </text>
+
+	  <inputfield>
+		<id>inputUserName</id>
+		<value>text</value>
+	  </inputfield>
+
+
+	  <inputfield>
+		<id>inputPassword</id>
+		<value>password</value>
+	  </inputfield>
+
+	</background>
+
+	<!-- LOGIN WITH FACEBOOK -->
+	<button>	
+		<id>buttonLoginWithFacebook</id>
+		<type>normal</type>
+	</button>
+
+	<!-- LOGIN WITH GOOGLE -->
+	 <button>	
+		<id>buttonLoginWithGoogle</id> 
+		<type>normal</type> 
+	 </button> 
+		
+	<!-- LOGIN -->
+	<button>	
+		<id>buttonLogin</id>
+		<type>normal</type>
+	</button>
+
+	<!-- SIGNUP -->
+	<button>
+		<id>buttonSignUp</id>
+		<type>normal</type>
+	</button>
+
+</html>

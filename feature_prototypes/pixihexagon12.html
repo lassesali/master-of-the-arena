@@ -1,0 +1,1463 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>pixi.js example 2 loading a sprite sheet</title>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			background-color: #000000;
+		}
+	</style>
+	<script src="js/pixi.js"></script>
+	<script src="js/jquery-1.9.1.min"></script>
+        <script src="js/stats.js"></script>
+</head>
+<body>
+
+ 
+	<div style="position: absolute; left: 1100px; top: 128px; opacity: 0.95;">
+        <span style="font-family: Arial; color: white; font-weight: bold; font-size: 1.8em;">Mouse wheel</span><span style="font-size: 1.8em; font-family: Arial; color: white;"> to zoom in/out.</span>
+    	<p>
+		<button id="btnOutlineson" onclick="setOutlines(true)">Outlines ON</button>
+		<button id="btnOutlinesoff" onclick="setOutlines(false)">Outlines OFF</button>
+		<p>
+		<button id="btnShowcoordson" onclick="showCoordinates(true)">Show coords ON</button>
+		<button id="btnShowcoordsoff" onclick="showCoordinates(false)">Show coords OFF</button>
+		<p>
+		<textarea id="textPath" rows="5" cols="10" style="overflow:hidden"></textarea>
+		<!--<button onclick="drawPath(reitti)">Draw path</button>-->
+		<p>
+		<span id="mouseCoords" style="color: white;"></span>
+        <p>
+
+		</div>
+	
+	<div id="wrapper" style="position: absolute; left: 64px; top: 128px; border: 1px dotted green; width:940px; height: 570px;">
+	<div id="map" style="width: 256px; height: 256px; opacity: 0.9; border: 1px solid white; position: absolute; left: 1100px; top: 370px; background: url('minimap.jpg');
+	        box-shadow: 4px 0 10px rgba(0,0,0,0.25); -moz-box-shadow: 4px 0 10px rgba(0,0,0,0.25); -webkit-box-shadow: 4px 0 10px rgba(0,0,0,0.25);">
+	  <div id="camera" style="position: absolute; border: 2px solid yellow; width: 66px; height: 42px;"></div>
+	</div>
+	
+	<script>
+
+var showcoords = false;	
+
+initButtons();
+	
+// FPS Counter
+
+var stats = new Stats();
+stats.setMode(0); // 0: fps, 1: ms
+
+// Align top-left
+stats.domElement.style.position = 'absolute';
+stats.domElement.style.left = '0px';
+stats.domElement.style.top = '0px';
+
+document.body.appendChild( stats.domElement );
+
+setInterval( function () {
+
+    stats.begin();
+
+    // your code goes here
+
+    stats.end();
+
+}, 1000 / 60 );
+
+
+	var xleft = 1;
+	var ytop = 1;
+    var selectedTileObject;
+	
+	window.onload = function()
+	{
+		//adding the event listerner for Mozilla
+		if(window.addEventListener)
+			document.addEventListener('DOMMouseScroll', moveObject, false);
+
+		//for IE/OPERA etc
+		document.onmousewheel = moveObject;
+	}
+
+	function moveObject(event)
+	{
+	
+		var delta = 0;
+
+		if (!event) event = window.event;
+
+		// normalize the delta
+		if (event.wheelDelta) {
+
+			// IE & Opera
+			delta = event.wheelDelta / 60;
+
+		} else if (event.detail) {
+
+			// W3C
+			delta = -event.detail / 2;
+		}
+
+
+		
+		addZoom( delta/10 );
+	}
+	
+	function getMousePos(canvas, evt) 
+	{
+		var rect = canvas.getBoundingClientRect();
+		return {
+		  x: evt.clientX - rect.left,
+		  y: evt.clientY - rect.top
+		};
+	} 
+
+	kartta = document.getElementById('map');
+	kartta.addEventListener('mouseup', function(evt) {
+		
+		var mousePos = getMousePos(kartta, evt);
+
+        camera = document.getElementById('camera');
+	
+	    var left =  mousePos.x - 33;
+		var top = mousePos.y - 21;
+		if (left < 0 ) left = 0;
+		if (top < 0 ) top = 0;
+		if (left > 256-70 ) left = 256-70;
+		if (top > 256-46 ) top = 256-46;
+		
+		camera.style.left = left + "px";
+		camera.style.top = top + "px";
+		
+		//74,85
+		
+		xleft = Math.floor((74/256)*left);
+		ytop = Math.floor((85/256)*top);
+        if (xleft==0) xleft=1;
+		if (ytop==0) ytop=1;
+		
+		stage.removeChild(alienContainer);
+		aliens = [];
+		
+		// create an empty container
+		alienContainer = new PIXI.DisplayObjectContainer();
+		alienContainer.position.x = 0;
+		alienContainer.position.y = 0;
+		alienContainer.addChild(selectedTileObject); 
+		aliens.push(selectedTileObject);
+		
+		stage.addChild(alienContainer);
+		drawMap2();
+		
+		
+	}, false);
+	
+	function showCoordinates(param)
+	{
+	    
+		showcoords = param;
+		if (param == false)
+		{
+			document.getElementById("btnShowcoordsoff").disabled = true; 
+			document.getElementById("btnShowcoordson").disabled = false; 			
+		}
+		else
+		{
+			document.getElementById("btnShowcoordsoff").disabled = false; 
+			document.getElementById("btnShowcoordson").disabled = true; 				
+		}
+		
+		drawMap2();
+	}
+
+    function initButtons()
+	{
+			document.getElementById("btnOutlinesoff").disabled = true; 
+			document.getElementById("btnOutlineson").disabled = false; 
+			document.getElementById("btnShowcoordsoff").disabled = true; 
+			document.getElementById("btnShowcoordson").disabled = false; 	
+			document.getElementById("textPath").value = "";
+	}
+	
+	
+	function setOutlines(param)
+	{
+		if (param == true)
+		{
+			outlines = "_o";
+			document.getElementById("btnOutlinesoff").disabled = false; 
+			document.getElementById("btnOutlineson").disabled = true; 
+		}
+		else
+		{
+			outlines = "";
+			document.getElementById("btnOutlinesoff").disabled = true; 
+			document.getElementById("btnOutlineson").disabled = false; 			
+		}
+		
+		stage.removeChild(alienContainer);
+		aliens = [];
+		
+		// create an empty container
+		alienContainer = new PIXI.DisplayObjectContainer();
+		alienContainer.position.x = 0;
+		alienContainer.position.y = 0;
+		alienContainer.addChild(selectedTileObject); 
+		aliens.push(selectedTileObject);
+		
+		stage.addChild(alienContainer);
+		parseXML();
+		drawMap2();		
+	}
+
+	function setZoom(param)
+	{
+	    zoom = param;
+	}
+	
+	function addZoom(param)
+	{
+		zoom = zoom + param;
+		if ( zoom<1.0 )
+		{
+		  zoom = 1.0;
+		}
+		if ( zoom>4.0 )
+		{
+		  zoom = 4.0;
+		}
+	}
+	
+	var outlines = ""; //"_o";
+	var mapData;
+	var c=28;
+	var a=0.5*c;
+	var b=Math.sin(toRadians(60))*c;
+	var d=1.0;
+    var kerroin = 0.00818181818181818181818181818182*c;	  
+	
+	// create an array of assets to load
+	var assetsToLoader = [ "hex.json"];
+	
+	// create a new loader
+	loader = new PIXI.AssetLoader(assetsToLoader);
+	
+	// use callback
+	loader.onComplete = onAssetsLoaded
+	
+	//begin load
+	loader.load();
+	
+	
+	// holder to store aliens
+	var aliens = [];
+
+	var count = 0;
+	var zoom = 1.0;
+	
+	// create an new instance of a pixi stage
+	var stage = new PIXI.Stage(0x094B69, true);
+	
+	// create a renderer instance.
+	renderer = PIXI.autoDetectRenderer(940, 570);
+		
+
+	// add the renderer view element to the DOM
+	//document.body.appendChild(renderer.view);
+    document.getElementById('wrapper').appendChild(renderer.view);
+	
+	// create an empty container
+	var alienContainer = new PIXI.DisplayObjectContainer();
+	alienContainer.position.x = 0;
+	alienContainer.position.y = 0;
+	
+	
+	stage.addChild(alienContainer);
+	
+	
+	function onAssetsLoaded()
+	{
+		init();
+
+
+		// start animating
+		requestAnimFrame( animate );
+		
+		
+	}	
+	
+	function animate() {
+	
+	    requestAnimFrame( animate );
+	
+	    // just for fun, lets rotate mr rabbit a little
+	    //var i = 0; 
+		//var alien = aliens[i];
+	
+
+		alienContainer.scale.x = zoom;
+		alienContainer.scale.y = zoom;
+
+
+        alienContainer.position.x = 0-(940*zoom-940)/2;
+		alienContainer.position.y = 0-(570*zoom-570)/2;
+
+		
+        camera = document.getElementById('camera');
+	    
+		camera.style.width = 66/zoom + "px";
+		camera.style.height = 42/zoom + "px";
+
+	    // render the stage   
+	    renderer.render(stage);
+	}
+	
+	function init() {
+		createSelectedTile();
+		
+		$.ajax({                                     
+			url: 'map.xml',                          
+			data: '',                        
+			dataType: 'xml',                //data format      
+			success: function(data)          //on receive of reply
+			{
+				mapData = data;
+				parseXML();
+                drawMap2();
+			}
+		}); 
+
+		
+	}
+	
+
+	
+	function createSelectedTile()
+	{
+		var texture = PIXI.Texture.fromFrame("hex_selected.png");
+		selectedTileObject = new PIXI.Sprite(texture);
+		
+		selectedTileObject.position.x = 0;
+		selectedTileObject.position.y = -128;
+		selectedTileObject.anchor.x = 0.5;
+		selectedTileObject.anchor.y = 0.5;
+		
+		aliens.push(selectedTileObject);
+		alienContainer.addChild(selectedTileObject);     
+
+		
+	}
+
+	//heksagoniolion konstruktori
+    function HexagonTile() {	
+	
+	    var isTree = false;
+		var isMountain = false;
+		var parent = false;
+		var frameName = false;
+		var color;
+		var x;
+		var y;
+		var children = [];
+		
+		this.getNumberOfChildren = function()
+		{
+			return children.length;
+		}
+		
+		this.addChild = function(param)
+		{
+			children.push(param);
+		}
+		
+		this.popChild = function()
+		{
+			return children.pop();
+		}
+		
+		this.report = function()
+		{
+			return "x:"+x+","+", y:"+y+", frameName:"+frameName;
+		}
+	
+		this.setFrameName = function(param)
+		{
+			frameName = param;
+		}
+		this.getFrameName = function()
+		{
+			return frameName;
+		}
+		
+		this.setX = function(param)
+		{
+			x = param;
+		}
+		this.getX = function()
+		{
+			return x;
+		}
+		
+		this.setY = function(param)
+		{
+			y = param;
+		}
+		this.getY = function()
+		{
+			return y;
+		}
+		
+		this.setFrameName = function(param)
+		{
+			frameName = param;
+		}
+		this.getFrameName = function()
+		{
+			return frameName;
+		}
+		
+		this.setParent = function(param)
+		{
+			parent = param;
+		}
+		this.getParent = function()
+		{
+			return parent;
+		}
+		
+		this.setColor = function(param)
+		{
+			color = param;
+		}
+		this.getColor = function()
+		{
+			return color;
+		}
+		
+		this.setIsMountain = function(param)
+		{
+			isMountain = param;
+		}
+		this.getIsMountain = function()
+		{
+			return isMountain;
+		}
+		
+		this.setIsTree = function(param)
+		{
+			isTree = param;
+		}
+		this.getIsTree = function()
+		{
+			return isTree;
+		}		
+		
+	}
+
+	var karttaArray = new Array();
+	createKarttaArray();
+	
+	function createKarttaArray()
+	{
+		var xMax = 73;
+		var yMax = 85;
+		for (i=0;i<=xMax;i++) {
+			karttaArray[i]=new Array();
+			for (j=0;j<=yMax;j++) {
+				karttaArray[i][j]=0;
+				
+			}
+		}
+	}
+
+	
+	var karttaList = [];
+	
+	function parseXML() {
+	    karttaList = [];
+		$('tiles',mapData).each(function() 
+		{
+			$(this).children("tile").each(function() {
+				var x = parseInt($(this).attr("x")); 
+				var y = parseInt($(this).attr("y")); 
+				color = $(this).attr("color");
+				var frameName;
+				var objectFrameName = false;
+
+				switch (color)
+				{
+				/* tundra */
+					case '#948972':
+						frameName = "hex_dew"+outlines+".png";
+						break;
+					case '#827761':
+						frameName = "hex_dew"+outlines+".png";
+						break;
+					case '#aea07f':
+						frameName = "hex_dew"+outlines+".png";
+						break;
+					case '#948972':
+						frameName = "hex_dew"+outlines+".png";
+						break;
+					case '#948972':
+						frameName = "hex_dew"+outlines+".png";
+						break;
+					case '#948972':
+						frameName = "hex_dew"+outlines+".png";
+						break;
+				/* sea */
+					case '#0000ff':
+						frameName = false; //"hex_sea_o.png";
+						break;
+				/* forest */
+					case '#423e2b':
+						frameName = "hex_rainforestdew"+outlines+".png";
+						break;
+					case '#383824':
+						frameName = "hex_rainforestdew"+outlines+".png";
+						break;
+					case '#403d2a':
+						frameName = "hex_rainforestdew"+outlines+".png";
+						break;
+					case '#3d3b27':
+						frameName = "hex_rainforestdew"+outlines+".png";
+						break;
+				/* aro */
+					case '#524c36':
+						frameName = "hex_freshhoneydew"+outlines+".png";
+						break;
+					case '#645d49':
+						frameName = "hex_freshhoneydew"+outlines+".png";
+						break;
+				/* vuoristo */
+					case '#c0c0c0':
+					    frameName = "hex_dew"+outlines+".png";
+						break;				
+					default:
+						frameName = "hex_dew"+outlines+".png";				
+				}
+				
+				var obj = new HexagonTile();
+				obj.setFrameName(frameName);
+				obj.setX(x);
+				obj.setY(y);
+				obj.setColor(color);
+				
+				karttaArray[x][y]=obj;
+				karttaList.push(obj);
+				var parent = obj;
+				
+				$(this).children("mountain").each(function() {
+				  var num = Math.floor((Math.random()*2));
+				  if (num>0)
+				  { 
+				    var type=num;
+				  }
+				  else
+				  {
+				    var type="";
+				  }
+				  objectFrameName = "hex_mountain"+type+".png";
+				  
+				  var obj = new HexagonTile();
+				  obj.setFrameName(objectFrameName);
+				  obj.setX(x);
+				  obj.setY(y);
+				  obj.setColor(color);
+				  obj.setParent(parent);
+				  obj.setIsMountain(true);
+				  karttaList.push(obj);
+				  parent.addChild(obj);
+				 
+				});
+				
+				
+				$(this).children("tree").each(function() {
+				  var type = $(this).attr("type");
+                  if (type == undefined)
+				  {
+				    type = "";
+				  }
+				  objectFrameName = "hex_tree"+type+".png";
+
+				  var obj = new HexagonTile();
+				  obj.setFrameName(objectFrameName);
+				  obj.setX(x);
+				  obj.setY(y);
+				  obj.setColor(color);
+  				  obj.setParent(parent);
+				  obj.setIsTree(true);
+				  karttaList.push(obj);		
+				  parent.addChild(obj);				  
+				});
+				
+			});
+		});
+	}
+	
+	function drawMap2() {
+        var starttime = new Date( new Date().getTime() );
+		
+        var xright=xleft+19;
+		var ybottom=ytop+14;
+		
+		var offsetCoords = getCenter(xleft,ytop);
+	
+		var tempCoords = getCenter(1,1);
+		
+		var treemountainList = [];
+
+		
+		for (var mx=xleft; mx <= xright; mx++)
+		{
+			for (var my=ytop; my <= ybottom; my++)
+			
+			{
+
+				var obj = karttaArray[mx][my];
+
+				var x = obj.getX();
+				var y = obj.getY();
+
+				var color = obj.getColor();
+				var frameName = obj.getFrameName();
+				var isMountain = obj.getIsMountain();
+				var isTree = obj.getIsTree();
+				var numberOfChildren = obj.getNumberOfChildren();
+				
+				
+		
+					
+					if ( frameName != false && x >= xleft && x <= xright && y >= ytop && y <= ybottom )
+					{
+						
+						var texture = PIXI.Texture.fromFrame(frameName);
+						var alien = new PIXI.Sprite(texture);
+						
+						
+						var coords = getCenter(x, y);
+						
+
+							alien.position.x = coords[0] - offsetCoords[0];
+			
+
+							alien.position.y = coords[1] - offsetCoords[1];
+
+						
+						alien.anchor.x = 0.5;
+						alien.anchor.y = 0.5;
+						alien.scale.x = kerroin;
+						alien.scale.y = kerroin;
+
+						// enable the bunny to be interactive.. this will allow it to respond to mouse and touch events		
+						alien.interactive = true;
+
+						// this button mode will mean the hand cursor appears when you rollover the bunny with your mouse
+						alien.buttonMode = true;
+
+						// set the callbacks for when the mouse or a touch moves
+						alien.mousemove = function(data)
+						{
+								var offsetCoords = getCenter(xleft,ytop);	
+								var tempCoords = getCenter(1,1);	
+								
+								// need to get parent coords..
+								var position = data.getLocalPosition(this.parent);
+
+								var message = 'Top Left Corner: ('+xleft+','+ytop+')<br>Mouse position: (' + position.x + 'px ,' + position.y+'px)';
+								selectedTile = getTileFromCoords(position.x, position.y);
+								selectedTile[0] = selectedTile[0] + (xleft-1); 
+								selectedTile[1] = selectedTile[1] + (ytop-1);
+								
+								message = message + '<br> Mouse is over the tile: (' + selectedTile+')';
+			
+								var coords = getCenter( selectedTile[0], selectedTile[1] );
+								
+								coords[0] = coords[0] ;
+								coords[1] = coords[1] ;
+								
+								selectedTileObject.position.x = coords[0]-offsetCoords[0];
+								selectedTileObject.position.y = coords[1]-offsetCoords[1];
+								selectedTileObject.scale.x = kerroin;
+								selectedTileObject.scale.y = kerroin;
+			
+								document.getElementById('mouseCoords').innerHTML = message;
+						}					
+						
+						// set the callbacks for when the mouse is up
+						alien.mouseup = function(data){
+							// need to get parent coords..
+							var position = data.getLocalPosition(this.parent);
+							selectedTile = getTileFromCoords(position.x, position.y);
+							reitti.addToPath(selectedTile);
+							if (reitti.length()>1) drawPath(reitti);
+							tekstikentta = document.getElementById('textPath');
+							reitti.printPathToTextarea(tekstikentta);
+							
+						}
+						
+						aliens.push(alien);
+						alienContainer.addChild(alien);     
+						//console.log("hei "+x+","+y+","+color+","+coords[0]+","+coords[1]);      
+	
+	if (showcoords == true && numberOfChildren == 0) {
+		var text = new PIXI.Text("("+x+","+y+")", {font:"12px Arial", fill:"green"});
+		text.position.x = coords[0] - offsetCoords[0] - 16;
+		text.position.y = (coords[1] - offsetCoords[1]) -48*kerroin + 8;
+		alienContainer.addChild(text);				
+	}	
+					
+
+						
+					}
+					
+					var tempObj = [];
+					for (var k=0; k<numberOfChildren; k++)
+					{
+					    var childObj = obj.popChild();
+						tempObj.push(childObj);
+						var x = childObj.getX();
+						var y = childObj.getY();
+						var frameName = childObj.getFrameName();
+
+						
+						var isMountain = childObj.getIsMountain();
+						var isTree = childObj.getIsTree();
+					
+						if ( ( isMountain == true || isTree == true ) && frameName != false && x >= xleft && x <= xright && y >= ytop && y <= ybottom )
+						{
+							treemountainList.push(childObj);
+				
+						}
+					}
+					
+					for (var k=0; k<tempObj.length; k++)
+					{
+						obj.addChild( tempObj.pop() );
+					}
+					
+					
+			}
+		}
+		
+
+		alienContainer.removeChild(selectedTileObject);
+		alienContainer.addChild(selectedTileObject);
+
+		for (var i=0; treemountainList.length>0; i++)
+		{
+			var obj = treemountainList.pop();
+			var x = obj.getX();
+			var y = obj.getY();
+			var frameName = obj.getFrameName();
+			
+			var texture = PIXI.Texture.fromFrame(frameName);
+			var alien = new PIXI.Sprite(texture);
+					
+			var coords = getCenter(x, y);
+					
+			alien.position.x = coords[0] - offsetCoords[0];
+			alien.position.y = (coords[1] - offsetCoords[1]) -48*kerroin;
+			alien.anchor.x = 0.5;
+			alien.anchor.y = 0.5;
+					
+			alien.scale.x = kerroin;
+			alien.scale.y = kerroin;
+			aliens.push(alien);
+			alienContainer.addChild(alien);     
+	 
+	
+			if (showcoords == true) {
+					var text = new PIXI.Text("("+x+","+y+")", {font:"12px Arial", fill:"darkblue"});
+					text.position.x = coords[0] - offsetCoords[0] - 16;
+					text.position.y = (coords[1] - offsetCoords[1]) -48*kerroin + 8;
+					alienContainer.addChild(text);
+			} 
+	
+			
+		}
+/*
+		// create a new graphics object
+		var graphics = new PIXI.Graphics();
+		 
+		// draw a line
+		graphics.lineStyle(1, 0xFF0000);
+		graphics.moveTo(0,0);
+		graphics.lineTo(128,128);
+		 
+		// add it the stage so we see it on our screens..
+		alienContainer.addChild(graphics);
+*/
+
+		
+        var endtime = new Date( new Date().getTime() ) - starttime;
+		console.log(endtime+" ms");
+	}
+
+	Array.prototype.last = Array.prototype.last || function(count) {
+		count = count || 1;
+		var length = this.length;
+		if (count <= length) {
+			return this[length - count];
+		} else {
+			return null;
+		}
+	};
+
+	//reittiolion konstruktori
+	function Path() {
+
+	    var path = [];
+		var maxLength = 5;
+		
+		this.addToPath = function(param)
+		{
+			if ( path.length == maxLength )
+			{
+				var temp = path.last();
+				if (temp != null )
+				{
+					if ( !(temp[0] == param[0] && temp[1] == param[1]) )
+					{						
+						path.shift();
+						path.push(param);
+					}
+				}
+			}
+			else
+			{
+				var temp = path.last();
+				if (temp != null )
+				{
+					if ( !(temp[0] == param[0] && temp[1] == param[1]) )
+					{						
+						path.push(param);
+					}
+				} 
+				else 
+				{
+					path.push(param);
+
+				}
+				
+			}
+			
+			
+			
+		}
+		
+		this.length = function()
+		{
+			return path.length;
+		}
+		
+		this.getFromPath = function()
+		{
+			return path.pop();
+		}
+		
+		this.report = function()
+		{
+			return path;
+		}
+		
+		this.get = function()
+		{
+			return path;
+		}
+		
+		this.printPathToTextarea = function(tekstikentta)
+		{
+			tekstikentta.value = "";
+			
+			for (i=0; i < path.length; i++)
+			{
+				tekstikentta.value += path[i]+"\n";
+			}
+			
+			
+		}
+		
+		this.init = function(param)
+		{
+			path = param;
+		}
+
+	}
+	
+	var reitti = new Path();
+	
+	function drawPath(polku) {
+	
+	    polku = polku.get();
+	    var temp = polku.slice(0);
+	    var tempPath = new Path();
+		tempPath.init( temp );
+	
+		// create a new graphics object
+		var graphics = new PIXI.Graphics();
+		 
+		// draw a line
+		graphics.lineStyle(5, 0xFF0000);
+
+		for (i=0; tempPath.length()>0; i++)
+		{
+			var node = tempPath.getFromPath();
+			
+            			
+			if (i==0)
+			{
+				graphics.moveTo(getCenter(node[0],node[1])[0],getCenter(node[0],node[1])[1]);
+			} else
+			{
+				graphics.lineTo(getCenter(node[0],node[1])[0],getCenter(node[0],node[1])[1]);
+			}
+			 
+		}
+		// add it the stage so we see it on our screens..
+		alienContainer.addChild(graphics);	
+
+	}
+	
+	
+	function drawMap() {
+
+		var xright=xleft+19;
+		var ybottom=ytop+14;
+		
+		var offsetCoords = getCenter(xleft,ytop);
+	
+		var tempCoords = getCenter(1,1);
+		
+		//offsetCoords[0] = offsetCoords[0] - tempCoords[0];
+		//offsetCoords[1] = offsetCoords[1] - tempCoords[1];
+		//offsetCoords[0] = offsetCoords[0];
+		//offsetCoords[1] = offsetCoords[1];
+		
+		
+		$('tiles',mapData).each(function() 
+		{
+			$(this).children("tile").each(function() {
+				var x = parseInt($(this).attr("x")); 
+				var y = parseInt($(this).attr("y")); 
+				if (y>ybottom) return false;
+				color = $(this).attr("color");
+
+				var frameName;
+				var objectFrameName = false;
+				switch (color)
+				{
+				/* tundra */
+					case '#948972':
+						frameName = "hex_dew"+outlines+".png";
+						break;
+					case '#827761':
+						frameName = "hex_dew"+outlines+".png";
+						break;
+					case '#aea07f':
+						frameName = "hex_dew"+outlines+".png";
+						break;
+					case '#948972':
+						frameName = "hex_dew"+outlines+".png";
+						break;
+					case '#948972':
+						frameName = "hex_dew"+outlines+".png";
+						break;
+					case '#948972':
+						frameName = "hex_dew"+outlines+".png";
+						break;
+				/* sea */
+					case '#0000ff':
+						frameName = false; //"hex_sea_o.png";
+						break;
+				/* forest */
+					case '#423e2b':
+						frameName = "hex_rainforestdew"+outlines+".png";
+						break;
+					case '#383824':
+						frameName = "hex_rainforestdew"+outlines+".png";
+						break;
+					case '#403d2a':
+						frameName = "hex_rainforestdew"+outlines+".png";
+						break;
+					case '#3d3b27':
+						frameName = "hex_rainforestdew"+outlines+".png";
+						break;
+				/* aro */
+					case '#524c36':
+						frameName = "hex_freshhoneydew"+outlines+".png";
+						break;
+					case '#645d49':
+						frameName = "hex_freshhoneydew"+outlines+".png";
+						break;
+				/* vuoristo */
+					case '#c0c0c0':
+					    frameName = "hex_dew"+outlines+".png";
+						//frameName = "hex_midnightdewdrop"+outlines+".png";
+						break;				
+					default:
+						frameName = "hex_dew"+outlines+".png";				
+				}
+				
+				$(this).children("mountain").each(function() {
+				  
+				  var num = Math.floor((Math.random()*2));
+				  if (num>0)
+				  { 
+				    var type=num;
+				  }
+				  else
+				  {
+				    var type="";
+				  }
+				  
+				  objectFrameName = "hex_mountain"+type+".png";
+				});
+				$(this).children("tree").each(function() {
+				  var type = $(this).attr("type");
+                  if (type == undefined)
+				  {
+				    type = "";
+				  }
+				  objectFrameName = "hex_tree"+type+".png";
+				});
+				
+				
+                if ( frameName != false && x >= xleft && x <= xright && y >= ytop && y <= ybottom )
+				{
+					
+					var texture = PIXI.Texture.fromFrame(frameName);
+					var alien = new PIXI.Sprite(texture);
+					
+					
+					var coords = getCenter(x, y);
+					
+
+						alien.position.x = coords[0] - offsetCoords[0];
+		
+
+						alien.position.y = coords[1] - offsetCoords[1];
+
+					
+					alien.anchor.x = 0.5;
+					alien.anchor.y = 0.5;
+					alien.scale.x = kerroin;
+					alien.scale.y = kerroin;
+
+					// enable the bunny to be interactive.. this will allow it to respond to mouse and touch events		
+					alien.interactive = true;
+
+					// this button mode will mean the hand cursor appears when you rollover the bunny with your mouse
+					alien.buttonMode = true;
+
+					// set the callbacks for when the mouse or a touch moves
+					alien.mousemove = function(data)
+					{
+						    var offsetCoords = getCenter(xleft,ytop);	
+							var tempCoords = getCenter(1,1);	
+							
+							// need to get parent coords..
+							var position = data.getLocalPosition(this.parent);
+
+							var message = 'Top Left Corner: ('+xleft+','+ytop+')<br>Mouse position: (' + position.x + 'px ,' + position.y+'px)';
+							selectedTile = getTileFromCoords(position.x, position.y);
+							selectedTile[0] = selectedTile[0] + (xleft-1); 
+							selectedTile[1] = selectedTile[1] + (ytop-1);
+							
+							message = message + '<br> Mouse is over the tile: (' + selectedTile+')';
+		
+		                    var coords = getCenter( selectedTile[0], selectedTile[1] );
+
+							
+                            coords[0] = coords[0] ;
+                            coords[1] = coords[1] ;
+							
+							
+							
+							selectedTileObject.position.x = coords[0]-offsetCoords[0];
+							selectedTileObject.position.y = coords[1]-offsetCoords[1];
+							selectedTileObject.scale.x = kerroin;
+							selectedTileObject.scale.y = kerroin;
+					
+		                
+		
+							document.getElementById('mouseCoords').innerHTML = message;
+								
+							
+							
+					}					
+					
+					aliens.push(alien);
+					alienContainer.addChild(alien);     
+					//console.log("hei "+x+","+y+","+color+","+coords[0]+","+coords[1]);      
+/*
+var text = new PIXI.Text("("+x+","+y+")", {font:"12px Arial", fill:"green"});
+text.position.x = coords[0] - offsetCoords[0] - 16;
+text.position.y = (coords[1] - offsetCoords[1]) -48*kerroin + 8;
+alienContainer.addChild(text);				
+	*/				
+
+					
+				}
+				
+				if ( objectFrameName != false && x >= xleft && x <= xright && y >= ytop && y <= ybottom )
+				{
+					
+					var texture = PIXI.Texture.fromFrame(objectFrameName);
+					var alien = new PIXI.Sprite(texture);
+					
+					var coords = getCenter(x, y);
+					
+					alien.position.x = coords[0] - offsetCoords[0];
+					alien.position.y = (coords[1] - offsetCoords[1]) -48*kerroin;
+					alien.anchor.x = 0.5;
+					alien.anchor.y = 0.5;
+					
+					alien.scale.x = kerroin;
+					alien.scale.y = kerroin;
+					aliens.push(alien);
+					alienContainer.addChild(alien);     
+/*
+var text = new PIXI.Text("("+x+","+y+")", {font:"12px Arial", fill:"darkblue"});
+text.position.x = coords[0] - offsetCoords[0] - 16;
+text.position.y = (coords[1] - offsetCoords[1]) -48*kerroin + 8;
+alienContainer.addChild(text);
+*/
+
+					//console.log("hei"+x+","+y+","+color+","+coords[0]+","+coords[1]);      				
+				}
+				
+			});
+		});
+
+		alienContainer.removeChild(selectedTileObject);
+		alienContainer.addChild(selectedTileObject);
+		
+		
+	}
+	
+	function toRadians (angle) {
+		return angle * (Math.PI / 180);
+	}
+	
+	function testi(num)
+	{
+	  //top,bottom,left,right
+	  alert (getBorders(1,num));
+	  //alienContainer.removeChild(selectedTileObject);   
+	  //alienContainer.addChild(selectedTileObject); 	
+	}
+	
+	function getCenter(x,y)
+	{
+	    
+		var centerx = parseInt(getLeftBorder(x,y) + ((getRightBorder(x,y) - getLeftBorder(x,y)) / 2)); 
+		var centery = parseInt(getTopBorder(x,y) + ((getBottomBorder(x,y) - getTopBorder(x,y)) / 2));
+		return new Array (centerx, centery);
+	}	  
+	function getTopBorder(x,y)
+	{
+		var reunat = getBorders(x,y);
+		return Math.floor( reunat[0] );
+	}	 
+	function getBottomBorder(x,y)
+	{
+		var reunat = getBorders(x,y);
+		return Math.floor( reunat[1] );
+	}	  
+	function getLeftBorder(x,y)
+	{
+		var reunat = getBorders(x,y);
+		return Math.floor( reunat[2] );
+	}	 
+	function getRightBorder(x,y)
+	{
+		var reunat = getBorders(x,y);
+		return Math.floor( reunat[3] );
+	}	 
+	  
+	function getBorders(x,y)
+	{
+		var topBorder;
+		var bottomBorder;
+		var leftBorder;
+		var rightBorder;
+
+		if (y % 2 == 0)
+		{
+			if (x == 1)
+			{
+				if ( y == 2 ) 
+				{
+					topBorder = d*(a+c);
+					bottomBorder = d*(2*c+2*a+a);
+					leftBorder = b;
+					rightBorder = 2*b+b;
+				}
+				else
+				{
+					if ( y == 4)
+					{
+						var item =  3*c+4*a;
+					}
+					else
+					{
+						var item =  (y-1)*c+y*a;
+					}
+					topBorder = d*(item-a);
+					bottomBorder = d*(item + c + a);
+					leftBorder = b;
+					rightBorder = 2*b+b;
+				}
+			}
+			else
+			{
+				if ( y == 2 ) 
+				{
+					topBorder = d*(a+c);
+					bottomBorder = d*(2*c+2*a+a);
+					leftBorder = (x-1)*2*b + b;
+					rightBorder = (x-1)*2*b + 2*b+b;
+				}
+				else
+				{
+					var item =  (y-1)*c+y*a; 
+					topBorder = d*(item-a);
+					bottomBorder = d*(item + c + a);
+					leftBorder = (x-1)*2*b + b;
+					rightBorder = (x-1)*2*b + 2*b+b;
+				}
+			}
+		}
+		else
+		{
+			if ( y == 1)	
+			{
+				if (x == 1)
+				{
+					topBorder = 0;
+					bottomBorder = d*(2*c);
+					leftBorder = 0;
+					rightBorder = 2*b;
+				}
+				else
+				{
+					topBorder = 0;
+					bottomBorder = d*(2*c);
+					leftBorder = (x-1)*2*b;
+					rightBorder = (x-1)*2*b + 2*b;
+				}
+			}
+			else
+			{
+				if (x == 1)
+				{
+					if (y == 3)
+					{
+						var item =  (y-1)*2*c-a;
+					}
+					else 
+					{
+						var item =  (y-1)*c+y*a;
+					}
+					topBorder = d*(item-a);
+					bottomBorder = d*(item + c + a);
+					leftBorder = 0;
+					rightBorder = 2*b;
+				}
+				else
+				{
+					if (y == 3)
+					{
+						var item =  (y-1)*2*c-a;
+					}
+					else 
+					{
+						var item =  (y-1)*c+y*a;
+					}
+					topBorder = d*(item-a);
+					bottomBorder = d*(item + c + a);
+					leftBorder = (x-1)*2*b;
+					rightBorder = (x-1)*2*b + 2*b; 
+				}
+			}		  
+		}
+
+		leveys=rightBorder-leftBorder;
+		pituus=bottomBorder-topBorder;
+		topBorder=topBorder-pituus/2;
+		bottomBorder=bottomBorder-pituus/2;
+		leftBorder=leftBorder-leveys/2;
+		rightBorder=rightBorder-leveys/2;
+                //console.log("topBorder, bottomBorder, leftBorder, rightBorder: " + topBorder +","+ bottomBorder +","+ leftBorder +","+ rightBorder );
+		
+		return new Array( topBorder, bottomBorder, leftBorder, rightBorder  );	  
+	}	
+
+
+function getTileFromCoords(x,y)
+{
+  for (var row=1; row<15; row++)
+  {
+    var topy = getTopBorder(1, row);
+    var bottomy = getBottomBorder(1, row);
+	if ( y >= topy && y <= bottomy )
+	{
+	  var rivi = row;
+	  
+	  var belowtopy = getTopBorder(1, row+1);
+	  if ( y >= belowtopy )
+	  {
+	    var rivibottom = row+1;
+		break;
+	  }
+	  else
+	  {
+	    break;
+	  }
+	}
+  }
+
+  for (var col=1; col<21; col++)
+  {
+    var leftx = getLeftBorder(col, rivi % 2);
+    var rightx = getRightBorder(col, rivi % 2);
+	
+	if ( x >= leftx && x <= rightx )
+	{
+	  var sarake = col;
+          if ( ytop % 2 == 0 && rivi % 2 == 0 ) 
+          {
+            sarake++;
+          }
+
+	  if (rivibottom != undefined)
+	  {
+	      
+		  if (rivi % 2 == 0 )
+		  {
+		          
+			  var sidex = getRightBorder(col, rivi+1);
+  
+			  if ( x < sidex )
+			  {
+				var sarakeright = col;
+				break;
+			  }
+			  else
+			  {
+				var sarakeright = col+1;
+				break;
+			  }
+	      }
+		  else
+		  {
+		      var sidex = getRightBorder(col-1, rivi+1);
+			  if ( x < sidex )
+			  {
+				var sarakeright = col-1;
+				break;
+			  }
+			  else
+			  {
+				var sarakeright = col;
+				break;
+			  }			  
+		  }
+	  }
+	}
+  }
+  
+  if (sarake == undefined || rivi == undefined)
+  {
+    return false;
+  }
+  
+
+
+    if (rivibottom != undefined)
+    {
+
+    }	
+
+    if (sarakeright != undefined)
+    {
+        
+		if ( getLeftBorder(sarakeright,rivibottom) > getLeftBorder(sarake,rivi) ) 
+		{
+		    
+			//kolmio on aina sinisen sis�ll�
+			if( is_in_triangle(
+			  x, y, getLeftBorder(sarakeright,rivibottom), getBottomBorder(sarake,rivi),
+			  getRightBorder(sarake,rivi), getTopBorder(sarakeright,rivibottom),
+			  getRightBorder(sarake,rivi), getBottomBorder(sarake,rivi)  
+			) )
+			{
+			  var valittuTile = new Array(sarakeright, rivibottom);
+			}
+			else
+			{
+			  var valittuTile = new Array(sarake, rivi);
+			}
+		}
+		else
+		{
+		
+			//kolmio on aina sinisen sis�ll�
+			if( is_in_triangle(
+			  x, y, getLeftBorder(sarake,rivi) , getTopBorder(sarakeright,rivibottom),
+			  getRightBorder(sarakeright,rivibottom) , getBottomBorder(sarake,rivi),
+			  getLeftBorder(sarake,rivi) , getBottomBorder(sarake,rivi) 
+			) )
+			{
+			  var valittuTile = new Array(sarakeright, rivibottom);
+			}
+			else
+			{
+			  var valittuTile = new Array(sarake, rivi);
+			}
+		}
+
+	}		
+	
+	if (valittuTile == undefined)
+	{
+	  var valittuTile = new Array(sarake, rivi);
+	}
+	
+    	
+  return valittuTile;
+
+}
+
+	function is_in_triangle (px,py,ax,ay,bx,by,cx,cy)
+	{
+
+		//credit: http://www.blackpawn.com/texts/pointinpoly/default.html
+
+		var v0 = [cx-ax,cy-ay];
+		var v1 = [bx-ax,by-ay];
+		var v2 = [px-ax,py-ay];
+
+		var dot00 = (v0[0]*v0[0]) + (v0[1]*v0[1]);
+		var dot01 = (v0[0]*v1[0]) + (v0[1]*v1[1]);
+		var dot02 = (v0[0]*v2[0]) + (v0[1]*v2[1]);
+		var dot11 = (v1[0]*v1[0]) + (v1[1]*v1[1]);
+		var dot12 = (v1[0]*v2[0]) + (v1[1]*v2[1]);
+
+		var invDenom = 1/ (dot00 * dot11 - dot01 * dot01);
+
+		var u = (dot11 * dot02 - dot01 * dot12) * invDenom;
+		var v = (dot00 * dot12 - dot01 * dot02) * invDenom;
+
+		return ((u >= 0) && (v >= 0) && (u + v < 1));
+	}
+	
+	
+	</script>
+
+	</body>
+</html>

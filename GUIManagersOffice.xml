@@ -1,0 +1,87 @@
+<html>
+<!-- Copyright (c) 2013-2014 Lasse Sali. This project is licensed under the MIT License. -->
+
+	<background>
+	  <id>backgroundContainer</id>
+	  
+      <!-- MANAGER'S OFFICE -->
+	  <text>
+	  	<id>bgContractsManagersofficeText</id>
+		<vector>
+		  <x>0.24</x>
+		  <y>0.085</y>
+		  <size>3.0</size>
+		  <scalex>1.2</scalex>
+		  <scaley>0.8</scaley>
+		</vector>
+	  </text>
+	  
+	</background>
+
+	<background>
+	  <id>backgroundContainerInner</id>
+
+      <!-- CONTRACTS -->
+	  <text>
+	  	<id>topTabContracts</id>
+		<vector>
+		  <x>0.65</x>
+		  <y>0.08</y>
+		  <size>2.8</size>
+		  <scalex>1.2</scalex>
+		  <scaley>0.8</scaley>
+		</vector>
+	  </text>
+	  
+	</background>
+	
+    <background>
+	  <id>backgroundContracts</id>
+
+      <!-- ADD ITEMS TO CONTRACT -->
+	  <text>
+	  	<id>bgContractsAdditemstocontractText</id>
+	  </text>
+	  
+      <!-- SELECTED ITEM INFORMATION: -->
+	  <text>
+	    <id>bgContractsSelectediteminformationText</id>
+	  </text>
+
+      <!-- TOP LEVEL DETAILS: -->
+	  <text>
+	    <id>bgContractsTopleveldetailsText</id>
+	  </text>
+	  
+	</background>
+	
+	<!-- CONFIRM DESIGN -->
+	<button>
+		<id>buttonConfirmDesign</id>
+		<type>normal</type>
+	</button>
+
+	<!-- CLOSE -->
+	<button>
+		<id>buttonClose</id>
+		<type>normal</type>
+		<state>ui-state-default</state>
+	</button>
+
+	<!-- AUTO-BUILD -->
+	<button>
+		<id>buttonAutoBuild</id>
+		<type>normal</type>
+		<state>ui-state-default</state>
+	</button>
+
+	<!-- REMOVE ITEM -->
+	<button>
+		<id>buttonRemoveItem</id>
+		<type>normal</type>
+		<state>ui-state-default disabled</state>
+	</button>
+
+
+		
+</html>

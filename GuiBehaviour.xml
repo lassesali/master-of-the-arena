@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2013-2014 Lasse Sali. This project is licensed under the MIT License. -->
+
+<Datatable xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+	<!-- Hiiren nappi laskeutuu alas jonkin objektin päällä -->
+	<Condition Mouse="Down">
+	</Condition>
+ 
+	<!-- Hiirenosoitin lähtee pois jonkin objektin päältä -->
+	<Condition Mouse="Leave"> 
+		<Condition HasClass="bottomtab">
+			<Condition HasId="tabBottomManagersOffice">
+				<Condition ScreenState="ManagersOffice">
+					<Else>
+						<Action Do="removeClass" Item="mouseenter" />
+					</Else>
+				</Condition>
+				<Else>
+					<Action Do="removeClass" Item="mouseenter" />	  
+				</Else>
+			</Condition>
+		</Condition>
+
+		<Condition HasClass="button" DoesNotHaveClass="disabled">
+			<Action Do="removeClass" Item="mouseenter" /> 
+			<Condition HasClass="mousedown">
+				<Action Do="removeClass" Item="mousedown" />
+				<Action Object="Browser" Item="FXselectionpressed" Do="playAudio" />
+			</Condition>	
+		</Condition>
+		  
+		<Condition HasClass="topButton">
+			<Action Do="removeClass" Item="mouseenter" /> 
+			<Condition HasClass="mousedown">
+				<Action Do="removeClass" Item="mousedown" />
+				<Action Object="Browser" Item="FXselectionpressed" Do="playAudio" />
+			</Condition>
+		</Condition>
+
+	</Condition>	
+
+
+	
+	<!-- Hiiren nappi nousee ylös jonkin objektin päällä -->
+	<Condition Mouse="Up">
+
+		<Condition HasClass="button" DoesNotHaveClass="disabled">
+		
+			<Action Object="Browser" Do="playAudio" Item="FXselectionpressed" />
+		
+			<Condition HasClass="mouseenter">
+				<Action Do="removeClass" Item="mouseenter" />
+			</Condition>
+		
+			<Condition HasClass="mousedown">
+				<Action Do="removeClass" Item="mousedown" />
+			</Condition>
+			
+			<!-- Sulje Manager's Office-näkymä, kun Close-nappia on painettu -->
+			<Condition HasId="buttonClose">		
+				<Condition ScreenState="ManagersOffice">
+					<Action Object="GUIBehaviour" Do="goToScreenState" Item="MainScreen" />
+				</Condition>
+			</Condition>
+			
+			<!-- Sulje User Welcome-näkymä, kun Ok-nappia on painettu -->
+			<Condition HasId="buttonOK">		
+				<Condition ScreenState="UserWelcome">
+					<Action Object="GUIBehaviour"  Do="goToScreenState" Item="MainScreen" />
+				</Condition>
+			</Condition>
+				
+			<!-- Facebook-kirjautuminen, kun Login-nappia on painettu -->
+			<Condition HasId="buttonLoginWithFacebook">		
+				<Condition ScreenState="UserLogin">
+					<Action Object="GUIBehaviour" Do="fbLogin" />
+				</Condition>
+			</Condition>
+			
+			<!-- Google-kirjautuminen, kun Login-nappia on painettu -->
+			<!-- <Condition HasId="buttonLoginWithGoogle">		 -->
+			<!--	<Condition ScreenState="UserLogin"> -->
+			<!--		<Action Object="GUIBehaviour" Do="googleLogin" /> -->
+			<!--	</Condition> -->
+			<!-- </Condition> -->
+		
+		</Condition>	
+
+		<Condition HasClass="topButton">
+			<Action Do="removeClass" Item="mousedown" />	
+			<Condition HasId="buttonFullscreenSwitch">
+				<Action Object="Browser" Do="toggleFullScreen" />
+			</Condition>
+
+			<Condition HasId="buttonAudioSwitch">	
+				<Action Object="Browser" Do="toggleAudio" />
+				<Condition Object="Browser" IsTrue="isAudioEnabled">
+					<Action Do="removeClass" Item="switchOff" />
+					<Else>
+						<Action Do="addClass" Item="switchOff" />
+					</Else>
+				</Condition>
+			</Condition>
+			
+			<Action Object="Browser" Do="playAudio" Item="FXselectionpressed" />
+			
+		</Condition>
+
+		<Condition HasClass="bottomtab">
+			<Condition HasId="tabBottomManagersOffice">
+				<Condition ScreenState="ManagersOffice">
+					<Action Object="GUIBehaviour"  Do="goToScreenState" Item="MainScreen" />
+					<Else>
+						<Action Object="GUIBehaviour"  Do="goToScreenState" Item="ManagersOffice" />
+					</Else>
+				</Condition>
+			</Condition>
+		</Condition>
+
+	</Condition>          
+	
+</Datatable>

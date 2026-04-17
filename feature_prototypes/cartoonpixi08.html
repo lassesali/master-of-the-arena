@@ -1,0 +1,1767 @@
+<html>
+<head>
+<script src="js/pixastic.custom.js"></script>
+<script src="js/pixi.js"></script>
+<script src="js/jquery-2.1.1.min.js"></script>
+
+<style>
+
+        canvas {
+
+            border: 2px purple solid;
+
+        }
+
+</style>
+</head>
+
+
+<body>
+
+
+<div id="buttonsholder" style="height:260px;">
+<div id="buttons">
+Hair type:
+<button id="buttonBlack" onclick="setToBlack()">Colorful</button>
+<button id="buttonBlonde" onclick="setToBlonde()">Matte Black</button>
+<br>
+Hair color:
+<button onclick="setHairColorTo([98,42,71])">Aubergine</button>
+<button onclick="setHairColorTo([206,176,142])">Blonde</button>
+<button onclick="setHairColorTo([32,55,105])">Indigo</button>
+<button onclick="setHairColorTo([139,60,30])">Brown</button>
+<button onclick="setHairColorTo([117,21,5])">Red</button>
+<button onclick="setHairColorTo([64,64,64])">Dark Gray</button>
+<button onclick="setHairColorTo([192,192,192])">Light Gray</button>
+<button onclick="setHairColorTo([32,32,32])">Black</button>
+<br>
+Hair style:
+<button id="buttonBald" onclick="setToBald()">Bald</button>
+<button id="buttonGloriousHair" onclick="setToHairGlorious()">Glorious Hair</button>
+<button id="buttonNormalHair" onclick="setToHairNormal()">Normal Hair</button>
+<br>
+Race:
+<button id="buttonElf" onclick="Elf()">Elf</button>
+<button id="buttonHuman" onclick="Human()">Human</button>
+<br>
+Background:
+<button onclick="setBgColor('rgb(0, 0, 0)')">Black</button>
+<button onclick="setBgColor('rgba(64, 64, 96, 0.5)')">Default</button> 
+<button onclick="setBgColor('rgb(188, 222, 178)')">Green</button>
+<button onclick="setBackground('background')">Countryside</button>
+<br>
+Nose:
+<button onclick="setNoseTo('default')">Default</button>
+<button onclick="setNoseTo('becky')">Becky</button>
+<button onclick="setNoseTo('samantha')">Samantha</button>
+<button onclick="setNoseTo('violet')">Violet</button>
+<button onclick="setNoseTo('rena')">Rena</button>
+<br>
+Chin:
+<button id="chin_default" onclick="setChinTo('default')">Default</button>
+<button id="chin_becky" onclick="setChinTo('becky')">Becky</button>
+<button id="chin_samantha" onclick="setChinTo('samantha')">Samantha</button>
+<button id="chin_violet" onclick="setChinTo('violet')">Violet</button>
+<button id="chin_rena" onclick="setChinTo('rena')">Rena</button>
+<span id="selectedChin" style="color: darkblue;"></span>
+<br>
+Chin symmetry:
+<button id="asym_none" onclick="setChinSymmetryTo('')">Symmetric</button>
+Asymmetric left side:
+<button id="asym_default" onclick="setChinSymmetryTo('default')">Default</button>
+<button id="asym_becky"  onclick="setChinSymmetryTo('becky')">Becky</button>
+<button id="asym_samantha"  onclick="setChinSymmetryTo('samantha')">Samantha</button>
+<button id="asym_violet"  onclick="setChinSymmetryTo('violet')">Violet</button>
+<button id="asym_rena"  onclick="setChinSymmetryTo('rena')">Rena</button>
+<br>
+
+Eye Color:
+<button onclick="setEyeColorTo([152, 170, 172])">Aqua</button>
+<button onclick="setEyeColorTo([134, 137, 148])">Blue</button>
+<button onclick="setEyeColorTo([106, 118, 92])">Green</button>
+<button onclick="setEyeColorTo([132, 129, 133])">Gray</button>
+<button onclick="setEyeColorTo([97, 72, 55])">Brown</button>
+<button onclick="setEyeColorTo([148, 73, 88])">Violet</button>
+<br>
+Eyes:
+<button onclick="setEyesTo('default')">Default</button>
+<!--<button onclick="setEyesTo('samantha')">Samantha</button>-->
+<!--<button onclick="setEyesTo('rena')">Rena</button>-->
+
+
+<br>
+
+</div>
+</div>
+
+<div id="wrapper"></div>
+<div id="portrait" style="border: 2px solid; background: red; height: 150px; width: 128px; position: absolute; bottom: 10px; right: 10px;">
+	
+	<canvas id="portraitCanvas"></canvas>
+</div>
+<div id="portraitSmall" style="border: 2px solid; background: red; height: 96px; width: 96px; position: absolute; bottom: 10px; right: 180px;">
+	
+	<canvas id="portraitSmallCanvas"></canvas>
+</div>
+<div id="piilossa" style="display: none;"></div>
+<div id="nakyvilla"></div>
+  
+<script>
+
+
+
+
+	function componentFromStr(numStr, percent) {
+		var num = Math.max(0, parseInt(numStr, 10));
+		return percent ?
+			Math.floor(255 * Math.min(100, num) / 100) : Math.min(255, num);
+	}
+
+	// Funktio vastaanottaa parametrina joko "RGB(R,G,B)" tai "RGBA(R,G,B,A)".
+	// Funktio palauttaa taulukon, jonka alkiot ovat: 1) RGB-arvo muodossa RGB(R,G,B) ja 2) Alpha-arvo.
+	function rgbaToRgb(color) {
+		
+		var iColor = color;
+		iColor = iColor.replace(' ', '');
+		iColor = iColor.replace('(', '');
+		iColor = iColor.replace(')', '');
+		iColor = iColor.replace('rgba', '');
+		iColor = iColor.replace('rgb', '');
+		iColor = iColor.replace(' ', '');
+        iColor = iColor.split(',');
+
+		if ( !iColor[3] )		
+		{
+			var IDs = new Array(1);
+			IDs[0] = color; // return RGB(R,G,B)
+			IDs[1] = "1.0"; // return Alpha
+			return IDs;
+		}
+		else
+		{
+			var IDs = new Array(1);
+			IDs[0] = "rgb(" + iColor[0] + "," + iColor[1] + "," + iColor[2] + ")"; // return RGB(R,G,B)
+			IDs[1] = iColor[3]; // return Alpha
+			return IDs;
+		}
+	}
+	
+	
+	// Funktio vastaanottaa parametrina joko "RGB(R,G,B)" tai "RGBA(R,G,B,A)".
+	// Funktio palauttaa taulukon, jonka alkiot ovat: 1) RGB-arvo heksadesimaalimuodossa ja 2) Alpha-arvo.
+	function rgbToHex(rgb) {
+	
+		var result = rgbaToRgb(rgb);
+		
+		rgb = result[0];
+		var alpha = result[1];
+
+		var rgbRegex = /^rgb\(\s*(-?\d+)(%?)\s*,\s*(-?\d+)(%?)\s*,\s*(-?\d+)(%?)\s*\)$/;
+
+		var result, r, g, b, hex = new Array(1);
+		if ( (result = rgbRegex.exec(rgb)) ) {
+			r = componentFromStr(result[1], result[2]);
+			g = componentFromStr(result[3], result[4]);
+			b = componentFromStr(result[5], result[6]);
+
+			hex[0] = "0x" + (0x1000000 + (r << 16) + (g << 8) + b).toString(16).slice(1);
+			hex[1] = alpha;
+		}
+
+		return hex;
+	}
+	
+
+    console.log("init pixi.js canvas...");
+
+    // create an new instance of a pixi stage
+    var stage = new PIXI.Stage(0xFFFFFF);
+	
+    // *** MISSING DOCUMENTARY ***
+	//var graphics = new PIXI.Graphics();
+
+	// get the resolution of the screen pixi is on (if retina this will be 2)
+	var myDisplayResolution = 1; //window.devicePixelRatio;
+ 	
+	var rendererOptions = {
+		antialiasing:true,
+		transparent:false,
+		resolution:myDisplayResolution
+	}
+
+    // create a renderer instance.
+    var renderer = PIXI.autoDetectRenderer(1280, 2000, rendererOptions);
+ 
+    // add the renderer view element to the DOM
+    document.body.appendChild(renderer.view);
+ 
+    requestAnimFrame( animate );
+ 
+	var pixiMainCanvas = new PIXI.DisplayObjectContainer();
+	var pixiTempCanvas2 = new PIXI.DisplayObjectContainer();
+	var pixiTempCanvas3 = new PIXI.DisplayObjectContainer();
+	var pixiTempCanvas4 = new PIXI.DisplayObjectContainer();
+	pixiMainCanvas.position.x = 0; 
+	pixiMainCanvas.position.y = 0;
+	pixiTempCanvas2.position.x = 0; 
+	pixiTempCanvas2.position.y = 256;
+	pixiTempCanvas3.position.x = 0;
+	pixiTempCanvas3.position.y = 512;
+	pixiTempCanvas4.position.x = 0;
+	pixiTempCanvas4.position.y = 768;
+
+/*
+    // create a new Sprite using the texture
+    var texture = PIXI.Texture.fromImage("screen1.png");
+    var bunny = new PIXI.Sprite(texture);
+ 
+    // center the sprites anchor point
+    bunny.anchor.x = 0.5;
+    bunny.anchor.y = 0.5;
+ 
+    // move the sprite t the center of the screen
+    bunny.position.x = 200;
+    bunny.position.y = 150;
+    bunny.scale.x = 0.5;
+    bunny.scale.y = 0.5;
+
+    pixiTempCanvas4.addChild(bunny);
+*/
+	stage.addChild(pixiMainCanvas);
+	stage.addChild(pixiTempCanvas2);
+	stage.addChild(pixiTempCanvas3);
+	stage.addChild(pixiTempCanvas4);	
+
+	
+    function animate() {
+ 
+        requestAnimFrame( animate );
+ 
+        // just for fun, lets rotate mr rabbit a little
+        //bunny.rotation += 0.1;
+ 
+        // render the stage  
+        renderer.render(stage);
+    }
+
+	
+
+
+
+    var symmetries = [];
+	symmetries.push(["default","samantha"]);
+	symmetries.push(["default","violet"]);
+	symmetries.push(["becky","samantha"]);
+	symmetries.push(["becky","violet"]);
+	symmetries.push(["violet","samantha"]);
+	
+    var chinSymmetry = "";
+    var chinSymmetryName = "";
+    var background = "background.jpg";
+    var haircol = 'rgb(206,176,142)';
+	var haircolDark = 'rgb(154,132,106)';
+    var eyestype = "s_female_eyes.png";
+	var eyecol = 'rgb(152, 170, 172)';
+	var eyecolDark = 'rgb(122, 140, 142)';
+    var chin = "";
+	var chinName = "";
+    var bgColor = 'rgba(64, 64, 96, 0.5)';
+	var nose = "s_female_nose.png";
+    var jono = [];
+	var haircolor = "blonde";
+    var status = "blonde";
+	var eyecolor = "s_eyes_blue.png";
+	var hair = "s_hair.png";
+	var hairsilhuette = "s_hair_white_test.png";
+	var hairsilhuettematte = "s_hair_white.png";
+	var hairlines = "s_hair_lines_neg_trim.png";
+	var hairfilter = "filter.png";
+	var elf = false;
+ 	
+    checkChinSymmetries();
+
+	
+    img = document.createElement('canvas');
+	img.id = "kuva";
+	img.width= 1280;
+	img.height= 400;
+	//document.getElementById('piilossa').appendChild(img);
+	document.getElementById('nakyvilla').appendChild(img);
+
+    img2 = document.createElement('canvas');
+	img2.id = "doublebuffer";
+	img2.width= 1280;
+	img2.height= 400;
+	document.getElementById('wrapper').appendChild(img2);
+
+	img3 = document.createElement('canvas');
+	img3.id = "kuvaTest2";
+	img3.width= 1280;
+	img3.height= 400;
+	//document.getElementById('piilossa').appendChild(img3);
+	document.getElementById('nakyvilla').appendChild(img3);
+
+	img4 = document.createElement('canvas');
+	img4.id = "kuvaTest3";
+	img4.width= 1280;
+	img4.height= 400;
+	//document.getElementById('piilossa').appendChild(img4);
+	document.getElementById('nakyvilla').appendChild(img4);
+
+	img5 = document.createElement('canvas');
+	img5.id = "pixiCanvasRendererTempCanvas1";
+	img5.width = 1280;
+	img5.height = 400;
+	//document.getElementById('piilossa').appendChild(img5);
+	document.getElementById('nakyvilla').appendChild(img5);
+
+	img6 = document.createElement('canvas');
+	img6.id = "pixiCanvasRendererTempCanvas2";
+	img6.width = 1280;
+	img6.height = 400;
+	//document.getElementById('piilossa').appendChild(img6);
+	document.getElementById('nakyvilla').appendChild(img6);
+
+
+function checkChinSymmetries()
+{
+/*
+	document.getElementById('asym_default').disabled =  false;
+	document.getElementById('asym_violet').disabled =  false;
+	document.getElementById('asym_samantha').disabled =  false;
+	document.getElementById('asym_becky').disabled =  false;
+	document.getElementById('asym_rena').disabled = false;
+	*/
+	
+	document.getElementById('chin_default').disabled = true;
+	document.getElementById('chin_violet').disabled = true;
+	document.getElementById('chin_samantha').disabled = true;
+	document.getElementById('chin_becky').disabled = true;
+	document.getElementById('chin_rena').disabled = true;
+	
+
+	if (chinSymmetryName != "") 
+	{
+		document.getElementById('asym_none').disabled =  false;
+		for (var i = 0; i < symmetries.length; i++  )
+		{
+			var pair = symmetries[i];
+			if ( pair[0] == chinSymmetryName )
+			{
+				document.getElementById('chin_'+pair[1]).disabled = false;
+			
+			}
+			if ( pair[1] == chinSymmetryName )
+			{
+				document.getElementById('chin_'+pair[0]).disabled = false;
+			
+			}
+  	    }
+
+		if (chinName == "")
+		{
+			var leuka = "default";
+		}
+		else
+		{
+			var leuka = chinName;
+		}
+		
+		for (var i = 0; i < symmetries.length; i++  )
+		{
+			var pair = symmetries[i];
+
+			if ( pair[0] == leuka )
+			{
+				document.getElementById('asym_'+pair[1]).disabled = false;
+		
+			
+			}
+			if ( pair[1] == leuka )
+			{
+				document.getElementById('asym_'+pair[0]).disabled = false;
+									
+			}
+  	    }
+		document.getElementById('asym_'+chinSymmetryName).disabled = true;
+		document.getElementById('asym_'+leuka).disabled = true;
+
+		
+	
+
+		document.getElementById('chin_'+leuka).disabled = true;	
+		
+	}
+    else
+	{
+		document.getElementById('asym_none').disabled =  true;
+		document.getElementById('asym_default').disabled =  true;
+		document.getElementById('asym_violet').disabled =  true;
+		document.getElementById('asym_samantha').disabled =  true;
+		document.getElementById('asym_becky').disabled =  true;
+		document.getElementById('asym_rena').disabled = true;
+
+		document.getElementById('chin_default').disabled = false;
+		document.getElementById('chin_violet').disabled = false;
+		document.getElementById('chin_samantha').disabled = false;
+		document.getElementById('chin_becky').disabled = false;
+		document.getElementById('chin_rena').disabled = false;	
+
+
+		
+		if (chinName == "")
+		{
+			var leuka = "default";
+		}
+		else
+		{
+			var leuka = chinName;
+		}
+
+		document.getElementById('chin_'+leuka).disabled = true;
+	
+		for (var i = 0; i < symmetries.length; i++  )
+		{
+		    
+			var pair = symmetries[i];
+			
+			if ( pair[0] == leuka )
+			{
+				document.getElementById('asym_'+pair[1]).disabled = false;
+			
+			}
+
+			if ( pair[1] == leuka )
+			{
+				document.getElementById('asym_'+pair[0]).disabled = false;
+			
+			}
+  	    }	
+			
+	}
+	
+	printChinName();
+	
+}
+	
+function setChinSymmetryTo(param)
+{
+	if (param != "")
+	{
+		chinSymmetry = "s_chin_" + param + ".png";
+		chinSymmetryName = param;
+	}
+	else
+	{
+	   chinSymmetry = "";
+	   	   chinSymmetryName = "";
+	}
+    checkChinSymmetries();
+
+	nolla();
+
+
+}
+	
+function setEyesTo(param)
+{
+	if ( param == "default" )
+	{
+		eyestype = "s_female_eyes.png";
+	}
+	else 
+	{
+	  eyestype = "s_eyes_" + param + ".png";
+	}
+	nolla();
+
+
+}
+
+function setHairColorTo(param)
+{
+    document.getElementById("buttonBlonde").disabled = false;
+    document.getElementById("buttonBlack").disabled = true; 
+    haircolor = "black";
+    status = haircolor;
+		  
+	haircol = 'rgb('+param[0]+','+param[1]+','+param[2]+')';
+
+	
+	//tummennetaan sävy
+	var pun = Math.floor(param[0]*0.75);
+	var vih = Math.floor(param[1]*0.75);
+	var sin = Math.floor(param[2]*0.75);
+	haircolDark = 'rgb('+pun+','+vih+','+sin+')';	
+
+	nolla();
+}
+
+function setEyeColorTo(param)
+{
+	eyecol = 'rgb('+param[0]+','+param[1]+','+param[2]+')';
+	
+		
+	//tummennetaan sävy
+	var pun = Math.floor(param[0]*0.75);
+	var vih = Math.floor(param[1]*0.75);
+	var sin = Math.floor(param[2]*0.75);
+	eyecolDark = 'rgb('+pun+','+vih+','+sin+')';	
+	
+	nolla();
+}
+
+function setBgColor(param)
+{
+	bgColor = param;
+	background = "";
+	nolla();
+}
+
+function setBackground(param)
+{
+	background = param + ".jpg";
+	nolla();
+}
+
+
+function setNoseTo(param) {
+		
+	if ( param == "default" )
+	{
+	  nose = "s_female_nose.png";
+	}
+	else 
+	{
+	  nose = "s_nose_" + param + ".png";
+	}
+	nolla();
+}
+
+function printChinName()
+{
+
+	if ( chinSymmetryName != "")
+	{
+		var temp = " with '" + chinSymmetryName + "' on the left side of the face."
+	}
+	else
+	{
+		var temp = "";
+	}
+	
+	if (chinName == "")
+	{
+		var leuka = "default";
+	}
+	else
+	{
+		var leuka = chinName;
+	}
+	
+	
+	document.getElementById("selectedChin").innerHTML = "SELECTED CHIN: '"+leuka+"'"+temp;	
+		
+}
+
+
+function setChinTo(param) {
+		
+	
+	if ( param == "default" )
+	{
+		chin = "";
+		chinName = "";
+	}
+	else 
+	{
+	  chin = "s_chin_" + param + ".png";
+	  chinName = param;
+	}
+	
+	
+	
+    checkChinSymmetries();
+	
+
+	
+	nolla();
+}
+
+
+function setToBald() {
+
+	document.getElementById("buttonBald").disabled = true;
+	document.getElementById("buttonGloriousHair").disabled = false;
+	document.getElementById("buttonNormalHair").disabled = false;
+	document.getElementById("buttonBlack").disabled = true;
+	document.getElementById("buttonBlonde").disabled = true;
+	status = "bald";
+
+	nolla();
+}		
+
+function setToBlack() {
+
+		document.getElementById("buttonBlack").disabled = true;
+		document.getElementById("buttonBlonde").disabled = false;
+		haircolor = "black";
+        status = haircolor;
+	nolla();
+}
+
+function setToBlonde() {
+  document.getElementById("buttonBlonde").disabled = true;
+  document.getElementById("buttonBlack").disabled = false; 
+  haircolor = "blonde";
+  status = haircolor;
+  nolla();
+}
+
+
+function setToHairGlorious()
+{
+	if (haircolor == "black")
+	{
+		document.getElementById("buttonBlonde").disabled = false;
+		document.getElementById("buttonBlack").disabled = true;
+	} 
+	else
+	{
+		document.getElementById("buttonBlonde").disabled = true;
+		document.getElementById("buttonBlack").disabled = false;
+	}
+	
+
+	document.getElementById("buttonGloriousHair").disabled = true;
+    document.getElementById("buttonNormalHair").disabled = false; 
+		document.getElementById("buttonBald").disabled = false;
+	hair = "s_hair_glorious.png";
+	hairsilhuette = "s_hair_glorious_white_test.png";
+	hairsilhuettematte = "s_hair_glorious_white.png";
+	hairlines = "s_hair_glorious_lines_trim_blur.png";
+	hairfilter = "filter_glorious.png";
+	status = haircolor;
+	
+	nolla();
+}
+
+function setToHairNormal()
+{
+	if (haircolor == "black")
+	{
+		document.getElementById("buttonBlonde").disabled = false;
+		document.getElementById("buttonBlack").disabled = true;
+	} 
+	else
+	{
+		document.getElementById("buttonBlonde").disabled = true;
+		document.getElementById("buttonBlack").disabled = false;
+	}
+
+
+	document.getElementById("buttonGloriousHair").disabled = false;
+    document.getElementById("buttonNormalHair").disabled = true;
+	document.getElementById("buttonBald").disabled = false;
+		
+	hair = "s_hair.png";
+	hairsilhuette = "s_hair_white_test.png";
+	hairsilhuettematte = "s_hair_white.png";
+		hairlines = "s_hair_lines_neg_trim.png";
+		hairfilter = "filter.png";
+	status = haircolor;
+
+    nolla();
+	
+}
+
+function Elf()
+{
+  document.getElementById("buttonElf").disabled = true; 
+  document.getElementById("buttonHuman").disabled = false;
+
+  elf=true; 
+  
+  nolla();
+  
+}
+
+function Human()
+{
+
+  document.getElementById("buttonElf").disabled = false;
+  document.getElementById("buttonHuman").disabled = true;
+
+  elf=false;
+  
+  nolla();
+}
+
+function nolla()
+{
+  document.getElementById('buttons').style.display = "none";
+  
+  if(elf == true)
+  {
+  	if ( hair != "s_hair_glorious.png" || status == "bald" )
+	{
+	  var img = "s_ears_elf_detailed.png";
+	  var imgsil = "s_ears_elf_white.png";
+  
+	}
+	else
+	{
+	  var img = "s_ears_elf_bighair.png";
+	  var imgsil = "s_ears_elf_bighair_white.png";
+	}
+    jono.push( ["screen", img] );
+	jono.push( ["multiply", imgsil] );
+  }
+
+  
+  if (status == "bald")
+  {
+    //jono.push( ["screen", eyecolor] );
+
+	if (chinSymmetry != "")
+	{
+		jono.push( ["normal_rightside", chinSymmetry] );
+
+		if (chin != "")
+		{
+			jono.push( ["normal_withblankrightside", chin] );
+		}
+
+	}
+	else
+	{
+	
+		if (chin != "")
+		{
+			jono.push( ["normal", chin] );
+		}
+	
+	}
+	
+	jono.push( ["normal", nose] );
+
+	jono.push( ["normal", eyestype] );
+	jono.push( ["load","s_female_detailed.png"] );
+	
+  } 
+  else if(status == "black")
+  {
+   
+	jono.push ( ["lightenfrom2"] );
+
+    jono.push( ["multiply", hairsilhuettematte] );
+
+	if (chinSymmetry != "")
+	{
+		jono.push( ["normal_rightside", chinSymmetry] );
+
+		if (chin != "")
+		{
+			jono.push( ["normal_withblankrightside", chin] );
+		}
+
+	}
+	else
+	{
+	
+		if (chin != "")
+		{
+			jono.push( ["normal", chin] );
+		}
+	
+	}
+	
+	
+	
+
+
+	jono.push( ["normal", nose] );
+	jono.push( ["normal", eyestype] );
+
+    jono.push( ["load","s_female_detailed.png"] );
+	
+    jono.push( ["difference2", hairsilhuette] );
+    jono.push( ["darken2from3"] );
+
+	jono.push( ["lighten3", haircolDark, hairlines] );
+
+	jono.push( ["screen2from3"] );
+	jono.push( ["color3", haircol, hairfilter] );
+	
+    jono.push( ["load2", hairsilhuette] );
+
+  } 
+  else if(status == "blonde")
+  {
+    jono.push( ["multiply", hairsilhuettematte] );
+	
+
+	if (chinSymmetry != "")
+	{
+		jono.push( ["normal_rightside", chinSymmetry] );
+
+		if (chin != "")
+		{
+			jono.push( ["normal_withblankrightside", chin] );
+		}
+
+	}
+	else
+	{
+	
+		if (chin != "")
+		{
+			jono.push( ["normal", chin] );
+		}
+	
+	}	
+	
+	jono.push( ["normal", nose] );
+	jono.push( ["normal", eyestype] );
+
+    jono.push( ["load","s_female_detailed.png"] );
+
+  }
+
+  if (background != "")
+  {
+     jono.push( ["load",background] ); 
+
+  }
+  
+  if ( jono.length>0 )
+  {
+    draw();
+  }
+  
+  
+}
+
+function draw()
+{
+
+
+
+	if ( jono.length == 0 )
+	{
+		show();
+		return false;
+	}
+
+
+    var piirra = jono.pop();
+
+	console.log( "function call xxx(" + piirra[0] + "," + piirra[1] + "," + piirra[2] + ")" );
+
+	
+	if (piirra[0] == "load" )
+	{
+		var myCanvas = document.getElementById('kuva');
+		var ctx = myCanvas.getContext('2d');
+		var img = new Image;
+		img.onload = function(){
+
+			if (background == "")
+			{
+				ctx.fillStyle = "rgb(128,128,128)";
+				ctx.fillRect(0,0,768,256);
+
+				// ## pixi.js ##
+				var graphics = new PIXI.Graphics();
+
+				graphics.beginFill( rgbToHex("rgb(128,128,128)")[0] );
+
+				// set the line style to have a width of 0 and set the color to rgb(0,0,0)
+				graphics.lineStyle( 0, rgbToHex("rgb(0,0,0)")[0] );
+
+				// draw a rectangle
+				graphics.drawRect(0, 0, 768, 256);
+
+				graphics.endFill();
+				
+				// ## end of pixi.js ##
+				
+				ctx.fillStyle = bgColor;
+				ctx.fillRect(0,0,768,256);
+
+
+				// ## pixi.js ##
+
+				var rgba = rgbToHex(bgColor);
+				var	rgb = rgba[0];
+				var alpha = rgba[1];
+				graphics.beginFill( rgb, alpha );
+				graphics.lineStyle( 1, rgb );
+
+				// draw a rectangle
+				graphics.drawRect(0, 0, 768, 256);
+
+				graphics.endFill();
+
+				
+				console.log( "fill color: " + rgb + ", a: " + alpha );
+				
+				var imgSpr = new PIXI.Sprite(graphics.generateTexture());
+				pixiMainCanvas.addChild(imgSpr);
+				
+				
+			}
+			
+				radius=10;
+				x=134;
+				y=87;
+				ctx.beginPath();
+				ctx.arc(x, y, radius, 0 , 2 * Math.PI, false);
+				ctx.closePath();
+				ctx.fillStyle = "rgb(255, 222, 178)";
+				ctx.fill();
+
+				// ## pixi.js
+				var graphics = new PIXI.Graphics();
+				graphics.beginFill( rgbToHex("rgb(255,222,178)")[0] );
+                graphics.drawCircle(x, y, radius);
+				graphics.endFill();
+
+				// ## end of pixi.js
+				
+				ctx.beginPath();
+				ctx.arc(x+1, y, radius/2, 0 , 2 * Math.PI, false);
+				ctx.closePath();
+				ctx.fillStyle = eyecol;
+				ctx.fill();
+
+				// ## pixi.js
+				graphics.beginFill( rgbToHex(eyecol)[0] );
+                graphics.drawCircle(x, y, radius/2);
+				graphics.endFill();
+
+				// ## end of pixi.js
+
+
+
+				ctx.beginPath();
+				ctx.arc(x,y,radius/2,Math.PI/2,Math.PI*1.5,false);
+				ctx.closePath();
+				ctx.fillStyle = eyecolDark;
+				ctx.fill();
+
+				// ## pixi.js
+				graphics.beginFill( rgbToHex(eyecolDark)[0] );
+                graphics.drawCircle(x, y, radius/2);
+				graphics.endFill();
+
+				// ## end of pixi.js
+
+				ctx.beginPath();
+				ctx.arc(x+1, y, radius/5, 0 , 2 * Math.PI, false);
+				ctx.closePath();
+				ctx.fillStyle = "rgb(0, 0, 0)";
+				ctx.fill();
+
+				// ## pixi.js
+				graphics.beginFill( rgbToHex("rgb(0, 0, 0)")[0] );
+                graphics.drawCircle(x+1, y, radius/5);
+				graphics.endFill();
+
+				// ## end of pixi.js
+				
+				x=171;
+				y=85;
+				ctx.beginPath();
+				ctx.arc(x, y, radius, 0 , 2 * Math.PI, false);
+				ctx.closePath();
+				ctx.fillStyle = "rgb(255, 222, 178)";
+				ctx.fill();
+
+				// ## pixi.js
+				graphics.beginFill( rgbToHex("rgb(255, 222, 178)")[0] );
+                graphics.drawCircle(x, y, radius);
+				graphics.endFill();
+
+				// ## end of pixi.js
+	
+				
+				ctx.beginPath();
+				ctx.arc(x+1, y, radius/2, 0 , 2 * Math.PI, false);
+				ctx.closePath();
+				ctx.fillStyle = eyecol;
+				ctx.fill();
+	
+				// ## pixi.js
+				graphics.beginFill( rgbToHex(eyecol) );
+                graphics.drawCircle(x+1, y, radius/2);
+				graphics.endFill();
+
+				// ## end of pixi.js
+					
+				
+				
+				ctx.beginPath();
+				ctx.arc(x,y,radius/2,Math.PI/2,Math.PI*1.5,false);
+				ctx.closePath();
+				ctx.fillStyle = eyecolDark;
+				ctx.fill();
+				
+				// ## pixi.js
+				graphics.beginFill( rgbToHex(eyecolDark)[0] );
+                graphics.drawCircle(x, y, radius/2);
+				graphics.endFill();
+
+				// ## end of pixi.js
+	
+
+				ctx.beginPath();
+				ctx.arc(x+1, y, radius/5, 0 , 2 * Math.PI, false);
+				ctx.closePath();
+				ctx.fillStyle = "rgb(0, 0, 0)";
+				ctx.fill();
+				
+				// ## pixi.js
+				graphics.beginFill( rgbToHex("rgb(0, 0, 0)")[0] );
+                graphics.drawCircle(x+1, y, radius/5);
+				graphics.endFill();
+
+				// ## end of pixi.js
+	
+
+
+				
+				x=422;
+				y=83;
+				ctx.beginPath();
+				ctx.arc(x, y, radius, 0 , 2 * Math.PI, false);
+				ctx.closePath();
+				ctx.fillStyle = "rgb(255, 222, 178)";
+				ctx.fill();
+
+				// ## pixi.js
+				graphics.beginFill( rgbToHex("rgb(255, 222, 178)")[0] );
+                graphics.drawCircle(x+1, y, radius);
+				graphics.endFill();
+
+				// ## end of pixi.js
+	
+
+				ctx.beginPath();
+				ctx.arc(x+5, y, radius/2, 0 , 2 * Math.PI, false);
+				ctx.closePath();
+				ctx.fillStyle = eyecol;
+				ctx.fill();
+				
+				// ## pixi.js
+				graphics.beginFill( rgbToHex(eyecol)[0] );
+                graphics.drawCircle(x+5, y, radius/2);
+				graphics.endFill();
+
+				// ## end of pixi.js				
+				
+				ctx.beginPath();
+				ctx.arc(x,y,radius/2,Math.PI/2,Math.PI*1.5,false);
+				ctx.closePath();
+				ctx.fillStyle = eyecolDark;
+				ctx.fill();
+
+				// ## pixi.js
+				graphics.beginFill( rgbToHex(eyecolDark)[0] );
+                graphics.drawCircle(x, y, radius/2);
+				graphics.endFill();
+
+				// ## end of pixi.js				
+								
+				
+
+				ctx.beginPath();
+				ctx.arc(x+5, y, radius/5, 0 , 2 * Math.PI, false);
+				ctx.closePath();
+				ctx.fillStyle = "rgb(0, 0, 0)";
+				ctx.fill();
+
+				// ## pixi.js
+				graphics.beginFill( rgbToHex("rgb(0, 0, 0)")[0] );
+                graphics.drawCircle(x+5, y, radius/5);
+				graphics.endFill();
+
+				// ## end of pixi.js				
+								
+				
+							
+				x=609;
+				y=84;
+				ctx.beginPath();
+				ctx.arc(x, y, radius, 0 , 2 * Math.PI, false);
+				ctx.closePath();
+				ctx.fillStyle = "rgb(255, 222, 178)";
+				ctx.fill();
+
+				// ## pixi.js
+				graphics.beginFill( rgbToHex("rgb(255, 222, 178)")[0] );
+                graphics.drawCircle(x, y, radius);
+				graphics.endFill();
+
+				// ## end of pixi.js				
+						
+				
+				ctx.beginPath();
+				ctx.arc(x, y, radius/2, 0 , 2 * Math.PI, false);
+				ctx.closePath();
+				ctx.fillStyle = eyecol;
+				ctx.fill();
+				
+				// ## pixi.js
+				graphics.beginFill( rgbToHex(eyecol)[0] );
+                graphics.drawCircle(x, y, radius/2);
+				graphics.endFill();
+
+				// ## end of pixi.js				
+										
+				
+				ctx.beginPath();
+				ctx.arc(x,y,radius/2,Math.PI/2,Math.PI*1.5,false);
+				ctx.closePath();
+				ctx.fillStyle = eyecolDark;
+				ctx.fill();
+				
+				// ## pixi.js
+				graphics.beginFill( rgbToHex(eyecolDark)[0] );
+                graphics.drawCircle(x, y, radius/2);
+				graphics.endFill();
+
+				// ## end of pixi.js				
+														
+				
+				ctx.beginPath();
+				ctx.arc(x, y, radius/5, 0 , 2 * Math.PI, false);
+				ctx.closePath();
+				ctx.fillStyle = "rgb(0, 0, 0)";
+				ctx.fill();
+				
+				// ## pixi.js
+				graphics.beginFill( rgbToHex("rgb(0, 0, 0)")[0] );
+                graphics.drawCircle(x, y, radius/5);
+				graphics.endFill();
+
+				// ## end of pixi.js				
+														
+							
+				x=652;
+				y=84;
+				ctx.beginPath();
+				ctx.arc(x, y, radius, 0 , 2 * Math.PI, false);
+				ctx.closePath();
+				ctx.fillStyle = "rgb(255, 222, 178)";
+				ctx.fill();
+				
+				// ## pixi.js
+				graphics.beginFill( rgbToHex("rgb(255, 222, 178)")[0] );
+                graphics.drawCircle(x, y, radius);
+				graphics.endFill();
+
+				// ## end of pixi.js				
+			
+				
+				ctx.beginPath();
+				ctx.arc(x, y, radius/2, 0 , 2 * Math.PI, false);
+				ctx.closePath();
+				ctx.fillStyle = eyecol;
+				ctx.fill();
+
+				// ## pixi.js
+				graphics.beginFill( rgbToHex(eyecol)[0] );
+                graphics.drawCircle(x, y, radius/2);
+				graphics.endFill();
+
+				// ## end of pixi.js				
+						
+				
+				ctx.beginPath();
+				ctx.arc(x,y,radius/2,Math.PI/2,Math.PI*1.5,false);
+				ctx.closePath();
+				ctx.fillStyle = eyecolDark;
+				ctx.fill();
+
+				// ## pixi.js
+				graphics.beginFill( rgbToHex(eyecolDark)[0] );
+                graphics.drawCircle(x, y, radius/2);
+				graphics.endFill();
+
+				// ## end of pixi.js				
+						
+				
+				
+				ctx.beginPath();
+				ctx.arc(x, y, radius/5, 0 , 2 * Math.PI, false);
+				ctx.closePath();
+				ctx.fillStyle = "rgb(0, 0, 0)";
+				ctx.fill();
+		
+				// ## pixi.js
+				graphics.beginFill( rgbToHex("rgb(0, 0, 0)")[0] );
+                graphics.drawCircle(x, y, radius/5);
+				graphics.endFill();
+
+				// ## end of pixi.js				
+		
+
+			ctx.drawImage(img,0,0); // Or at whatever offset you like
+
+			// ## pixi.js
+			if (background != "")
+			{
+				var imgSpr = new PIXI.Sprite( graphics.generateTexture() );
+				
+				imgSpr.position.x = 125;
+				imgSpr.position.y = 73;
+				
+				pixiMainCanvas.addChild(imgSpr);
+			}
+
+			
+
+
+			    // create a texture from an image path
+				var texture = PIXI.Texture.fromImage( piirra[1] );
+				// create a new Sprite using the texture
+				var kuva = new PIXI.Sprite(texture);
+			 
+				pixiMainCanvas.addChild(kuva);
+			
+			// ## end of pixi.js				
+
+
+			
+			draw();
+		};
+		img.src = piirra[1];
+
+		
+	}
+	else if (piirra[0] == "multiply" )
+	{
+		var myCanvas = document.getElementById('kuva');
+	    var blendImg = new Image();
+
+	    blendImg.onload = function() {
+
+			// ## pixi.js 
+			
+			// create a texture from an image path
+			
+			var texture = PIXI.Texture.fromImage( piirra[1] );
+			var kuva = new PIXI.Sprite(texture);
+			kuva.blendMode = PIXI.blendModes.MULTIPLY;
+			pixiMainCanvas.addChild(kuva);
+			
+			// ## end of pixi.js 
+		
+			Pixastic.process(myCanvas, "blend", 
+			{
+				amount : 1, 
+				mode : "multiply", 
+				image : blendImg
+			}, function() { draw(); }
+			);
+
+
+			
+		}
+        blendImg.src = piirra[1];
+		
+
+		
+	}
+	else if (piirra[0] == "screen" )
+	{
+		var myCanvas = document.getElementById('kuva');
+	    var blendImg = new Image();
+
+		
+		
+	    blendImg.onload = function() {
+
+			// ## pixi.js
+			var texture = PIXI.Texture.fromImage( piirra[1] );
+			var kuva = new PIXI.Sprite(texture);
+			kuva.blendMode = PIXI.blendModes.SCREEN;
+			pixiMainCanvas.addChild(kuva);
+			// ## end of pixi.js 
+		
+			Pixastic.process(myCanvas, "blend", 
+			{
+				amount : 1, 
+				mode : "screen", 
+				image : blendImg
+			}, function() { draw(); }
+			);
+
+		// ## pixi.js 
+		
+
+			
+		}
+        blendImg.src = piirra[1];
+		
+		
+	}
+	else if (piirra[0] == "normal" )
+	{
+		var myCanvas = document.getElementById('kuva');
+	    var blendImg = new Image();
+	    blendImg.onload = function() {
+
+
+			Pixastic.process(myCanvas, "blend", 
+			{
+				amount : 1, 
+				mode : "normal", 
+				image : blendImg
+			}, function() { draw(); }
+			);
+		}
+        blendImg.src = piirra[1];
+	
+	
+		// ## pixi.js 
+		
+		var texture = PIXI.Texture.fromImage( piirra[1] );
+		var kuva = new PIXI.Sprite(texture);
+		kuva.blendMode = PIXI.blendModes.NORMAL;
+		pixiMainCanvas.addChild(kuva);
+		
+		// ## end of pixi.js		
+	
+	}
+	else if (piirra[0] == "normal_rightside" ) 
+	{
+		var myCanvas = document.getElementById('kuva');
+		var ctx = myCanvas.getContext('2d');
+		var img = new Image;
+		img.onload = function()
+		{
+			ctx.drawImage(img,632,0,136,256,632,0,136,256); // Or at whatever offset you like
+			
+			ctx.drawImage(img, 154,0, 30,256, 154,0, 30,256); // Or at whatever offset you like
+
+			// ## pixi.js
+
+
+				var texture = PIXI.Texture.fromCanvas( ctx );
+				var kuva = new PIXI.Sprite(texture);
+			 
+				kuva.position.x = 0;
+				kuva.position.y = 0;
+
+				pixiMainCanvas.addChild(kuva);				
+				
+				
+			// ## end of pixi.js	
+			
+			draw();
+
+		
+
+			
+		};
+		img.src = piirra[1];
+		
+		
+	}
+    else if (piirra[0] == "normal_withblankrightside" ) 
+	{
+		var myCanvas = document.getElementById('kuva');
+		var ctx = myCanvas.getContext('2d');
+		var img = new Image;
+		img.onload = function()
+		{
+			ctx.drawImage(img, 184,0, 448,256, 184,0, 448,256); // Or at whatever offset you like
+			
+			ctx.drawImage(img, 0,0, 154,256, 0,0, 154,256); // Or at whatever offset you like
+
+			
+			// ## pixi.js
+/*
+			    var texture = PIXI.Texture.fromCanvas( ctx );
+				var kuva = new PIXI.Sprite(texture);
+			 
+				kuva.position.x = 0;
+				kuva.position.y = 0;
+
+				stage.addChild(kuva);				
+*/
+				
+				
+			// ## end of pixi.js				
+			
+			draw();
+
+			
+
+			
+		};
+		img.src = piirra[1];
+	}			
+
+	else if (piirra[0] == "load2" ) //--> CANVAS #2
+	{
+		var myCanvas = document.getElementById('kuvaTest2');
+		var ctx = myCanvas.getContext('2d');
+		var img = new Image;
+		img.onload = function(){
+			ctx.drawImage(img,0,0); // Or at whatever offset you like
+
+			// ## pixi.js
+
+		    // create a texture from an image path
+			var texture = PIXI.Texture.fromImage( piirra[1] );
+			// create a new Sprite using the texture
+			var kuva = new PIXI.Sprite( texture );
+            //kuva.position.y = 256; // Canvas #2 sijainti
+			pixiTempCanvas2.addChild(kuva);
+			
+			// ## end of pixi.js	
+
+		
+			draw();
+			
+		};
+		img.src = piirra[1];
+	}	
+	else if (piirra[0] == "color3" )
+	{
+		var myCanvas = document.getElementById('kuvaTest3'); //--> CANVAS #3
+		var ctx = myCanvas.getContext('2d');
+	
+		ctx.fillStyle = piirra[1];
+		ctx.fillRect(0,0,768,256);
+
+		// ## pixi.js ##
+
+		var rgba = rgbToHex( piirra[1] );
+		var	rgb = rgba[0];
+		var alpha = rgba[1];
+
+		var graphics = new PIXI.Graphics();
+
+		graphics.beginFill( rgb, alpha );
+
+		// set the line style to have a width of 0 and set the color to rgb(0,0,0)
+		graphics.lineStyle( 1, rgb );
+
+		// draw a rectangle
+		graphics.drawRect(0, 2*256, 768, 256); // (x,y,w,h), Canvas #3 sijainti
+		graphics.endFill();
+
+		var recSpr = new PIXI.Sprite( graphics.generateTexture() );
+		pixiTempCanvas3.addChild(recSpr);
+		
+		
+		// ## end of pixi.js ##		
+		
+		
+		var blendImg = new Image();
+		blendImg.onload = function() 
+		{
+			// ### pixi.js
+			
+			// create a texture from an image path
+			
+			var texture = PIXI.Texture.fromImage( piirra[2] );
+			var kuva = new PIXI.Sprite(texture);
+			kuva.blendMode = PIXI.blendModes.DARKEN; 
+			//kuva.position.x = 0;
+			//kuva.position.y = 2*256; // Canvas #3 sijainti
+			pixiTempCanvas2.addChild(kuva);
+			
+			// ### end of pixi.js		
+		
+			Pixastic.process(myCanvas, 'blend', 
+			{
+				amount : 1, 
+				mode : 'darken', 
+				image : blendImg
+			}, function() { draw(); }
+			);
+		}
+        blendImg.src = piirra[2];
+	} 
+	else if (piirra[0] == "lighten3" ) 
+	{
+		var myCanvas = document.getElementById('kuvaTest3');
+		var ctx = myCanvas.getContext('2d');
+	
+		ctx.fillStyle = piirra[1];
+		ctx.fillRect(0,0,768,256);
+
+		// ## pixi.js ##
+
+		var rgba = rgbToHex( piirra[1] );
+		var rgb = rgba[0];
+		var alpha = rgba[1];
+
+		var graphics = new PIXI.Graphics();
+		graphics.beginFill( rgb, alpha );
+
+		graphics.lineStyle( 1, rgb );
+
+		graphics.drawRect(0, 0, 768, 256); 
+		graphics.endFill();
+
+		var recSpr = new PIXI.Sprite( graphics.generateTexture() );
+		pixiTempCanvas3.addChild(recSpr);
+		
+		// ## end of pixi.js ##		
+		
+		
+		var blendImg = new Image();
+		blendImg.onload = function() 
+		{
+			Pixastic.process(myCanvas, 'blend', 
+			{
+				amount : 1, 
+				mode : 'lighten', 
+				image : blendImg
+			}, function() { this.goOn(); }
+			);
+		}
+        blendImg.src = piirra[2];	
+		
+		this.goOn = function() {
+			var blendImgPixi = new Image();
+			blendImgPixi.onload = function() 
+			{
+				// ### pixi.js
+				
+				// pixi.js-kirjaston WebGL ei tue LIGHTEN -blend modea
+				//
+				// Workaround: 
+				// 1) kopioidaan pixiTempCanvas3-WebGL-objektin sisältö pixiCanvasRendererTempCanvas1-DOM-objektiin
+				// 2) tehdään LIGHTEN -blend mode Pixastic.js-kirjaston kautta
+				// 3) kopioidaan pixiCanvasRendererTempCanvas2-DOM-objektin sisältö pixi.js-WebGL-canvaksen pixiTempCanvas3-WebGL-objektiin 
+				
+				var sourceCanvas = pixiTempCanvas3.generateTexture().getCanvas();
+				var destinationCanvas = document.getElementById('pixiCanvasRendererTempCanvas1');
+				var destCtx = destinationCanvas.getContext('2d');
+				destCtx.drawImage(sourceCanvas, 0, 0);
+
+				// ### end of pixi.js	
+
+				Pixastic.process(destinationCanvas, 'blend', 
+				{
+					amount : 1, 
+					mode : 'lighten', 
+					image : blendImgPixi
+				}, function() 
+				{ 
+
+					// ### the pixi.js implementation
+
+					// kopioidaan pixiCanvasRendererTempCanvas2-DOM-objektin sisältö pixi.js-WebGL-canvaksen pixiTempCanvas3-WebGL-objektiin
+					
+					var canvas = document.getElementById('pixiCanvasRendererTempCanvas1');
+					var file = canvas.toDataURL(); // convert image to base64 string format
+					var image = new Image();
+					image.src = file; // data_uri_string
+					var base = new PIXI.BaseTexture( image );
+					var texture = new PIXI.Texture( base );	
+					var kuva = new PIXI.Sprite( texture );
+					pixiTempCanvas3.addChild(kuva);		
+					
+					// ### the end of the pixi.js implementation										
+				
+					draw(); 
+				}
+				);
+			}	
+			blendImgPixi.src = piirra[2];				
+		}
+	}
+	
+	else if (piirra[0] == "lightenfrom2" ) 
+	{
+		var myCanvas = document.getElementById('kuva');
+		var ctx = myCanvas.getContext('2d');
+
+		var tempCanvas = document.getElementById('kuvaTest2');
+
+		Pixastic.process(myCanvas, 'blend', 
+		{
+			amount : 1, 
+			mode : 'lighten', 
+			image : tempCanvas
+		}, function() { draw(); }
+		);
+	} 
+	else if (piirra[0] == "screen2from3" ) // copy the layer of TempCanvas3 to TempCanvas2 and use SCREEN as Blend Mode
+	{
+
+		var myCanvas = document.getElementById('kuvaTest2');
+		var ctx = myCanvas.getContext('2d');
+
+		var tempCanvas = document.getElementById('kuvaTest3');
+
+		Pixastic.process(myCanvas, 'blend', 
+		{
+			amount : 1, 
+			mode : 'screen', 
+			image : tempCanvas
+		}, function() { draw(); }
+		);
+		
+		// ## pixi.js
+
+		var kuva = new PIXI.Sprite( pixiTempCanvas3.generateTexture() );
+		kuva.blendMode = PIXI.blendModes.SCREEN;
+		pixiTempCanvas2.addChild(kuva);
+
+		// ## end of pixi.js 
+		
+		
+	} 
+ 	else if (piirra[0] == "darken2from3" ) // copy the layer of TempCanvas3 to TempCanvas2 and use DARKEN as Blend Mode
+	{
+		var myCanvas = document.getElementById('kuvaTest2');
+		var ctx = myCanvas.getContext('2d');
+
+		var tempCanvas = document.getElementById('kuvaTest3');
+
+
+		Pixastic.process(myCanvas, "blend", 
+		{
+			amount : 0.5, 
+			mode : "darken", 
+			image : tempCanvas
+		}, function() { draw(); }
+		);
+
+
+	} 
+ 	else if (piirra[0] == "difference2" )
+	{
+		var myCanvas = document.getElementById('kuvaTest2');
+		var ctx = myCanvas.getContext('2d');
+
+	    var blendImg = new Image();
+
+	    blendImg.onload = function() {
+			Pixastic.process(myCanvas, "blend", 
+			{
+				amount : 1, 
+				mode : "difference", 
+				image : blendImg
+			}, function() { draw(); }
+			);
+		}
+        blendImg.src = piirra[1];
+	} 
+	else if (piirra[0] == "copy3from2" )
+	{
+		var myCanvas = document.getElementById('kuvaTest2');
+		var ctx = myCanvas.getContext('2d');
+
+		var tempCanvas = document.getElementById('kuvaTest3');
+
+		Pixastic.process(tempCanvas, 'blend', 
+		{
+			amount : 1, 
+			mode : 'normal', 
+			image : myCanvas
+		}, function() { draw(); }
+		);
+	} 
+	else
+	{
+		Alert("Error!");
+	}
+
+}
+
+
+
+function show()
+{
+	
+	// Assume we have a main canvas
+	canvas = document.getElementById('kuva');
+	ctx = canvas.getContext('2d');
+
+	// create backing canvas
+	var backCanvas = document.getElementById('doublebuffer');
+	var backCtx = backCanvas.getContext('2d');
+	// save main canvas contents
+	backCtx.drawImage(canvas, 0,0);
+
+	
+	portrait = document.getElementById('portraitCanvas');
+	pctx = portrait.getContext('2d');
+    pctx.drawImage(canvas, 560,0,140,210,0,0,128,192);
+
+	portraitSmall = document.getElementById('portraitSmallCanvas');
+	psctx = portraitSmall.getContext('2d');	
+	psctx.drawImage(canvas, 550,0,160,160,0,0,96,96);
+	
+	document.getElementById('buttons').style.display = "block";
+}
+
+
+function checkLoaded()
+{
+
+	var img = document.getElementById("image01");
+	var img2 = document.getElementById("image02");
+	var img3 = document.getElementById("image03");
+	var img4 = document.getElementById("image04");
+
+	if (img.complete && img2.complete && img3.complete && img4.complete)
+	{
+	  clearInterval(tarkista);
+	  console.log("complete");
+	  nolla();
+	}
+	else
+	{
+	  console.log("incomplete");
+
+	}
+	
+}
+
+</script>
+
+
+<script>
+	document.getElementById("buttonGloriousHair").disabled = false;
+    document.getElementById("buttonNormalHair").disabled = true;
+	document.getElementById("buttonBlonde").disabled = true;
+	document.getElementById("buttonBlack").disabled = false; 
+	document.getElementById("buttonBald").disabled = false;
+	document.getElementById("buttonElf").disabled = false;
+	document.getElementById("buttonHuman").disabled = true;
+	var tarkista = setInterval( "checkLoaded()", 10 );
+</script>
+
+<div style="display: none;">
+
+<img id="image01" src="s_female_detailed.png">
+<img id="image02" src="s_eyes_blue.png">
+<img id="image03" src="s_hair.png">
+<img id="image04" src="s_hair_white_test.png">
+<img src="s_ears_elf_detailed.png">
+<img src="s_ears_elf_white.png">
+<img src="s_ears_elf_bighair.png">
+<img src="s_ears_elf_bighair_white.png">
+<img src="s_eyes_brown.png">
+<img src="s_hair_glorious.png">
+<img src="s_hair_glorious_white.png">
+</div>
+	
+
+
+</body>
+
+
+
+</html>

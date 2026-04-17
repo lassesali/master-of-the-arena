@@ -1,0 +1,321 @@
+<html>
+<head>
+<script src="js/stats.js"></script>
+</head>
+
+<body>
+
+<div id="portrait" style="border: 2px solid; background: gray; height: 800px; width: 800px; position: absolute; top: 10px; left: 100px;">
+  <b>Time:</b> <span id="timeText">0 : 0</span>
+  <p>
+  <b>FPS:</b> <span id="fpsText"></span>
+
+  <button onclick="setFPS(60)">60</button>
+  <button onclick="setFPS(50)">50</button>
+  <button onclick="setFPS(30)">30</button>
+  <button onclick="setFPS(25)">25</button>
+  <button onclick="setFPS(10)">10</button>
+  <button onclick="setFPS(5)">5</button>
+  <button onclick="setFPS(1)">1</button>
+  <p>
+  <b>Game speed:</b> <span id="speedText"></span>
+  <button onclick="setGameSpeed(8); setUltraSpeed(20)">x20</button>
+  <button onclick="setGameSpeed(8); setUltraSpeed(10)">x10</button>
+  <button onclick="setGameSpeed(8); setUltraSpeed(5)">x5</button>
+  <button onclick="setGameSpeed(8); setUltraSpeed(4)">x4</button>
+  <button onclick="setGameSpeed(8); setUltraSpeed(3)">x3</button>
+  <button onclick="setGameSpeed(8); setUltraSpeed(2)">x2</button>
+  <button onclick="setGameSpeed(8); setUltraSpeed(1)">8</button>
+  <button onclick="setGameSpeed(10); setUltraSpeed(1)">10</button>
+  <button onclick="setGameSpeed(50); setUltraSpeed(1)">50</button>
+  <button onclick="setGameSpeed(100); setUltraSpeed(1)">100</button>
+  <button onclick="setGameSpeed(250); setUltraSpeed(1)">250</button>
+  <p>
+  <span id="debugText"></span>
+  <p>
+  <canvas style="border: 1px solid;" id="myCanvas" width="640" height="480"></canvas>
+</div>
+<div style="display: none;"><canvas id="myBackCanvas" width="640" height="480"></canvas></div>
+
+<script>
+
+// FPS Counter
+
+var stats = new Stats();
+stats.setMode(0); // 0: fps, 1: ms
+
+// Align top-left
+stats.domElement.style.position = 'absolute';
+stats.domElement.style.left = '0px';
+stats.domElement.style.top = '0px';
+
+document.body.appendChild( stats.domElement );
+
+setInterval( function () {
+
+    stats.begin();
+
+    // your code goes here
+
+    stats.end();
+
+}, 1000 / 60 );
+
+
+var fps;
+var gameSpeed;
+var ultraSpeed;
+var sec = 0;
+var min = 0;
+
+setFPS(25);
+setGameSpeed(8);
+setUltraSpeed(1);
+
+ympyra = new Ympyra();
+ympyra2 = new Ympyra();
+ympyra2.setRadius(40);
+ympyra2.setDirX(1);
+ympyra2.setDirY(1);
+ympyra.setDirX(-1);
+ympyra.setDirY(-1);
+
+function setFPS(param)
+{
+	fps = 1000/param;
+	document.getElementById("fpsText").innerHTML = Math.round(param);
+}
+
+function setGameSpeed(param)
+{
+	gameSpeed = param;
+
+}
+
+function setUltraSpeed(param)
+{
+	ultraSpeed = param;
+	document.getElementById("speedText").innerHTML = gameSpeed + " (x" + ultraSpeed + ")";
+}
+
+function RunEvery(param)
+{
+
+	if (timer[param] == param)
+	{
+		return true;
+	}
+	return false;
+}
+
+
+var timer = new Array(1000);
+timer[20] = 10;
+timer[50] = 10;
+timer[100] = 10;
+timer[200] = 10;
+timer[250] = 10;
+timer[500] = 10;
+timer[1000] = 10;
+
+function main()
+{
+	for (var repeat=0; repeat<ultraSpeed; repeat++)
+	{
+		timer[20] = ( timer[20] == 20 ) ? 10 : timer[20]=timer[20]+10;  //variable = (condition) ? true-value : false-value;
+		timer[50] = ( timer[50] == 50 ) ? 10 : timer[50]=timer[50]+10;
+		timer[100] = ( timer[100] == 100 ) ? 10 : timer[100]=timer[100]+10;
+		timer[200] = ( timer[200] == 200 ) ? 10 : timer[200]=timer[200]+10;
+		timer[250] = ( timer[250] == 250 ) ? 10 : timer[250]=timer[250]+10;  
+		timer[500] = ( timer[500] == 500 ) ? 10 : timer[500]=timer[500]+10;  
+		timer[1000] = ( timer[1000] == 1000 ) ? 10 : timer[1000]=timer[1000]+10;  
+
+		events();
+	}
+	setTimeout(main, gameSpeed);
+  
+
+}
+
+function events()
+{
+
+  if ( RunEvery(20) ) // joka 20ms
+  {
+    ympyra.move();
+    ympyra2.move();
+  }
+
+  if ( RunEvery(250) && !(RunEvery(500)) ) // joka toinen 250ms
+  {
+    ympyra.setFillstyle('yellow');
+	
+  }
+
+  if ( RunEvery(250) && RunEvery(500) ) // joka toinen 250ms
+  {
+    ympyra.setFillstyle('blue');
+  }
+  
+
+  if ( RunEvery(500) && !(RunEvery(1000)) ) // joka toinen 100ms
+  {
+    ympyra2.setFillstyle('red');
+	
+  }
+
+  if ( RunEvery(500) && RunEvery(1000) ) // joka toinen 100ms
+  {
+    ympyra2.setFillstyle('green');
+  }  
+
+  if ( RunEvery(1000) ) // joka 1000ms
+  {
+    sec++;
+	if (sec == 60)
+	{
+	  sec = 0;
+	  min++;
+	}
+	document.getElementById("timeText").innerHTML = min + " : " +sec;
+	
+  }
+  
+}
+
+main();
+animate();
+
+function animate() {
+
+	var canvas = document.getElementById('myBackCanvas');
+	var context = canvas.getContext('2d');
+
+	context.rect(0,0,640,480);
+    context.fillStyle="darkblue";
+    context.fill(); 
+	
+	context.beginPath();
+	context.arc(ympyra.getPosX(), ympyra.getPosY(), ympyra.getRadius(), 0, 2 * Math.PI, false);
+	context.fillStyle = ympyra.getFillstyle();
+	context.fill();
+	context.lineWidth = 5;
+	context.strokeStyle = '#003300';
+	context.stroke();
+  	context.closePath();
+	
+	context.beginPath();
+	context.arc(ympyra2.getPosX(), ympyra2.getPosY(), ympyra2.getRadius(), 0, 2 * Math.PI, false);
+	context.fillStyle = ympyra2.getFillstyle();
+	context.fill();
+	context.lineWidth = 5;
+	context.strokeStyle = '#003300';
+	context.stroke();
+  	context.closePath();
+
+	
+  	context.closePath();
+	
+	/*
+	document.getElementById("debugText").innerHTML = "Timers: <br>[020]" + timer[20] + "<br>[050]" + timer[50] + "<br>[100]" + timer[100] + "<br>[200]" + timer[200] + "<br>[250]" + timer[250] + "<br>[500]" + timer[500]
+	+ "<br>[1000]" + timer[1000];
+	*/
+	
+	var cnvs = document.getElementById('myCanvas');
+	var ctx = cnvs.getContext('2d');
+	ctx.drawImage(myBackCanvas, 0,0);
+	
+	setTimeout( function() { requestAnimationFrame(animate) }, fps );
+	
+	
+}
+
+
+
+function Ympyra()
+{
+  var dirX = 0;
+  var dirY = 0;
+  var posx = 300;
+  var posy = 300;
+  var radius = 70;
+  var fillstyle = 'green';
+  
+  this.setDirX = function ( param )
+  {
+    dirX = param;
+  }
+
+  this.setDirY = function ( param )
+  {
+    dirY = param;
+  }
+
+  
+  this.setFillstyle = function (param)
+  {
+    fillstyle = param;
+  }
+
+  this.getFillstyle = function ()
+  {
+    return fillstyle;
+  }
+ 
+  this.setRadius = function (param)
+  {
+    radius = param;
+  }
+ 
+  this.getRadius = function ()
+  {
+    return radius;
+  }
+  
+  this.move = function ()
+  {
+    posx = posx + dirX;
+	posy = posy + dirY;
+	
+	if ( posx > 640 && dirX == 1 )
+	{
+	  dirX = -1;
+	}
+	
+	if ( posx < 0 && dirX == -1 )
+	{
+	  dirX = 1;
+	}
+
+	if ( posy > 480 && dirY == 1 )
+	{
+	  dirY = -1;
+	}
+	
+	if ( posy < 0 && dirY == -1 )
+	{
+	  dirY = 1;
+	}
+	
+  }
+  
+  this.getPosX = function()
+  {
+    return posx;
+  }
+  
+  this.getPosY = function()
+  {
+    return posy;
+  }
+
+}
+
+
+
+
+</script>
+
+</body>
+</html>
+

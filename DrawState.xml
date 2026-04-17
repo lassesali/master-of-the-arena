@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2013-2014 Lasse Sali. This project is licensed under the MIT License. -->
+
+<Datatable xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+	<Condition ScreenState="MainScreen">
+		<AddGUI Name="GuiBottomTabs" />
+		<AddGUI Name="GuiTopButtons" />
+	</Condition>
+	<Condition ScreenState="ManagersOffice">
+		<AddGUI Name="GuiTopButtons" />
+		<AddGUI Name="GuiManagersOffice" />
+		<AddGUI Name="GuiBottomTabs" />
+	</Condition>
+	<Condition ScreenState="UserLogin">
+		<AddGUI Name="GuiTopButtons" />
+		<AddGUI Name="GuiUserLogin" />
+	</Condition>
+	<Condition ScreenState="UserWelcome">
+		<AddGUI Name="GuiTopButtons" />
+		<AddGUI Name="GuiUserWelcome" />
+		<AddGUI Name="GuiBottomTabs" />
+	</Condition>
+	<Condition ScreenState="InvalidBrowser">
+		<AddGUI Name="GuiInvalidBrowser" />
+	</Condition>
+	
+</Datatable>

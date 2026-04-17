@@ -1,0 +1,159 @@
+svg
+{
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  z-index: 1;
+  pointer-events: none;
+}
+
+
+#bgContractsManagersofficeText, #textUserLogin {
+  left: 3.28125%;
+  top: 5.5%;
+  font-family: Arial, Helvetica, "Nimbus Sans L", "Liberation Sans";
+  font-weight: bold;
+  font-size: 3.0em;
+  position: absolute;
+  text-align: left;
+  width: 30%; //25.78125%; //26.5625%;
+
+
+  //line-height: 150%;
+  white-space: nowrap;
+}
+
+#bgContractsAdditemstocontractText {
+  width: 33.62069%; /*inside a 580x320 block  580x267 */
+  left: 3.448275862%;
+  top: 88.01498127340824%;
+  font-family: Verdana, DejaVu Sans, Kalimati;
+  font-size: 1.6em;
+  font-weight: bold;
+  position: absolute;
+  text-align: left;
+  color: White;
+  white-space: nowrap;
+}
+
+#bgContractsSelectediteminformationText {
+  width: 30.17241%; /*inside a 580x320 block */
+  left: 63.965517%;
+  top: 53.4375%;
+  font-family: Arial, Helvetica, "Nimbus Sans L", "Liberation Sans";
+  font-size: 1.6em;
+  position: absolute;
+  text-align: left;
+  color: White;
+  white-space: nowrap;
+}
+
+#bgContractsTopleveldetailsText {
+  left: 71.3793%;
+  top: 5.625%;
+  font-family: Verdana, DejaVu Sans, Kalimati;
+  font-size: 1.4em;
+  font-weight: bold;
+  position: absolute;
+  text-align: left;
+  color: White;
+}
+
+
+#textWelcome {
+  top: 6.6176470588%;
+  left: 2.5%;
+  width: 93.75%;
+  font-family: Verdana, DejaVu Sans, Kalimati;
+  font-size: 2.0em;
+  font-weight: bold;
+  position: absolute;
+  text-align: center;
+  color: White;
+}
+
+#textPlayerName {
+  top: 25%;
+  left: 5.625%;
+  width: 93.75%;
+  font-family: Verdana, DejaVu Sans, Kalimati;
+  font-size: 1.8em;
+  font-weight: bold;
+  position: absolute;
+  color: White;
+}
+
+#textUserName {
+  top: 25.0%;
+}
+
+#textPassword {
+  top: 43.0%;
+}
+
+
+#textUserName, #textPassword {
+  left: 06.71875%;
+  width: 93.75%;
+  font-family: Verdana, DejaVu Sans, Kalimati;
+  font-size: 1.8em;
+  font-weight: bold;
+  position: absolute;
+  color: Black;
+}
+
+#textRegisterLabel {
+  font-size: 2.1em;
+  top: 23.29340%;
+  color: Black;
+  font-family: Arial, Helvetica, "Nimbus Sans L", "Liberation Sans";
+  font-weight: bold;
+}
+
+#textRegisterSubLabel {
+  font-size: 1.9em;
+  top: 27.44988%;
+  color: Pink;
+  font-family: Arial, Helvetica, "Nimbus Sans L", "Liberation Sans";
+  font-weight: normal;
+  font-style: italic;
+}
+
+#textRegisterLabel, #textRegisterSubLabel {
+  left: 64.21875%;
+  width: 31.25%;
+  position: absolute;
+  white-space: nowrap;
+}
+
+
+#textRegisterDescription {
+  left: 64.0625%;
+  top: 34.96333%;
+  width: 31.25%;
+  height: 26.89487%;
+  font-family: Verdana, DejaVu Sans, Kalimati;
+  font-size: 1.6em;
+  font-weight: bold;
+  position: absolute;
+  color: Black;
+  white-space: nowrap;  
+  line-height: 0.8em;
+}
+
+
+
+#bgContractsManagersofficeText, #textUserLogin, #bgContractsAdditemstocontractText, #bgContractsSelectediteminformationText, 
+#bgContractsTopleveldetailsText, #textWelcome, #textPlayerName, #textUserName, #textPassword, #textRegisterLabel, #textRegisterSubLabel, #textRegisterDescription {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+  text-shadow: 2px 2px 2px rgba(0,0,0, 0.25);
+
+}
+
+
