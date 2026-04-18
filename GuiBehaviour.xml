@@ -72,19 +72,37 @@
 			</Condition>
 				
 			<!-- Facebook-kirjautuminen, kun Login-nappia on painettu -->
+			<!--
 			<Condition HasId="buttonLoginWithFacebook">		
 				<Condition ScreenState="UserLogin">
 					<Action Object="GUIBehaviour" Do="fbLogin" />
 				</Condition>
 			</Condition>
-			
+			-->
+
+			<!-- 2026 -->
+			<!-- Regular-kirjautuminen, kun Login-nappia on painettu -->
+			<Condition HasId="buttonLogin">		
+				<Condition ScreenState="UserLogin">
+				        <Action Object="GUIBehaviour" Do="regularLogin" />
+    				</Condition>
+			</Condition>			
+
+			<!-- 2026 -->
+			<Condition HasId="buttonSignUp">		
+			    <Condition ScreenState="UserLogin">
+			        <Action Object="GUIBehaviour" Do="regularRegister" />
+			    </Condition>
+			</Condition>
+
 			<!-- Google-kirjautuminen, kun Login-nappia on painettu -->
-			<!-- <Condition HasId="buttonLoginWithGoogle">		 -->
-			<!--	<Condition ScreenState="UserLogin"> -->
-			<!--		<Action Object="GUIBehaviour" Do="googleLogin" /> -->
-			<!--	</Condition> -->
-			<!-- </Condition> -->
-		
+			<!--
+			<Condition HasId="buttonLoginWithGoogle">		 
+				<Condition ScreenState="UserLogin"> 
+					<Action Object="GUIBehaviour" Do="googleLogin" /> 
+				</Condition> 
+			</Condition> 
+			-->		
 		</Condition>	
 
 		<Condition HasClass="topButton">

@@ -1,8 +1,10 @@
 <?php session_start();
+
 /*
  * Copyright (c) 2013-2014 Lasse Sali.
  * This project is licensed under the MIT License.
  */
+
   $sessid = session_id();
 
 if ( isset( $_GET['session'] ) )
@@ -29,6 +31,7 @@ if ( isset( $_GET['session'] ) )
       //--------------------------------------------------------------------------
       // 2) Query database for data
       //--------------------------------------------------------------------------
+      echo "query";
       $result = mysql_query("SELECT * FROM $loginTableName WHERE login_sessionid='$session'");          //query
       $num = false;
       while($row = mysql_fetch_array($result)){

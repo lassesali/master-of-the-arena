@@ -1,9 +1,13 @@
-<?php include 'init.php';
+<?php 
+session_start(); 
 
 /*
  * Copyright (c) 2013-2014 Lasse Sali.
  * This project is licensed under the MIT License.
  */
+
+include 'init.php';
+
 ?>
 
 <!DOCTYPE html>
@@ -23,7 +27,6 @@
 	@import url('/backgrounds.css');
 	@import url('/inputfields.css');
 	@import url('/texts.css');
-	@import url('/toptabs.css');
 </style>
 
 <script src="js/jquery-1.9.1.min.js"></script>
@@ -128,7 +131,7 @@ guiB.setBrowser (ibrowser);
   function redirect(pointerBrowser)
   {
 
-    var location = 'http://proto.masterofarena.com/login.php?language=<?php echo $language; ?>';
+    var location = 'http://localhost:8080/login.php?language=<?php echo $language; ?>';
 
     if ( pointerBrowser.isFullScreen() == TRUE  )
     {
@@ -142,8 +145,8 @@ guiB.setBrowser (ibrowser);
 
   function redirecttogame()
   {
-    //alert( 'http://proto.masterofarena.com/index.php?logingoogle=1&session=<?php echo $sessid; ?>&name=<?php echo $user_firstname_google; ?>&email=<?php echo $user_email_google; ?>&language=<?php echo $language; ?>' );
-    //window.location = 'http://proto.masterofarena.com/index.php?logingoogle=1&session=<?php echo $sessid; ?>&name=<?php echo $user_firstname_google; ?>&email=<?php echo $user_email_google; ?>&language=<?php echo $language; ?>';
+    alert( 'http://localhost:8080/index.php?logingoogle=1&session=<?php echo $sessid; ?>&name=<?php echo $user_firstname_google; ?>&email=<?php echo $user_email_google; ?>&language=<?php echo $language; ?>' );
+    window.location = 'http://localhost:8080/index.php?logingoogle=1&session=<?php echo $sessid; ?>&name=<?php echo $user_firstname_google; ?>&email=<?php echo $user_email_google; ?>&language=<?php echo $language; ?>';
   }
 
 
@@ -253,6 +256,7 @@ function isset () {
   var NONE = 0;
   var FACEBOOK_ONLINE = 1;
   var GOOGLE_ONLINE = 2;
+  var REGULAR_ONLINE = 3; // 2026: Added REGULAR_ONLINE for non-social logins
   var OFFLINE = 0;
   var UNAUTH = -1; //UNAUTHORISED (Käyttäjän Facebook-tili on auki, mutta hän ei ole antanut oikeuksia pelille)
   var TRUE = 1;
@@ -471,10 +475,10 @@ $(window).resize(function() {
   }
   
 game = new Game();
+game.sessionid = <?PHP echo $session; ?>;
 game.setBrowser(ibrowser);
 game.setGUIBehavior(guiB);
 game.setMouse(mouse);  
-game.sessionid = <?PHP echo $session; ?>;
 game.googleloggedin=<?php if ( isset($_SESSION['googleloggedin']) ) { echo "'" . $_SESSION['googleloggedin'] . "'"; } else { echo "false"; }?>;
 fbLogin.setGamePointer(game);
 fbLogin.passURLFullscreenParameter(fullscreen);

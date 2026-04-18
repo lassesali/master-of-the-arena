@@ -3,13 +3,14 @@
  * Copyright (c) 2013-2014 Lasse Sali.
  * This project is licensed under the MIT License.
  */
+
   //--------------------------------------------------------------------------
   // Example php script for fetching data from mysql database
   //--------------------------------------------------------------------------
-  $host = "localhost";
-  $user = "user";
-  $pass = "pass";
+  $host = "db:3306";
+  $user = "admin";
+  $pass = "123456";
 
-  $databaseName = "database";
+  $databaseName = "moa_db";
   
 ?>

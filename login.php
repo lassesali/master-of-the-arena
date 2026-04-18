@@ -1,4 +1,5 @@
 <?php session_start(); 
+
 /*
  * Copyright (c) 2013-2014 Lasse Sali.
  * This project is licensed under the MIT License.
@@ -27,7 +28,7 @@ else
 
 require_once 'openid.php'; 
 
-$openid = new LightOpenID('http://proto.masterofarena.com');
+$openid = new LightOpenID('http://localhost:8080/');
 
  $openid->identity = 'https://www.google.com/accounts/o8/id';
   $openid->required = array(
@@ -39,7 +40,7 @@ $openid = new LightOpenID('http://proto.masterofarena.com');
 
 //$openid->returnUrl = 'http://proto.masterofarena.com/index.php?session=' . $sessid . '&language=' . $language;
 
-$urli = 'http://proto.masterofarena.com/index.php?session=' . $sessid . '&language=' . $language;
+$urli = 'http://localhost:8080/index.php?session=' . $sessid . '&language=' . $language;
 
 if ( isset($fullscreen) ) 
 {

@@ -1,6 +1,9 @@
-# Master of the Arena (2013-2014)
+This project is licensed under the MIT License - see the LICENSE file for details. 
+Copyright (c) 2014 Lasse Sali.
 
-Master of the Arena is a client-server prototype for a web-browser game, originally developed and optimized for the browser ecosystem of 2013 (specifically Firefox and Chrome). 
+# Master of the Arena (2014)
+
+Master of the Arena is a client-server prototype for a web-browser game, originally developed and optimized for the browser ecosystem of 2014 (specifically Firefox and Chrome). 
 
 This project serves as a time capsule of early HTML5 web game development, demonstrating a custom-built data communication flow and game loop without relying on modern frameworks. It showcases foundational skills in full-stack architecture, utilizing raw AJAX and XML to bridge the gap between a graphical frontend and a database-driven backend.
 
@@ -28,7 +31,7 @@ Rather than relying on pre-built frameworks, the core of this prototype is a bes
 * **Raw Full-Stack Auth & Session Management:**
   The frontend state is tightly coupled with a PHP/MySQL backend. The engine handles complex handshake logic to manage sessions, integrating directly with legacy Facebook SDK and Google OpenID (`LightOpenID`) OAuth flows. Raw PHP endpoints query the database and return user data via JSON to dynamically inject profile pictures and names into the DOM upon successful authentication.
   
-## 🛠️ Tech Stack (Circa 2013)
+## 🛠️ Tech Stack (Circa 2014)
 
 **Client-Side (Frontend):**
 * HTML5
@@ -36,18 +39,13 @@ Rather than relying on pre-built frameworks, the core of this prototype is a bes
 * XML
 * Raphaël 2.1.0 (JavaScript Vector Library)
 * jQuery v1.9.1 (DOM Manipulation & AJAX)
+* FastClick (Optimized touch responsiveness)
 
 **Server-Side (Backend):**
-* PHP 5.4
+* PHP
 * MySQL
 
-## Application Screenshots ##
-
-![](https://github.com/lassesali/master-of-the-arena/blob/website/assets/screenshot_login.jpg)
-![](https://github.com/lassesali/master-of-the-arena/blob/website/assets/screenshot_welcome.jpg)
-![](https://github.com/lassesali/master-of-the-arena/blob/website/assets/screenshot_managersoffice.jpg)
-
-## 🛠️ Feature Prototypes (2013-2014)
+## 🛠️ Feature Prototypes (2014)
 
 **🕹️ Play the live prototypes here:** [https://lassesali.github.io/master-of-the-arena/](https://lassesali.github.io/master-of-the-arena/)
 
@@ -59,12 +57,6 @@ Ultimately, these specific prototypes **were never integrated into the main proj
 
 * **The Combat Engine (`arena.html`):** A 2D simulation prototype for the game's core "gladiator" combat/racing loop. It was built to test custom playback controls, time-stepping, and the live text-commentary feed.
 * **Character Customization (`cartoon.html` & `cartoonpixi08.html`):** Early builds of the character creator. These tested the UI and layering systems needed to let players customize a gladiator's race, hair, facial symmetry, and eye color.
-* **Asset Coloring (`blendmodes_pixi.js.html`):** Technical tests to figure out how to dynamically colorize those character assets. They tested various hardware and software-based blend modes (like Multiply, Screen, and Lighten) to seamlessly merge textures and color hexes.
+* **Asset Coloring (`blendmodes.html` & `blendmodes_pixi.js.html`):** Technical tests to figure out how to dynamically colorize those character assets. They tested various hardware and software-based blend modes (like Multiply, Screen, and Lighten) to seamlessly merge textures and color hexes.
 * **The Overworld (`pixihexagon12.html`):** The foundation for a planned exploration and navigation system. It tested the complex math required for a staggered hex-grid, biome generation via XML data, minimap camera panning, and path-drafting.
 * **Time & Performance (`fps_timeline.html`):** A crucial technical testbed used to figure out how to decouple the underlying game logic (simulation speed) from the visual rendering loop (FPS). This was to ensure arena simulations would run consistently regardless of a player's browser performance.
-
-## License ##
-
-Copyright (c) 2013-2014 Lasse Sali
-
-This project is licensed under the [MIT License](LICENSE) - see the LICENSE file for details. 

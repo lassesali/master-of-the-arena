@@ -1,6 +1,5 @@
 <html>
 <!-- Copyright (c) 2013-2014 Lasse Sali. This project is licensed under the MIT License. -->
-
 	<background>
 	  <id>backgroundLoginContainer</id>
 
@@ -55,16 +54,17 @@
 	</background>
 
 	<!-- LOGIN WITH FACEBOOK -->
-	<button>	
-		<id>buttonLoginWithFacebook</id>
-		<type>normal</type>
-	</button>
+	 <!-- <button> 	-->
+	<!--	<id>buttonLoginWithFacebook</id> -->
+    <!--		<type>normal</type> -->
+	 <!-- </button> -->
+	 
 
 	<!-- LOGIN WITH GOOGLE -->
-	 <button>	
-		<id>buttonLoginWithGoogle</id> 
-		<type>normal</type> 
-	 </button> 
+	<!-- <button>	-->
+	<!--	<id>buttonLoginWithGoogle</id> -->
+	<!--	<type>normal</type> -->
+	<!-- </button> -->
 		
 	<!-- LOGIN -->
 	<button>	

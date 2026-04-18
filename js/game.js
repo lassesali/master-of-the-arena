@@ -194,6 +194,7 @@ this.checkForGoogleLogin = function()
 				var num = data; 
 				if (num != 0)
 				{
+				  console.log("attempting googleinit()");
 				  googleinit(data);            
 				}
 				else
@@ -258,14 +259,14 @@ this.checkForGoogleAccount = function(name,email,session)
 		var num = data;              //get id
 		if (num != false)
 		{
-		  // console.log("The Google account exists in the database.");
+		   console.log("The Google account exists in the database (name:" + name + ")" );
 
 
 		  redirecttogame();
 		} 
 		else
 		{
-		  // console.log("The Google account did not exist in the database and was merged within.");
+		   console.log("The Google account did not exist in the database and was merged within.");
 
 
 		  redirecttogame();
@@ -305,7 +306,7 @@ this.init = function (state,user,access,email,fullscreen) {
 	accessToken=access; //Facebook accesstoken
 	fbMail=email;
 
-    // Luodaan ilmentym�t olioista vain ensimm�isell� Init()-funktion suorituskerralla
+    // Luodaan ilmentym t olioista vain ensimm isell  Init()-funktion suorituskerralla
 	if ( isset(mousePointer,true) == false ) 
 	{	    
 		browserPointer.init(gamePointer,guiPointer); //voidaan alustaa Browser-olio, kun Game-olio ja GUIBehavior-olio on luotu
@@ -377,9 +378,9 @@ this.init = function (state,user,access,email,fullscreen) {
 	}
 
     /*    
-        if ( browserPointer.isFullScreen() == FALSE && fullscreen == 1 ) //URL-parametrina on v�litetty fullscreen=1, joka forcettaa menem��n fullscreen-tilaan
+        if ( browserPointer.isFullScreen() == FALSE && fullscreen == 1 ) //URL-parametrina on v litetty fullscreen=1, joka forcettaa menem  n fullscreen-tilaan
         {
-            console.log("URL-parametrina on v�litetty fullscreen=1, joka forcettaa menem��n fullscreen-tilaan");
+            console.log("URL-parametrina on v litetty fullscreen=1, joka forcettaa menem  n fullscreen-tilaan");
             browserPointer.toggleFullScreen();
             
         }
@@ -408,7 +409,7 @@ this.setMouse = function (item) {
 }
 
 
-/* Ajetaanko ohjelmaa apps.facebook.com -osoitteesta k�sin */
+/* Ajetaanko ohjelmaa apps.facebook.com -osoitteesta k sin */
 	this.isRunFromFacebook = function () {
 		if ( ( window.innerWidth == $('div#wrapper').width() ) || ( window.innerWidth == $('div#wrapper').width()*2 ) )
 		{
@@ -440,12 +441,12 @@ this.numberOfGUI = function() {
 	return GUIStack.length;
 }
 
-//palautetaan nykyinen n�kym�
+//palautetaan nykyinen n kym 
 this.getScreenState = function() {
 	return screenState;
 }
 
-//asetetaan uusi n�kym�
+//asetetaan uusi n kym 
 this.setScreenState = function(state,redraw) {
 	if (gamePointer.getGameState != LOADING_GUI)
 	{
@@ -492,13 +493,13 @@ this.checkLoggedin = function() {
 	var screen=gamePointer.getScreenState();
 	var logged=gamePointer.getLoggedin();
 
-	if( ((screen == GUI_USER_LOGIN) || (screen == NONE)) && ( (logged == FACEBOOK_ONLINE) || (logged == GOOGLE_ONLINE) ) )
+	if( ((screen == GUI_USER_LOGIN) || (screen == NONE)) && ( (logged == FACEBOOK_ONLINE) || (logged == GOOGLE_ONLINE) || (logged == REGULAR_ONLINE) ) )
 	{
-		// console.log(screen +" "+ logged+" "+getAika());
+		console.log(screen +" "+ logged+" "+getAika());
 
                 if ( supports('boxShadow') && supportsBackgroundSize() ) { 
                   
-  		  // console.log("setscreenstate to USER_WELCOME. this.getLoggedin()="+logged);
+  		  console.log("setscreenstate to USER_WELCOME. this.getLoggedin()="+logged);
  		  gamePointer.setScreenState(USER_WELCOME, true);
 		  if ( is_chrome || is_firefox || (is_safari && gamePointer.isRunFromFacebook()==false) )
 		  {
@@ -510,7 +511,7 @@ this.checkLoggedin = function() {
                 }
                 else
                 {
- 		  // console.log("setscreenstate to INVALID_BROWSER "+ getAika());
+ 		  console.log("setscreenstate to INVALID_BROWSER "+ getAika());
 		  gamePointer.setScreenState(INVALID_BROWSER, false);
 
                 }
@@ -519,10 +520,10 @@ this.checkLoggedin = function() {
 	{
 
                 if ( supports('boxShadow') && supportsBackgroundSize() ) { 
- 		  // console.log("setscreenstate to USER_LOGIN "+ getAika());
+ 		  console.log("setscreenstate to USER_LOGIN "+ getAika());
 		  gamePointer.setScreenState(USER_LOGIN, false);
                 } else {
- 		  // console.log("setscreenstate to INVALID_BROWSER "+ getAika());
+ 		  console.log("setscreenstate to INVALID_BROWSER "+ getAika());
 		  gamePointer.setScreenState(INVALID_BROWSER,false);
 
                 }
@@ -562,7 +563,7 @@ this.getDescription = function(param)
             
 			temp = tags[i].firstChild.nodeValue;
 
-			// chrome ja opera ei osaa n�ytt�� unicode-merkkej�
+			// chrome ja opera ei osaa n ytt   unicode-merkkej 
 			if (is_chrome || is_opera)
 			{
 				var temp = temp.replace(/./g,function(char){
@@ -658,9 +659,9 @@ this.initState = function(state,fullscreen) {
 		gamePointer.checkLoggedin();
 	}
 
-        if ( browserPointer.isFullScreen() == FALSE && fullscreen == 1 ) //URL-parametrina on v�litetty fullscreen=1, joka forcettaa menem��n fullscreen-tilaan
+        if ( browserPointer.isFullScreen() == FALSE && fullscreen == 1 ) //URL-parametrina on v litetty fullscreen=1, joka forcettaa menem  n fullscreen-tilaan
         {
-            console.log("URL-parametrina on v�litetty fullscreen=1, joka forcettaa menem��n fullscreen-tilaan");
+            console.log("URL-parametrina on v litetty fullscreen=1, joka forcettaa menem  n fullscreen-tilaan");
 
             setTimeout($.proxy(  browserPointer.toggleFullScreen() , browserPointer), 3000);
             
@@ -759,7 +760,7 @@ this.checkIfReadyToDraw = function()
 
 
 this.clearScreen = function() {
-	var test = $('div#wrapper2').children().remove(); //Tuhotaan wrapperin sis�lt�
+	var test = $('div#wrapper2').children().remove(); //Tuhotaan wrapperin sis lt 
 
 	gamePointer.clearVectors();
 }
@@ -882,10 +883,20 @@ this.draw = function(teksti) {
 					newSpan.appendChild(k);
 					jValue = playerFirstName;
 				}
+				// --- 2026 ---
+				else if ( gamePointer.getLoggedin() == REGULAR_ONLINE ) 
+				{
+					var k=document.createElement("img");
+					k.setAttribute("src", 'gui/default96x96.svg');
+					k.setAttribute("style", 'display: block; width: 15%; height: 20%;');	
+					newSpan.appendChild(k);				
+					jValue = playerFirstName;
+				}
+				// ----------------------
 			}
 
 			 
-			if ( jValue.length == 1 || gamePointer.getLoggedin() == GOOGLE_ONLINE)
+			if ( jValue.length == 1 || gamePointer.getLoggedin() == GOOGLE_ONLINE || gamePointer.getLoggedin() == REGULAR_ONLINE )
 			{
 				newSpan.appendChild(document.createTextNode(jValue));
 			}

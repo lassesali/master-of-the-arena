@@ -3,7 +3,7 @@
  * This project is licensed under the MIT License.
 */
 
-/* Graafisen k�ytt�liittym�n Tapahtumank�sittelij�-olio */
+/* Graafisen k ytt liittym n Tapahtumank sittelij -olio */
 function GUIBehavior() {
 
 var pointer = this;
@@ -40,7 +40,82 @@ this.googleLogin = function()
 {
 	googleLogin(pointer.browserPointer);
 }
-			
+
+/* 2026 */	
+this.regularLogin = function()
+{
+	// NOTE: You must ensure the IDs below match the IDs defined in your GUI XML files
+	// for the email and password input elements.
+	var email = $('#inputUserName input').val(); 
+	var password = $('#inputPassword input').val();
+	var sessionid = game.sessionid; // Using global 'game' object
+
+	if (email == "" || password == "") {
+		alert("Please enter both email and password.");
+		return;
+	}
+
+	$.ajax({                                     
+		type: 'POST',
+		url: 'regular_login.php',                          
+		data: {
+			email: email,
+			password: password,
+			session: sessionid
+		},                        
+		dataType: 'json',                     
+		success: function(data)          
+		{
+			// --- CHANGED: Check data.status and save data.firstname ---
+			if (data.status == 1) {
+				console.log("Regular login successful!");
+				playerFirstName = data.firstname; // Save the name globally!
+				game.initState(REGULAR_ONLINE, pointer.browserPointer.isFullScreen()); // Using global 'game' object
+			} else {
+				alert("Login failed. Check your email and password.");
+			}
+		} 
+	});
+}
+
+/* 2026 */
+this.regularRegister = function()
+{
+	// Grab the text from the actual input fields, not the text labels
+	var username = $('#inputUserName input').val(); 
+	var password = $('#inputPassword input').val();
+
+	if (username == "" || password == "") {
+		alert("Please enter both a username/email and a password to register.");
+		return;
+	}
+
+	$.ajax({                                     
+		type: 'POST',
+		url: 'register.php',    // This points to the registration script we created earlier                      
+		data: {
+			email: username,
+			firstname: username, // Since your UI only has one username field, we'll use it for both email and firstname
+			password: password
+		},                        
+		dataType: 'json',                     
+		success: function(response)          
+		{
+			if (response.status === "success") {
+				alert("Registration successful! Logging you in...");
+				// Auto-login the user immediately after successful registration
+				pointer.regularLogin();
+			} else {
+				alert("Registration failed: " + response.message);
+			}
+		},
+		error: function() 
+		{
+			alert("An error occurred communicating with the server. u("+username+") p("+password+")"  );
+		}
+	});
+}
+		
 this.getScreenState = function(ScreenState)
 {
 	var State;
@@ -64,7 +139,7 @@ this.getScreenState = function(ScreenState)
 	return State;
 }
 
-/* P�ivitet��n taustakuva */
+/* P ivitet  n taustakuva */
 this.updateBackground = function(gameObj)
 {
 	var state = gameObj.getScreenState();
@@ -85,11 +160,11 @@ this.updateBackground = function(gameObj)
 }
 
 
-/* Hiirenosoitin menee jonkin objektin p��lle */
+/* Hiirenosoitin menee jonkin objektin p  lle */
 this.mouseenter = function(obj,browserObj,mouseObj,gameObj) 
 {
 
-   	// Hiirenosoitin menee tabin p��lle
+   	// Hiirenosoitin menee tabin p  lle
 	if ( $(obj).hasClass("bottomtab") )
 	{
 		browserObj.playAudio("FXbottomtabswap");
@@ -162,7 +237,7 @@ this.mouseenter = function(obj,browserObj,mouseObj,gameObj)
 } //end of mouseenter()
 
 
-/* Hiirenosoitin l�htee pois jonkin objektin p��lt� */
+/* Hiirenosoitin l htee pois jonkin objektin p  lt  */
 this.mouseleave = function(obj,browserObj,mouseObj,gameObj) 
 {
     
@@ -261,7 +336,7 @@ this.mouseleave = function(obj,browserObj,mouseObj,gameObj)
 } //end of mouseleave()
 
 
-/* Hiiren nappi nousee yl�s jonkin objektin p��ll� */
+/* Hiiren nappi nousee yl s jonkin objektin p  ll  */
 this.mouseup = function(obj,browserObj,mouseObj,gameObj) 
 {
 	var test = mouseObj.isDuplicateMouseEvent();
@@ -453,7 +528,7 @@ this.mouseup = function(obj,browserObj,mouseObj,gameObj)
 	}
 }
 
-/* Hiiren nappi laskeutuu alas jonkin objektin p��ll� */
+/* Hiiren nappi laskeutuu alas jonkin objektin p  ll  */
 this.mousedown = function(obj,browserObj,mouseObj,gameObj) 
 {
 	if ( $(obj).hasClass("button") && !$(obj).hasClass("disabled") )
