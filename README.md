@@ -1,6 +1,3 @@
-This project is licensed under the MIT License - see the LICENSE file for details. 
-Copyright (c) 2013-2014 Lasse Sali.
-
 # Master of the Arena (2013-2014)
 
 Master of the Arena is a client-server prototype for a web-browser game, originally developed and optimized for the browser ecosystem of 2013 (specifically Firefox and Chrome). 
@@ -44,6 +41,12 @@ Rather than relying on pre-built frameworks, the core of this prototype is a bes
 * PHP 5.4
 * MySQL
 
+## Application Screenshots ##
+
+![](https://github.com/lassesali/master-of-the-arena/blob/website/assets/screenshot_login.jpg)
+![](https://github.com/lassesali/master-of-the-arena/blob/website/assets/screenshot_welcome.jpg)
+![](https://github.com/lassesali/master-of-the-arena/blob/website/assets/screenshot_managersoffice.jpg)
+
 ## 🛠️ Feature Prototypes (2013-2014)
 
 **🕹️ Play the live prototypes here:** [https://lassesali.github.io/master-of-the-arena/](https://lassesali.github.io/master-of-the-arena/)
@@ -59,3 +62,9 @@ Ultimately, these specific prototypes **were never integrated into the main proj
 * **Asset Coloring (`blendmodes_pixi.js.html`):** Technical tests to figure out how to dynamically colorize those character assets. They tested various hardware and software-based blend modes (like Multiply, Screen, and Lighten) to seamlessly merge textures and color hexes.
 * **The Overworld (`pixihexagon12.html`):** The foundation for a planned exploration and navigation system. It tested the complex math required for a staggered hex-grid, biome generation via XML data, minimap camera panning, and path-drafting.
 * **Time & Performance (`fps_timeline.html`):** A crucial technical testbed used to figure out how to decouple the underlying game logic (simulation speed) from the visual rendering loop (FPS). This was to ensure arena simulations would run consistently regardless of a player's browser performance.
+
+## License ##
+
+Copyright (c) 2013-2014 Lasse Sali
+
+This project is licensed under the [MIT License](LICENSE) - see the LICENSE file for details. 
