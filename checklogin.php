@@ -15,7 +15,20 @@ if (isset($_SESSION['user_email']) && $_SESSION['user_email'] !== "") {
     $tableName = "am_users";
 
     // 3. Haetaan käyttäjän tiedot Prepared Statementilla
-    $stmt = mysqli_prepare($con, "SELECT ID, user_firstname, user_email FROM $tableName WHERE user_email = ?");
+    try {
+      // 1. Prepare the query to check if the email is already in use
+      $stmt = mysqli_prepare($con, "SELECT ID, user_firstname, user_email FROM $tableName WHERE user_email = ?");
+
+    } catch (mysqli_sql_exception $e) {
+      // FAILSAFE: Check if preparation failed (e.g., table doesn't exist)
+      echo json_encode([
+        "status" => "error", 
+        "message" => "Database error (Check): " . mysqli_error($con) 
+      ]);
+      mysqli_close($con);
+      exit;
+    }
+
     mysqli_stmt_bind_param($stmt, "s", $email);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);

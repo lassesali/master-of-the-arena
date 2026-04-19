@@ -79,7 +79,7 @@ this.regularLogin = function()
 				playerFirstName = data.firstname; // Save the name globally!
 				game.initState(REGULAR_ONLINE, pointer.browserPointer.isFullScreen()); // Using global 'game' object
 			} else {
-				pointer.notify("Login failed. Check your email and password.");
+				pointer.notify("Login failed: <br>" + data.message);
 			}
 		} 
 	});
@@ -109,11 +109,11 @@ this.regularRegister = function()
 		success: function(response)          
 		{
 			if (response.status === "success") {
-				pointer.notify("Registration successful! Logging you in...");
+				pointer.notify("Registration successful! Logging you in...<br>" + response.message);
 				// Auto-login the user immediately after successful registration
 				pointer.regularLogin();
 			} else {
-				pointer.notify("Registration failed: " + response.message);
+				pointer.notify("Registration failed: <br>" + response.message);
 			}
 		},
 		error: function() 
