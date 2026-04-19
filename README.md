@@ -29,33 +29,34 @@ Since the application now relies on a modernized database structure, follow thes
 Ensure your PHP 8 and MySQL containers are running:
 ```bash
 docker-compose up -d
+```
 
 ### 2. Initialize the Database
 Because Docker initializes with an empty MySQL volume, you must create the necessary tables for the new native login system.
 
-Open your browser and navigate to: http://localhost:8080/seed.php
+Open your browser and navigate to: `http://localhost:8080/seed.php`
 
 You should see success messages confirming that the am_users and am_login tables have been created.
 
 ### 3. Test the Game
-Navigate to http://localhost:8080/
+Navigate to `http://localhost:8080/`
 
 The game should initialize the new Native Login GUI.
 
-Register a new user (data is sent via POST to register.php).
+Register a new user (data is sent via POST to `register.php`).
 
 Ensure audio plays after your first click!
 
 ## 📂 Key Modified Files
-index.php - Cleaned wrapper, removed FB-root and legacy PHP session echoes.
+`index.php` - Cleaned wrapper, removed FB-root and legacy PHP session echoes.
 
-init.php - Stripped of old OpenID logic.
+`init.php` - Stripped of old OpenID logic.
 
-register.php / player.php / checklogin.php - Rewritten for PHP 8 / MySQLi.
+`register.php` / `player.php` / `checklogin.php` - Rewritten for PHP 8 / MySQLi.
 
-js/game.js - State machine updates and text-scaling infinite loop fix.
+`js/game.js` - State machine updates and text-scaling infinite loop fix.
 
-seed.php - Utility script for database seeding.
+`seed.php` - Utility script for database seeding.
 
 ## 🕰️ Historical Note
 The original 2013-2014 codebase (with the Facebook Canvas/Google login implementations) is preserved in the 2014 branch for historical reference.
