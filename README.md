@@ -1,62 +1,67 @@
-This project is licensed under the MIT License - see the LICENSE file for details. 
-Copyright (c) 2014 Lasse Sali.
+# 🚀 Master of Arena (v0.3.0 2026 Modernization Upgrade)
+**Branch:** `feature/php8-upgrade` (Built on `feature/native-login`)
 
-# Master of the Arena (2014)
+## 📖 Overview
+This branch represents a major architectural leap for the project, upgrading the original 2013-2014 codebase to modern **PHP 8** standards. It completely decouples the game from legacy third-party social integrations (Facebook/Google OpenID) and replaces them with a secure, native Email & Password authentication system. 
 
-Master of the Arena is a client-server prototype for a web-browser game, originally developed and optimized for the browser ecosystem of 2014 (specifically Firefox and Chrome). 
+Additionally, this upgrade patches several legacy HTML5 Canvas and JavaScript bugs to ensure compatibility with modern browser engines (Chromium/Gecko/WebKit).
 
-This project serves as a time capsule of early HTML5 web game development, demonstrating a custom-built data communication flow and game loop without relying on modern frameworks. It showcases foundational skills in full-stack architecture, utilizing raw AJAX and XML to bridge the gap between a graphical frontend and a database-driven backend.
+## ✨ Key Technical Upgrades
 
-## 🧠 Under the Hood: The Custom Game Engine
+### 🔒 Backend & Security (PHP 8)
+* **Removed Deprecated Extensions:** Completely removed all legacy `mysql_*` functions (e.g., `mysql_query`, `mysql_real_escape_string`) which are no longer supported in PHP 8.
+* **Prepared Statements:** Migrated all database interactions to `mysqli` with parameterized/prepared statements to guarantee 100% protection against SQL Injection.
+* **Modern Cryptography:** Replaced the manual `mt_rand()` and `crypt()` hashing algorithm with PHP's native, highly secure `password_hash()` and `password_verify()`.
+* **Graceful Error Handling:** Handled PHP 8.1+ `mysqli` Strict Mode exceptions to prevent Fatal Errors when database tables are missing, returning clean JSON responses instead.
+* **Decoupled Social Logins:** Removed obsolete OpenID and Facebook SDK backend validations in favor of standard, secure session cookies (`checklogin.php`).
 
-Rather than relying on pre-built frameworks, the core of this prototype is a bespoke, data-driven GUI engine and game loop built entirely from scratch. It was designed to separate logic, state, and presentation into a highly modular architecture.
+### 🎮 Frontend & Engine (JavaScript)
+* **Dynamic UI Notifications:** Implemented clear, on-screen notification messages on the login screen to provide immediate user feedback following registration and login attempts.
+* **Infinite Loop Fix:** Rewrote the UI text-scaling engine in `this.draw()`. Replaced a dangerous `em`-based mathematical calculation with a safe, pixel-based failsafe loop to prevent the browser's main thread from freezing.
+* **Modern Autoplay Policy Compliance:** Modern browsers block audio without user interaction. Updated the audio engine (`musicPlayer` and `this.playAudio()`) to catch `NotAllowedError` promises silently and trigger background music only upon the user's first physical click on the document.
+* **UI State Machine Cleanup:** Removed `FACEBOOK_ONLINE` and `GOOGLE_ONLINE` states, consolidating the engine into a clean `REGULAR_ONLINE` vs `OFFLINE` state flow.
 
-### Key Architectural Features:
+## 🛠️ Local Development & Setup
 
-* **Finite State Machine (FSM):**
-  The application flow is strictly controlled by a custom FSM. State transitions (like moving from `USER_LOGIN` to `MANAGERS_OFFICE`) trigger a custom rendering loop that clears the DOM and sequentially rebuilds the UI layers required for the new state (`redrawScreenState()`).
+Since the application now relies on a modernized database structure, follow these steps to run the game locally using your Docker environment:
 
-* **Context-Aware UI Routing:**
-  Before modern routers existed, this engine utilized an XML manifest (`GUIFiles.xml`) to act as a custom router. It features conditional logic to dynamically serve completely different UI layouts based on the environment (e.g., seamlessly swapping between a standard login screen and a Facebook Canvas-optimized screen at runtime).
+### 1. Start the Docker Containers
+Ensure your PHP 8 and MySQL containers are running:
+```bash
+docker-compose up -d
 
-* **Declarative, Data-Driven Layouts (XML over HTML):**
-  Instead of hardcoding the DOM, the application structure is defined declaratively in XML configuration files. The core engine (`game.js`) fetches these files via AJAX (powered by jQuery), parses the tags, and dynamically generates the HTML elements (`document.createElement`) and input fields on the fly.
+### 2. Initialize the Database
+Because Docker initializes with an empty MySQL volume, you must create the necessary tables for the new native login system.
 
-* **XML-Driven Event Handling:**
-  Standard JavaScript event listeners were bypassed in favor of a custom, configuration-based event system. Raw mouse interactions are captured and passed to a central behavior manager (`GuiBehavior.js`). This manager reads logic rules from `GuiBehaviour.xml` to dynamically trigger JavaScript functions based on element IDs, classes, and the current FSM state.
+Open your browser and navigate to: http://localhost:8080/seed.php
 
-* **Dynamic Localization & Legacy Responsive Scaling & Vector Text Scaling:**
-  A custom localization engine parses language files (`English.xml`, `Finnish.xml`) and injects the correct strings into the UI at runtime. Because this was built before Flexbox or CSS Grid were viable, the UI relies on highly precise, percentage-based CSS positioning calculated against parent aspect ratios. To ensure the localized text scaled perfectly across resolutions, the engine parses `<vector>` coordinates from the XML and utilizes `Raphaël.js` to draw transformable SVG vector text over the DOM elements.
+You should see success messages confirming that the am_users and am_login tables have been created.
 
-* **Raw Full-Stack Auth & Session Management:**
-  The frontend state is tightly coupled with a PHP/MySQL backend. The engine handles complex handshake logic to manage sessions, integrating directly with legacy Facebook SDK and Google OpenID (`LightOpenID`) OAuth flows. Raw PHP endpoints query the database and return user data via JSON to dynamically inject profile pictures and names into the DOM upon successful authentication.
-  
-## 🛠️ Tech Stack (Circa 2014)
+### 3. Test the Game
+Navigate to http://localhost:8080/
 
-**Client-Side (Frontend):**
-* HTML5
-* Vanilla JavaScript 
-* XML
-* Raphaël 2.1.0 (JavaScript Vector Library)
-* jQuery v1.9.1 (DOM Manipulation & AJAX)
-* FastClick (Optimized touch responsiveness)
+The game should initialize the new Native Login GUI.
 
-**Server-Side (Backend):**
-* PHP
-* MySQL
+Register a new user (data is sent via POST to register.php).
 
-## 🛠️ Feature Prototypes (2014)
+Ensure audio plays after your first click!
 
-**🕹️ Play the live prototypes here:** [https://lassesali.github.io/master-of-the-arena/](https://lassesali.github.io/master-of-the-arena/)
+## 📂 Key Modified Files
+index.php - Cleaned wrapper, removed FB-root and legacy PHP session echoes.
 
-This repository also includes a collection of standalone HTML/JS prototypes developed in 2014. These were built as targeted technical testbeds to explore and experiment with core mechanics for **Master of the Arena**. 
+init.php - Stripped of old OpenID logic.
 
-Ultimately, these specific prototypes **were never integrated into the main project**. Instead, they remain here as an archive of the game's early Research & Development phase. They serve as a time capsule of the project's technical evolution—most notably documenting the transition from standard HTML5 2D Canvas rendering (using `Pixastic.js`) to hardware-accelerated WebGL rendering (using `Pixi.js`).
+register.php / player.php / checklogin.php - Rewritten for PHP 8 / MySQLi.
 
-### What These Prototypes Explored:
+js/game.js - State machine updates and text-scaling infinite loop fix.
 
-* **The Combat Engine (`arena.html`):** A 2D simulation prototype for the game's core "gladiator" combat/racing loop. It was built to test custom playback controls, time-stepping, and the live text-commentary feed.
-* **Character Customization (`cartoon.html` & `cartoonpixi08.html`):** Early builds of the character creator. These tested the UI and layering systems needed to let players customize a gladiator's race, hair, facial symmetry, and eye color.
-* **Asset Coloring (`blendmodes.html` & `blendmodes_pixi.js.html`):** Technical tests to figure out how to dynamically colorize those character assets. They tested various hardware and software-based blend modes (like Multiply, Screen, and Lighten) to seamlessly merge textures and color hexes.
-* **The Overworld (`pixihexagon12.html`):** The foundation for a planned exploration and navigation system. It tested the complex math required for a staggered hex-grid, biome generation via XML data, minimap camera panning, and path-drafting.
-* **Time & Performance (`fps_timeline.html`):** A crucial technical testbed used to figure out how to decouple the underlying game logic (simulation speed) from the visual rendering loop (FPS). This was to ensure arena simulations would run consistently regardless of a player's browser performance.
+seed.php - Utility script for database seeding.
+
+## 🕰️ Historical Note
+The original 2013-2014 codebase (with the Facebook Canvas/Google login implementations) is preserved in the 2014 branch for historical reference.
+
+## License ##
+
+Copyright (c) 2013-2026 Lasse Sali
+
+This project is licensed under the [MIT License](LICENSE) - see the LICENSE file for details.

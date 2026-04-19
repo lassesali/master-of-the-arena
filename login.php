@@ -26,6 +26,7 @@ else
   print "Error.";
 }
 
+/*
 require_once 'openid.php'; 
 
 $openid = new LightOpenID('http://localhost:8080/');
@@ -36,10 +37,10 @@ $openid = new LightOpenID('http://localhost:8080/');
     'namePerson/last',
     'contact/email',
   );
-
+*/
 
 //$openid->returnUrl = 'http://proto.masterofarena.com/index.php?session=' . $sessid . '&language=' . $language;
-
+/*
 $urli = 'http://localhost:8080/index.php?session=' . $sessid . '&language=' . $language;
 
 if ( isset($fullscreen) ) 
@@ -52,6 +53,6 @@ $openid->returnUrl = $urli;
 
 
 header('Location: ' . $openid->authUrl());
-
+*/
 
 ?>

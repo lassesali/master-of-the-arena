@@ -1,79 +1,41 @@
 <?php session_start();
-
 /*
- * Copyright (c) 2013-2014 Lasse Sali.
- * This project is licensed under the MIT License.
+ * checkforgoogleuser.php (PHP 8 / Modernisoitu versio)
+ * TÄMÄ TIEDOSTO ON NYT KORVATTU UUDELLA checklogin.php -LOGIIKALLA.
+ * * Jos game.js kutsuu vielä tätä tiedostoa, se palauttaa samat tiedot
+ * kuin checklogin.php, jotta peli ei mene rikki.
  */
+header('Content-Type: application/json');
 
-  $sessid = session_id();
-  
-if ( isset( $_GET['session'] ) )
-{
-  $session = strip_tags( $_GET['session'] );
+include 'DBconnect.php'; // Varmista, että tässä on mysqli_connect
+
+// Tarkistetaan onko sessio aktiivinen (luotamme nyt PHP:n sessioihin, ei $_GET-parametreihin)
+if (isset($_SESSION['user_email']) && $_SESSION['user_email'] !== "") {
+    
+    $email = $_SESSION['user_email'];
+    $tableName = "am_users";
+
+    // Käytetään Prepared Statementia turvallisuuden takia
+    $stmt = mysqli_prepare($con, "SELECT ID, user_firstname FROM $tableName WHERE user_email = ?");
+    mysqli_stmt_bind_param($stmt, "s", $email);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    
+    if ($row = mysqli_fetch_assoc($result)) {
+        // Palautetaan ykkönen (1) niinkuin alkuperäinen koodi teki (json_encode($num))
+        // mutta annetaan myös nimi mukana varmuuden vuoksi.
+        echo json_encode([
+            "status" => 1,
+            "firstname" => $row['user_firstname']
+        ]);
+    } else {
+        echo json_encode(["status" => 0, "message" => "User not found"]);
+    }
+    mysqli_stmt_close($stmt);
+} else {
+    // Ei voimassa olevaa sessiota
+    echo json_encode(["status" => 0]);
 }
 
-if ( isset( $_GET['email'] ) )
-{
-  $email = strip_tags( $_GET['email'] );
-
-}
-
-if ( isset( $_GET['firstname'] ) )
-{
-  $firstname = strip_tags( $_GET['firstname'] );
-}  
-
-  if ( isset($session) && isset($email) && isset($firstname) )
-  {
-    $session = strip_tags($session);
-    $email = strip_tags($email);
-    $firstname = strip_tags($firstname);
-
-    $first = $firstname;
-    $mail = $email;
-
-    if ( $mail != "" )
-    {
-
-      //--------------------------------------------------------------------------
-      // 1) Connect to mysql database
-      //--------------------------------------------------------------------------
-      include 'DBconnect.php';
-      $tableName = "am_users";
-      $loginTableName = "am_login";
-
-      //--------------------------------------------------------------------------
-      // 2) Query database for data
-      //--------------------------------------------------------------------------
-      $result = mysql_query("SELECT * FROM $tableName WHERE user_email='$mail'");          //query
-      $num = mysql_fetch_row($result);                          //fetch result    
-      if ($num != false)
-      {
-        $num = 1;
-      } 
-      else
-      {
-        // Lis�t��n k�ytt�j�tietokantaan pelaajan Google-tunnus, koska se puuttui sielt�
-        $result = mysql_query("INSERT INTO $tableName (user_email,user_firstname) VALUES ('$mail','$firstname')");          //query
-
-      }
-
-      //Lis�t��n Login-tietokantaan kirjautuminen Google-tunnuksella
-      $result = mysql_query("INSERT INTO $loginTableName (login_sessionid,login_firstname,login_email) VALUES ('$session','$first','$mail')");          //query
-
-      //--------------------------------------------------------------------------
-      // 3) echo result as json 
-      //--------------------------------------------------------------------------
-      echo json_encode($num);
-    }
-    else
-    {
-      Print "Error.";
-    }
-  }
-  else
-  {
-    Print "Session not found. (" . $sessid . "," . $session . ")<br>";
-  }
-
+mysqli_close($con);
 ?>

@@ -1,65 +1,45 @@
 <?php session_start();
-
 /*
- * Copyright (c) 2013-2014 Lasse Sali.
+ * Copyright (c) 2013-2026 Lasse Sali.
  * This project is licensed under the MIT License.
  */
+header('Content-Type: application/json');
 
-  $sessid = session_id();
+// 1. Sisällytetään tietokanta heti alkuun
+include 'DBconnect.php';
 
-if ( isset( $_GET['session'] ) )
-{
-  $session = strip_tags( $_GET['session'] );
+// 2. Luotetaan täysin PHP:n sisäiseen $_SESSION-muuttujaan
+if (isset($_SESSION['user_email']) && $_SESSION['user_email'] !== "") {
+    
+    $email = $_SESSION['user_email'];
+    $tableName = "am_users";
 
+    // 3. Haetaan käyttäjän tiedot Prepared Statementilla
+    $stmt = mysqli_prepare($con, "SELECT ID, user_firstname, user_email FROM $tableName WHERE user_email = ?");
+    mysqli_stmt_bind_param($stmt, "s", $email);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    if ($row = mysqli_fetch_assoc($result)) {
+        // Palautetaan tiedot JSON-muodossa pelimoottorille
+        echo json_encode([
+            "status" => "logged_in",
+            "player_id" => $row['ID'],
+            "firstname" => $row['user_firstname'],
+            "email" => $row['user_email']
+        ]);
+    } else {
+        // Jos sessio on olemassa, mutta käyttäjää ei löydy kannasta
+        session_destroy();
+        echo json_encode(["status" => "error", "message" => "Session invalid"]);
+    }
+    
+    mysqli_stmt_close($stmt);
+
+} else {
+    // 4. Käyttäjä ei ole kirjautunut - palautetaan puhdas JSON, ei tekstiä
+    echo json_encode(["status" => "not_logged_in"]);
 }
 
-  if ( isset($session) )
-  {
-    $session = strip_tags($session);
-
-    if ( $session != "" )
-    {
-
-      //--------------------------------------------------------------------------
-      // 1) Connect to mysql database
-      //--------------------------------------------------------------------------
-      include 'DBconnect.php';
-      $tableName = "am_users";
-      $loginTableName = "am_login";
-
-
-      //--------------------------------------------------------------------------
-      // 2) Query database for data
-      //--------------------------------------------------------------------------
-      echo "query";
-      $result = mysql_query("SELECT * FROM $loginTableName WHERE login_sessionid='$session'");          //query
-      $num = false;
-      while($row = mysql_fetch_array($result)){
-	$email = $row['login_email'];
-        
-        $users_result = mysql_query("SELECT * FROM $tableName WHERE user_email='$email'");          //query
-        while($users_row = mysql_fetch_array($users_result)){
-          $num = $users_row['ID'];
-        }
-      }
- 
-      if ($num == false)
-      {
-        $num = 0;
-      } 
-      //--------------------------------------------------------------------------
-      // 3) echo result as json 
-      //--------------------------------------------------------------------------
-      echo json_encode($num);
-    }
-    else
-    {
-      Print "Error.";
-    }
-  }
-  else
-  {
-    Print "Session not found. (" . $sessid . ")";
-  }
-
+mysqli_close($con);
 ?>

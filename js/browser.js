@@ -1,5 +1,5 @@
 /* 
- * Copyright (c) 2013-2014 Lasse Sali. 
+ * Copyright (c) 2013-2026 Lasse Sali. 
  * This project is licensed under the MIT License.
 */
 
@@ -19,12 +19,27 @@ function Browser() {
 	
 /* Toistaa audiotiedoston */
 	this.playAudio = function(item) {
-		if ( this.isAudioEnabled() == true )
-		{
-			var audio = document.getElementById(item);
-			audio.play();
-		}
-	}
+        if ( this.isAudioEnabled() && gamePointer.isAudioAllowed() )
+        {
+            var audio = document.getElementById(item);
+            
+            // Make sure the audio element actually exists before trying to play it
+            if (audio) {
+                var playPromise = audio.play();
+
+                // Modern browsers return a promise from .play()
+                if (playPromise !== undefined) {
+                    playPromise.catch(function(error) {
+                        // The browser blocked the audio (likely due to no user interaction yet)
+                        // We catch it silently so it doesn't throw a red error in the console.
+                        console.log("Audio '" + item + "' was blocked by the browser's autoplay policy.");
+                    });
+                }
+            } else {
+                console.warn("Attempted to play audio '" + item + "', but the element was not found.");
+            }
+        }
+    }
 
 /* Onko ��net p��ll� */
 	this.isAudioEnabled = function() {
@@ -292,12 +307,9 @@ this.enableExitFullScreen = function() {
 			
                         var browserTimeout=50;
  			setTimeout($.proxy(browserPointer.showScreen, browserPointer), browserTimeout); 
-                      
-
-
 
 }
 
-	
+
 
 }

@@ -1,5 +1,5 @@
 /* 
- * Copyright (c) 2013-2014 Lasse Sali. 
+ * Copyright (c) 2013-2026 Lasse Sali. 
  * This project is licensed under the MIT License.
 */
 
@@ -41,6 +41,13 @@ this.googleLogin = function()
 	googleLogin(pointer.browserPointer);
 }
 
+this.notify = function(message)
+{
+	console.log(message);
+	$('#textNotification').html(message);
+	$('#textNotification').fadeIn(400).delay(2000).fadeOut(400);
+}
+
 /* 2026 */	
 this.regularLogin = function()
 {
@@ -51,7 +58,7 @@ this.regularLogin = function()
 	var sessionid = game.sessionid; // Using global 'game' object
 
 	if (email == "" || password == "") {
-		alert("Please enter both email and password.");
+		pointer.notify("Please enter both email and password.");
 		return;
 	}
 
@@ -72,7 +79,7 @@ this.regularLogin = function()
 				playerFirstName = data.firstname; // Save the name globally!
 				game.initState(REGULAR_ONLINE, pointer.browserPointer.isFullScreen()); // Using global 'game' object
 			} else {
-				alert("Login failed. Check your email and password.");
+				pointer.notify("Login failed. Check your email and password.");
 			}
 		} 
 	});
@@ -86,7 +93,7 @@ this.regularRegister = function()
 	var password = $('#inputPassword input').val();
 
 	if (username == "" || password == "") {
-		alert("Please enter both a username/email and a password to register.");
+		pointer.notify("Please enter both a username/email and a password to register.");
 		return;
 	}
 
@@ -102,16 +109,16 @@ this.regularRegister = function()
 		success: function(response)          
 		{
 			if (response.status === "success") {
-				alert("Registration successful! Logging you in...");
+				pointer.notify("Registration successful! Logging you in...");
 				// Auto-login the user immediately after successful registration
 				pointer.regularLogin();
 			} else {
-				alert("Registration failed: " + response.message);
+				pointer.notify("Registration failed: " + response.message);
 			}
 		},
 		error: function() 
 		{
-			alert("An error occurred communicating with the server. u("+username+") p("+password+")"  );
+			pointer.notify("An error occurred communicating with the server.");
 		}
 	});
 }
@@ -341,7 +348,6 @@ this.mouseup = function(obj,browserObj,mouseObj,gameObj)
 {
 	var test = mouseObj.isDuplicateMouseEvent();
 	if ( test == true ) { return false; }
-	if ( test == true ) { alert("Error"); }
     var iId = $(obj).attr('id');
 	
 	$('Condition',xmlFile).each(function() 
@@ -427,10 +433,8 @@ this.mouseup = function(obj,browserObj,mouseObj,gameObj)
               }
 			  else if ( HasId != undefined )
 			  {
-			    //alert(HasId);
 			    if ( iId == HasId )
 				{
-					//alert("hasid"+iId);
 					
 					pointer.doAction( $(this).children("Action") , $(obj), gameObj, browserObj, browserObj );
 					

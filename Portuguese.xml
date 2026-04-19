@@ -39,6 +39,7 @@
   <LocalizationPair Name="%tabBottom06"> </LocalizationPair>  
   <LocalizationPair Name="%tabBottom07"> </LocalizationPair> 
   <LocalizationPair Name="%textPlayerName">$PlayerFirstName</LocalizationPair> 
+  <LocalizationPair Name="%textNotification">$Notification</LocalizationPair> 
 </Datatable>
 
 		
