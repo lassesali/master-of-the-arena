@@ -1,5 +1,5 @@
 /* 
- * Copyright (c) 2013-2014 Lasse Sali. 
+ * Copyright (c) 2013-2026 Lasse Sali. 
  * This project is licensed under the MIT License.
 */
 
@@ -20,12 +20,12 @@ function Game() {
   var fbMail="";
   var sessionid;
   var googleloggedin;
-  var fbloginPointer;
   var guiPino = new Array();
   var drawStateData;
   var guiFilesData;
   var textVectors = new Array();
-  
+  var audioTurnedOnByUser = false;
+
 this.report = function()
 {
 alert("gamePointer:"+gamePointer 
@@ -42,10 +42,30 @@ alert("gamePointer:"+gamePointer
 +",uid:"+uid
 +",fbMail:"+fbMail
 +",sessionid:"+sessionid
-+",googleloggedin:"+googleloggedin
-+",fbloginPointer:"+fbloginPointer);
++",googleloggedin:"+googleloggedin);
 
 } 
+
+this.isAudioAllowed = function() {
+	if ( audioTurnedOnByUser == true )
+	{
+		return true;
+	}
+	return false;
+}
+
+this.setAudioAllowed = function(state) {
+	if ( state == true )
+	{
+		audioTurnedOnByUser = true;
+	}
+	else
+	{
+		audioTurnedOnByUser = false;
+	}
+	console.log("setAudioAllowed to: " + audioTurnedOnByUser);
+}
+
 
 this.getGuiFileName = function(param)
 {
@@ -102,7 +122,6 @@ this.getGuiFileName = function(param)
 
 this.getGuiLayers = function(screen)
 {
-    //console.log("function call getGuiLayers("+screen+")");
     var guiList = new Array();
 	
 	$('Condition',drawStateData).each(function() 
@@ -150,132 +169,111 @@ this.getUid = function()
 
 this.checkForGoogleLogin = function()
 {
-	console.log(getAika()+"checkForGoogleLogin()");
 
 	var sessionid = gamePointer.sessionid;
 	var googleloggedin = gamePointer.googleloggedin;
 
 	if ( sessionid != false && googleloggedin == false )
 	{
-			console.log( "#1 googleloggedin:" + googleloggedin +", sessionid:" + sessionid );
 
-			var param = 'session=' + sessionid;
+			// Check if the user is already logged in when the game loads
 			$.ajax({                                     
-			  url: 'checklogin.php',                          
-			  data: param,                        
-			  dataType: 'json',                //data format      
-			  success: function(data)          //on receive of reply
-			  {
-				var num = data; 
-				googleinit(data);            
+				url: 'checklogin.php',                          
+				type: 'GET', // Explicitly use GET for checking data                                
+				dataType: 'json',                      
+				success: function(response) {
+					
+					// Check the new JSON status we defined in PHP
+					if (response.status === "logged_in") {
+						console.log("Welcome back, " + response.firstname);
+						
+						// TODO: Replace googleinit() with your game's actual startup function.
+						googleinit(response.player_id); // Pass the player ID to your game initialization function
+						// For example: 
+						// startGameMenu(response.firstname);
+						
+						// (Note: We completely removed the nested session.php call because 
+						// session tracking is now handled securely by the backend!)
 
-				$.ajax({                                     
-				  url: 'session.php',                          
-				  data: param,                        
-				  dataType: 'json',                //data format      
-				  success: function(data)          //on receive of reply
-				  {
-					var num = data; 
-				  } 
-				});
-			  } 
+					} else {
+						// response.status === "not_logged_in"
+						console.log("User not logged in. Showing login screen.");
+						
+						// TODO: Call the function that displays your new Email/Password form
+						// showLoginUI();
+					}
+				},
+				error: function(xhr, status, error) {
+					console.error("Failed to check login status:", error);
+				}
 			});
 	}
 	else if ( sessionid != false && googleloggedin != false ) 
 	{
-			console.log( "#2 googleloggedin:" + googleloggedin +", sessionid:" + sessionid );
-			var param = 'session=' + sessionid;
 			$.ajax({                                     
 			  url: 'checklogin.php',                          
-			  data: param,                        
 			  dataType: 'json',                //data format      
-			  success: function(data)          //on receive of reply
+			  success: function(response)          //on receive of reply
 			  {
-				var num = data; 
-				if (num != 0)
+				if (response.status === "logged_in") {
+					console.log("Welcome back, " + response.firstname);
+
+				    if (response.player_id != 0)
+				    {
+				      console.log("attempting googleinit()");
+				      googleinit(response.player_id);            
+					}
+					else
+					{
+						googleloggedin = false;
+						// user has not logged in with Google or Facebook
+						console.log("#2 user has not logged in with Google or Facebook");
+						gamePointer.initState(OFFLINE,0);
+					}
+				}  
+				else 
 				{
-				  console.log("attempting googleinit()");
-				  googleinit(data);            
-				}
-				else
-				{
-					fbloginPointer.loadSDK();
 					googleloggedin = false;
 					// user has not logged in with Google or Facebook
 					console.log("#2 user has not logged in with Google or Facebook");
 					gamePointer.initState(OFFLINE,0);
 				}
-				
-			  } 
+			  }
 			});
 	}
 	else if ( sessionid == false && googleloggedin != false ) 
 	{
-			console.log( "#3 googleloggedin:" + googleloggedin +", sessionid:" + sessionid );
-			var param = 'session=' + googleloggedin;
-			$.ajax({                                     
-			  url: 'checklogin.php',                          
-			  data: param,                        
-			  dataType: 'json',                //data format      
-			  success: function(data)          //on receive of reply
-			  {
-				var num = data; 
-				if (num != 0)
+				if (response.status === "logged_in") {
+					console.log("Welcome back, " + response.firstname);
+
+				    if (response.player_id != 0)
+				    {
+				      googleinit(response.player_id);            
+					}
+					else
+					{
+						googleloggedin = false;
+						// user has not logged in with Google or Facebook
+						gamePointer.initState(OFFLINE,0);
+					}
+				}  
+				else 
 				{
-				  googleinit(data);            
-				}
-				else
-				{
-					fbloginPointer.loadSDK();
 					googleloggedin = false;
 					// user has not logged in with Google or Facebook
-					console.log("#3 user has not logged in with Google or Facebook");
 					gamePointer.initState(OFFLINE,0);
 				}
-				
-			  } 
-			});
+
 	}	
 	else
 	{ // user has not logged in with Google or Facebook
-	  fbloginPointer.loadSDK();
-   	  console.log( "#4 googleloggedin:" + googleloggedin +", sessionid:" + sessionid );
-	  console.log("#4 user has not logged in with Google or Facebook");
+
 	  gamePointer.initState(OFFLINE,0);
 	}
 
 }
 
-  
-this.checkForGoogleAccount = function(name,email,session)
-{
-	var textdata = 'firstname=' + name + '&email=' + email + '&session=' + session; 
-	$.ajax({                                     
-	  url: 'checkforgoogleuser.php',                          
-	  data: textdata,                        
-	  dataType: 'json',                //data format      
-	  success: function(data)          //on recieve of reply
-	  {
-		var num = data;              //get id
-		if (num != false)
-		{
-		   console.log("The Google account exists in the database (name:" + name + ")" );
-
-
-		  redirecttogame();
-		} 
-		else
-		{
-		   console.log("The Google account did not exist in the database and was merged within.");
-
-
-		  redirecttogame();
-
-		}
-	  } 
-	});
-}
-
+ 
 
 this.getTimeOfLastInit = function() {
   return timeOfLastInit;
@@ -284,6 +282,25 @@ this.getTimeOfLastInit = function() {
 this.setTimeOfLastInit = function(param) {
   timeOfLastInit = param;
 }
+
+this.initializeScreen = function() {
+
+	var docElm = document.getElementById('wrapper');
+	docElm.style.marginLeft="-470px";
+	docElm.style.marginTop="-294px";
+	docElm.style.top="50%";
+	docElm.style.left="50%";
+
+	document.getElementById('body_id').style.fontSize = "10px";
+	$('div#wrapper2').width("940px");
+	$('div#wrapper2').height("588px"); //588
+
+	var docElm = document.getElementById('wrapper2');
+	docElm.style.marginLeft="0";
+	docElm.style.left="0";
+}
+
+
 
 this.init = function (state,user,access,email,fullscreen) {
 
@@ -294,7 +311,6 @@ this.init = function (state,user,access,email,fullscreen) {
 	} 
 	else if (currentTime-timeOfLastInit < 1000) 
 	{
-		console.warn(getAika()+"eliminated duplicate init() Call");
 		return false;
 	} 
 	else 
@@ -341,60 +357,57 @@ this.init = function (state,user,access,email,fullscreen) {
 		});
 	}
 
-	if ( state == FACEBOOK_ONLINE ) 
+	if ( state == REGULAR_ONLINE ) 
 	{
-	    console.log(getAika()+"checkforfbuser run.");
-		var saccess = accessToken.substring(0,20);
-		var param = "mail="+fbMail+"&token="+saccess;
+		console.log(getAika() + "REGULAR_ONLINE state initialized. Fetching player data...");
+		
+		// We no longer need to send tokens or emails. 
+		// The PHP session automatically knows who is logged in!
 		$.ajax({                                     
-			url: 'checkforfbuser.php',                          
-			data: param,                        
-			dataType: 'json',                //data format      
-			success: function(data)          //on recieve of reply
+			url: 'player.php',                                                  
+			type: 'GET', // Using GET because we are just reading data                            
+			dataType: 'json',                    
+			success: function(response)          
 			{
-				var num = data;              //get id
-				if (num != false)
+				if (response.status === "success")
 				{
-					//The FB account exists in the database.
+					// The player data was successfully loaded from the database!
+					console.log("Player loaded successfully: " + response.player.name);
+					
+					// TODO: Store the player data in your game object
+					// Example: this.playerName = response.player.name;
+					// Example: this.playerId = response.player.id;
 
+					// Tell the GUI to switch to the main game view
+	    			gamePointer.setGameState(GUI_USER_WELCOME);
+	    			gamePointer.initState(state, fullscreen);
 				} 
 				else
 				{
-					//The FB account did not exist in the database and was merged within.
-
+					// If something went wrong (e.g., session expired)
+					console.log("Failed to load player data: " + response.message);
+					
+					// Kick the game back to the offline/login screen
+	    			gamePointer.setGameState(GUI_USER_LOGIN);
+	    			gamePointer.initState(state, fullscreen);
 				}
-			} 
+			},
+			error: function(xhr, status, error) {
+				console.error("AJAX Error reaching player.php:", error);
+			}
 		});
 	} 
-	
-	if(state==OFFLINE)
-	{
-		gamePointer.checkForGoogleLogin();
-	} 
-	else  
-	{
-	    console.log("gamePointer.initState(state,fullscreen)");
-		gamePointer.initState(state,fullscreen);
-	}
-
-    /*    
-        if ( browserPointer.isFullScreen() == FALSE && fullscreen == 1 ) //URL-parametrina on v litetty fullscreen=1, joka forcettaa menem  n fullscreen-tilaan
-        {
-            console.log("URL-parametrina on v litetty fullscreen=1, joka forcettaa menem  n fullscreen-tilaan");
-            browserPointer.toggleFullScreen();
-            
-        }
-        else
-        {
-            console.log( "browserPointer.isFullScreen(): " + browserPointer.isFullScreen() + ", fullscreen: " + fullscreen );
-        }
-*/
+	else if (state == OFFLINE) 
+    {
+        console.log("User is OFFLINE. Displaying native login screen.");
+        
+        // Tässä käsketään käyttöliittymää (GUI) näyttämään kirjautumisruutu.
+	    gamePointer.setGameState(GUI_USER_LOGIN);
+	    gamePointer.initState(state, fullscreen);
+    } 
 
 }
 
-this.setFbLogin = function(item) {
-  fbloginPointer = item;
-}
 
 this.setBrowser = function (item) {
   browserPointer = item;
@@ -428,12 +441,10 @@ this.setMouse = function (item) {
 
 this.addGUI = function(item) {
 	GUIStack.push(item);
-        // console.log("GUIStack.length:"+GUIStack.length);
 }
 
 this.takeGUI = function() {
 	var item = GUIStack.pop();
-        // console.log("GUIStack.length:"+GUIStack.length);
 	return item;
 }
 
@@ -450,7 +461,6 @@ this.getScreenState = function() {
 this.setScreenState = function(state,redraw) {
 	if (gamePointer.getGameState != LOADING_GUI)
 	{
-		// console.log("setScreenState("+state+") "+getAika());
 		screenState = state;
 		if (redraw == true)
 		{
@@ -460,7 +470,6 @@ this.setScreenState = function(state,redraw) {
 	}
 	else
 	{
-		// console.log("ERROR. Calling setScreenState("+state+") when GameState is LOADING_GUI. "+getAika());
 		alert("Critical Error.");
 	}
 }
@@ -472,7 +481,6 @@ this.getGameState = function() {
 
 //asetetaan uusi tila
 this.setGameState = function(state) {
-	// console.log("setGameState("+state+") "+getAika());
 	gameState = state;
 }
 
@@ -483,23 +491,20 @@ this.getLoggedin = function() {
 
 //asetetaan uusi loggedin-tila
 this.setLoggedin = function(state) {
-	// console.log("this.setLoggedin("+state+") "+getAika());
 	loggedin = state;
 	gamePointer.checkLoggedin();
 }
 
 this.checkLoggedin = function() {
-	console.log( getAika() + "this.checkLoggedin()" );
 	var screen=gamePointer.getScreenState();
 	var logged=gamePointer.getLoggedin();
 
-	if( ((screen == GUI_USER_LOGIN) || (screen == NONE)) && ( (logged == FACEBOOK_ONLINE) || (logged == GOOGLE_ONLINE) || (logged == REGULAR_ONLINE) ) )
+	if( ( screen == GUI_USER_LOGIN || screen == NONE ) &&  logged == REGULAR_ONLINE )
 	{
-		console.log(screen +" "+ logged+" "+getAika());
 
-                if ( supports('boxShadow') && supportsBackgroundSize() ) { 
+	    if ( supports('boxShadow') && supportsBackgroundSize() ) 
+		{ 
                   
-  		  console.log("setscreenstate to USER_WELCOME. this.getLoggedin()="+logged);
  		  gamePointer.setScreenState(USER_WELCOME, true);
 		  if ( is_chrome || is_firefox || (is_safari && gamePointer.isRunFromFacebook()==false) )
 		  {
@@ -508,25 +513,21 @@ this.checkLoggedin = function() {
 		  {
 			buildImageCache(2);
 		  }
-                }
-                else
-                {
- 		  console.log("setscreenstate to INVALID_BROWSER "+ getAika());
+        }
+        else
+        {
 		  gamePointer.setScreenState(INVALID_BROWSER, false);
-
-                }
-
-	} else if ( (screen != GUI_USER_LOGIN && screen != GUI_INVALID_BROWSER) && ((logged == OFFLINE) || (logged == UNAUTH)) ) 
+        }
+	} 
+	else if ( (screen != GUI_USER_LOGIN && screen != GUI_INVALID_BROWSER) && logged == OFFLINE )  
 	{
-
-                if ( supports('boxShadow') && supportsBackgroundSize() ) { 
+        if ( supports('boxShadow') && supportsBackgroundSize() ) { 
  		  console.log("setscreenstate to USER_LOGIN "+ getAika());
 		  gamePointer.setScreenState(USER_LOGIN, false);
-                } else {
+        } else {
  		  console.log("setscreenstate to INVALID_BROWSER "+ getAika());
 		  gamePointer.setScreenState(INVALID_BROWSER,false);
-
-                }
+       }
 	}
 }
 
@@ -593,7 +594,6 @@ this.parseMultiLineText = function(s)
 }
 
 this.initState = function(state,fullscreen) {
-    console.log(getAika()+"Game.initState() run");
 
 	$.ajax({                                     
 		url: 'GUIFiles.xml',                          
@@ -613,7 +613,6 @@ this.initState = function(state,fullscreen) {
 		success: function(data)          //on receive of reply
 		{
 			drawStateData = data;
-			console.log(getAika()+drawStateData);
 			gamePointer.checkIfReadyToDraw();
 		} 
 	});   
@@ -650,23 +649,11 @@ this.initState = function(state,fullscreen) {
 	});
 
 	gamePointer.setLoggedin(state);
-	if ( (gamePointer.getLoggedin() == GOOGLE_ONLINE) )
-	{
-		gamePointer.checkLoggedin();
-	} 
-	else 
-	{
-		gamePointer.checkLoggedin();
-	}
+	gamePointer.checkLoggedin();
 
         if ( browserPointer.isFullScreen() == FALSE && fullscreen == 1 ) //URL-parametrina on v litetty fullscreen=1, joka forcettaa menem  n fullscreen-tilaan
         {
-            console.log("URL-parametrina on v litetty fullscreen=1, joka forcettaa menem  n fullscreen-tilaan");
-
             setTimeout($.proxy(  browserPointer.toggleFullScreen() , browserPointer), 3000);
-            
-            //browserPointer.toggleFullScreen();
-            
         }
         else
         {
@@ -679,7 +666,6 @@ this.initState = function(state,fullscreen) {
 
 this.redrawScreenState = function() {
 
-    console.log(getAika()+" redrawScreenState()");
 	var state = gamePointer.getScreenState();
 
 	if (state != NONE) {
@@ -694,7 +680,6 @@ this.redrawScreenState = function() {
 		
 		guiPino = new Array(); // clear the array
 		guiPinoKoko = gamePointer.numberOfGUI();
-        console.log("set guiPinoKoko to:"+gamePointer.numberOfGUI() );
 		
 		taustat = new Array(); // clear the array
         for (var j=0; j < guiPinoKoko; j++)
@@ -703,6 +688,7 @@ this.redrawScreenState = function() {
 		    var gui = gamePointer.takeGUI();
 
 			xmlfile = gamePointer.getGuiFileName(gui);
+
 
 			$.ajax({                                     
 				url: xmlfile,                          
@@ -719,8 +705,6 @@ this.redrawScreenState = function() {
 				} 
 			});    
 		} // for
-
-
 		
 		
 	}
@@ -728,9 +712,7 @@ this.redrawScreenState = function() {
 
 this.checkIfReadyToDraw = function() 
 {
-    //console.log(getAika()+"checkIfReadyToDraw" );
-	//console.log(gamePointer.isLanguageDataReady() + "," + guiPinoKoko +"," + guiPino.length + "," +gamePointer.isGUIDataReady());
-	
+
 	if ( guiPinoKoko == 0 && gamePointer.isLanguageDataReady() == true && gamePointer.isGUIDataReady() == true )
 	{
 		gamePointer.redrawScreenState();
@@ -738,18 +720,17 @@ this.checkIfReadyToDraw = function()
 	
 	if ( gamePointer.isLanguageDataReady() == true && guiPinoKoko > 0 && gamePointer.isGUIDataReady() == true )
 	{
-
 		if (guiPino.length == guiPinoKoko) 
 		{
 			gamePointer.clearScreen();
 			for ( var j=0; j<guiPinoKoko; j++ )
 			{
+
 				gamePointer.draw( guiPino.pop() );
 										   
 			}
 			gamePointer.drawVectors();
 			console.log(getAika()+"The GUI screen has been redrawn.");
-
 			
 			
 		}
@@ -779,569 +760,315 @@ this.redrawVectors = function() {
 
 
 this.draw = function(teksti) {
-    //console.log(teksti);
+
     var vectors = new Array();
 
-	// BACKGROUND
-	var tags = teksti.getElementsByTagName("background");
-	for(var i = 0; i < tags.length; i++) 
-	{
-	    	   
+    // BACKGROUND
+    var tags = teksti.getElementsByTagName("background");
+    for(var i = 0; i < tags.length; i++) 
+    {
+        var textList = new Array();
+        var div = document.createElement("div");
+        var tag = tags[i];
+        var iId = tag.getElementsByTagName("id")[0].firstChild.nodeValue;
+        var iClass = "background";
 
-	    var textList = new Array();
-		
-		var div = document.createElement("div");
+        var inputList = tag.getElementsByTagName("inputfield");
+        for(var j = 0; j<inputList.length; j++) {
+            var newD = document.createElement("div");
+            var newA = document.createElement("input");
+            var a = inputList[j];
+            var jValue = a.getElementsByTagName("id")[0].firstChild.nodeValue;
+            var kValue = a.getElementsByTagName("value")[0].firstChild.nodeValue;
+            
+            newD.setAttribute("id", jValue);
 
-		var tag = tags[i];
-		var iId = tag.getElementsByTagName("id")[0].firstChild.nodeValue;
-		var iClass = "background";
+            if ( kValue == "password" ) {
+                newA.setAttribute("type", "password"); 
+            }
+            else
+            {
+                newA.setAttribute("type", "text"); 
+            }
 
-		var inputList = tag.getElementsByTagName("inputfield");
-		for(var j = 0; j<inputList.length; j++) {
-		    
-			var newD = document.createElement("div");
-			var newA = document.createElement("input");
-			var a = inputList[j];
-			var jValue = a.getElementsByTagName("id")[0].firstChild.nodeValue;
-						
-			var kValue = a.getElementsByTagName("value")[0].firstChild.nodeValue;
-			//var kValue = getDescription( jValue );
-			//if (kValue == false)
-			//{
-			//  kValue = "%" + jValue;
-			//}			
-			
-			newD.setAttribute("id", jValue);
+            newA.setAttribute("class", "textInput01"); 
+            newD.appendChild(newA);
+            div.appendChild(newD);
+        }
 
-			if ( kValue == "password" ) {
-				newA.setAttribute("type", "password"); 
-			}
-			else
-			{
-				newA.setAttribute("type", "text"); 
-			}
-
-			newA.setAttribute("class", "textInput01"); 
-
-			newD.appendChild(newA);
-			
-			div.appendChild(newD);
-		}
-
-		var spanList = tag.getElementsByTagName("text");
-		for(var j = 0; j<spanList.length; j++) 
-		{
-		    
+        var spanList = tag.getElementsByTagName("text");
+        for(var j = 0; j<spanList.length; j++) 
+        {
             var span = spanList[j];
-			
-			var newSpan = document.createElement("span");
-			
+            var newSpan = document.createElement("span");
+            var alt = "";
+            if ( span.getElementsByTagName("value")[0] != undefined )
+            {
+              alt = span.getElementsByTagName("value")[0].firstChild.nodeValue;
+            }
 
-						
-			
-			var alt = "";
-			if ( span.getElementsByTagName("value")[0] != undefined )
-			{
-			  alt = span.getElementsByTagName("value")[0].firstChild.nodeValue;
+            var jId = span.getElementsByTagName("id")[0].firstChild.nodeValue;
+            var jValue = gamePointer.getDescription( jId + alt );
+            if (jValue == false && jValue != " ")
+            {
+              jValue = "%" + jId + alt;
+            }
+
+            newSpan.id = jId;
+
+            if (jValue == "$PlayerFirstName") {
+                // --- 2026 ---
+                if ( gamePointer.getLoggedin() == REGULAR_ONLINE ) 
+                {
+                    var k=document.createElement("img");
+                    k.setAttribute("src", 'gui/default96x96.svg');
+                    k.setAttribute("style", 'display: block; width: 15%; height: 20%;');    
+                    newSpan.appendChild(k);             
+                    jValue = playerFirstName;
+                }
+            }
+
+            if (jValue == "$Notification") {
+				jValue = ""; // We will fill this in later with JavaScript when we want to show a notification to the player. This is just a placeholder for now.	
 			}
 
-
-			var jId = span.getElementsByTagName("id")[0].firstChild.nodeValue;
-			var jValue = gamePointer.getDescription( jId + alt );
-			if (jValue == false && jValue != " ")
-			{
-			  jValue = "%" + jId + alt;
-			}
-
-			newSpan.id = jId;
-
-
-			if (jValue == "$PlayerFirstName") {
-				if ( gamePointer.getLoggedin() == FACEBOOK_ONLINE )
+            if (jValue)
+			{ 
+				if ( jValue.length == 1 || gamePointer.getLoggedin() == REGULAR_ONLINE )
 				{
-					var k=document.createElement("img");
-					k.setAttribute("src", 'http://graph.facebook.com/'+uid+'/picture');
-					k.setAttribute("style", 'display: block; width: 15%; height: 20%;');
-					newSpan.appendChild(k);
-
-					jValue = "";
-
-					var k=document.createElement("fb:name");
-					k.setAttribute("uid", uid);
-					k.setAttribute("capitalize", "true");
-					k.setAttribute("useyou", "false");
-					k.setAttribute("linked", "false");
-					k.setAttribute("ifcansee", "Manager");
-					k.setAttribute("firstnameonly", "true");
-					newSpan.appendChild(k);
+					newSpan.appendChild(document.createTextNode(jValue));
 				}
-				else if ( gamePointer.getLoggedin() == GOOGLE_ONLINE )
+				else
 				{
-					var k=document.createElement("img");
-					k.setAttribute("src", 'gui/google96x96.png');
-					k.setAttribute("style", 'display: block; width: 15%; height: 20%;');
-					newSpan.appendChild(k);
-					jValue = playerFirstName;
-				}
-				// --- 2026 ---
-				else if ( gamePointer.getLoggedin() == REGULAR_ONLINE ) 
-				{
-					var k=document.createElement("img");
-					k.setAttribute("src", 'gui/default96x96.svg');
-					k.setAttribute("style", 'display: block; width: 15%; height: 20%;');	
-					newSpan.appendChild(k);				
-					jValue = playerFirstName;
-				}
-				// ----------------------
-			}
-
-			 
-			if ( jValue.length == 1 || gamePointer.getLoggedin() == GOOGLE_ONLINE || gamePointer.getLoggedin() == REGULAR_ONLINE )
-			{
-				newSpan.appendChild(document.createTextNode(jValue));
-			}
-			else
-			{
-				for (var k=0; k<jValue.length; k++)
-				{
-				  newSpan.appendChild(document.createTextNode(jValue[k]));	
-				  newSpan.appendChild(document.createElement('p'));	
-			  
+					for (var k=0; k<jValue.length; k++)
+					{
+					newSpan.appendChild(document.createTextNode(jValue[k]));  
+					newSpan.appendChild(document.createElement('p')); 
+					}
 				}
 			}
-			
-			textList.push(newSpan);
-			
-			div.appendChild(newSpan);
 
-			if ( span.getElementsByTagName("vector")[0] != undefined && (is_ie11 || is_firefox || is_chrome) ) 
-			//css3:n pointer-events toimii vain harvoissa selaimissa
-			{
-		
-				var vec = span.getElementsByTagName("vector")[0];
-				var vecx = vec.getElementsByTagName("x")[0].firstChild.nodeValue;
-				var vecy = vec.getElementsByTagName("y")[0].firstChild.nodeValue;
-				var vecsize = vec.getElementsByTagName("size")[0].firstChild.nodeValue;
-				var scalex = vec.getElementsByTagName("scalex")[0].firstChild.nodeValue;
-				var scaley = vec.getElementsByTagName("scaley")[0].firstChild.nodeValue;
-				var effect = "";
-				
-				var vect = [ iId, vecx, vecy, vecsize, jValue, newSpan, scalex, scaley, effect ];
-				
-				vectors.push( vect ); 
-				console.log("push: "+vect);
-			}
+            textList.push(newSpan);
+            div.appendChild(newSpan);
 
-				
-			
-		}
+            if ( span.getElementsByTagName("vector")[0] != undefined && (is_ie11 || is_firefox || is_chrome) ) 
+            {
+                var vec = span.getElementsByTagName("vector")[0];
+                var vecx = vec.getElementsByTagName("x")[0].firstChild.nodeValue;
+                var vecy = vec.getElementsByTagName("y")[0].firstChild.nodeValue;
+                var vecsize = vec.getElementsByTagName("size")[0].firstChild.nodeValue;
+                var scalex = vec.getElementsByTagName("scalex")[0].firstChild.nodeValue;
+                var scaley = vec.getElementsByTagName("scaley")[0].firstChild.nodeValue;
+                var effect = "";
+                var vect = [ iId, vecx, vecy, vecsize, jValue, newSpan, scalex, scaley, effect ];
+                vectors.push( vect ); 
+            }
+        }
 
-		div.className = iClass;
-		div.id = iId;
-		
-		if ( iClass == "background" ) 
-		{
-			taustat.push( $(div) ); //let's store the background div
-			if ( !( browserPointer.isFullScreen() ) ) 
-			{
-				$(div).addClass('r640x480');
-			}
-		} 
+        div.className = iClass;
+        div.id = iId;
         
-		$(div).addClass("GUIelement");
-
-		document.getElementById('wrapper2').appendChild(div);
-		
-		if ( gamePointer.getScreenState() == USER_WELCOME && gamePointer.getLoggedin() == FACEBOOK_ONLINE ) 
-		{
-			FB.XFBML.parse(document.getElementById(newSpan.id));
-		}
-
+        if ( iClass == "background" ) 
+        {
+            taustat.push( $(div) ); 
+            if ( !( browserPointer.isFullScreen() ) ) 
+            {
+                $(div).addClass('r640x480');
+            }
+        } 
+        
+        $(div).addClass("GUIelement");
+        document.getElementById('wrapper2').appendChild(div);
+        
         if ( $('#hidden-resizer').length == 0 )
         {
-			var xdiv = document.createElement("div");
-			xdiv.id = "hidden-resizer";
-			$(xdiv).css("border", "1px solid");
-			$(xdiv).css("z-index", "1");
-			$(xdiv).css("top", "0");
-			$(xdiv).css("left", "0");
-			$(xdiv).css("position", "absolute");
-			$(xdiv).css("background", "white");
-			$(xdiv).css("display", "inline-block");
-			$(xdiv).css("visibility", "hidden");
-			document.getElementById('wrapper2').appendChild(xdiv);
-		}
-		
-		for (var l=0; l<textList.length; l++)
-		{
-			if ( browserPointer.isFullScreen() == true)
-			{
-				var elem = textList[l];
-				elem = $(elem);
-				var size;
-				var newSize;
-						   
-				var desired_width = elem.width();			  
-				var resizer = $('#hidden-resizer');
-
-				resizer.html( elem.html() );	
-
-				resizer.css("font-family", elem.css("font-family") ); 
-				resizer.css("font-size", elem.css("font-size") ); 	
-				resizer.css("font-weight", elem.css("font-weight") ); 	
-				resizer.css("text-shadow", elem.css("text-shadow") ); 	
-                                
-
-				var wrap2 = document.getElementById('wrapper2');
-				
-				var percentage = parseFloat( 940 / $(wrap2).width() );
-				
-				
-                //alert(percentage+","+elem.html() +","+emSize+","+resizer.width()+","+desired_width);
-				emSize = false;
-				while(resizer.width() > desired_width ) 
-				{
-					size = parseFloat(resizer.css("font-size"), 10);
-					emSize = parseFloat( (percentage*(size / 10))-0.1 ).toFixed(1)+'em';
-					resizer.css("font-size", emSize );
-					//alert(percentage+","+elem.html() +","+emSize+","+resizer.width()+","+desired_width);
-							   
-				}
-				if (emSize != false)
-				{
-							  
-				  elem.css("font-size", emSize);
-		  
-				}
-				
-			}
-			
-			if ( browserPointer.isFullScreen() == false )
-			{	
-			   
-
-				var elem = textList[l];
-				elem = $(elem);
-				var size;
-				var newSize;
-						   
-				var desired_width = elem.width();			  
-				var resizer = $('#hidden-resizer');
-
-				resizer.html( elem.html() );	
-
-				resizer.css("font-family", elem.css("font-family") ); 
-				resizer.css("font-size", elem.css("font-size") ); 	
-				resizer.css("font-weight", elem.css("font-weight") ); 	
-				resizer.css("text-shadow", elem.css("text-shadow") ); 	
-
-				resizer.css("top", "0px");
-				resizer.css("position", "absolute");
-
-				
-				emSize = false;
-				while(resizer.width() > desired_width ) 
-				{
-					size = parseFloat(resizer.css("font-size"), 10);
-					emSize = parseFloat( (size / 10)-0.1 ).toFixed(1)+'em';
-								   
-					resizer.css("font-size", emSize );
-								   
-					//alert(elem.html() +","+emSize+","+resizer.width()+","+desired_width);               
-				}
-				if (emSize != false)
-				{
-							  
-				  elem.css("font-size", emSize);
-		  
-				}
-			}
-		}
-		
-
-		
-	}
-
-    //BOTTOMTAB	and TOPTAB
-	var tags = teksti.getElementsByTagName("tab");
-	for(var i = 0; i < tags.length; i++) 
-	{
-	    
-		var div = document.createElement("div");
-
-		var tag = tags[i];
-		var iId = tag.getElementsByTagName("id")[0].firstChild.nodeValue;
-		var iType = tag.getElementsByTagName("type")[0].firstChild.nodeValue;
-
-		if ( tag.getElementsByTagName("state")[0] == undefined )
-		{
-			var iState = "";
-		}
-		else
-		{
-			var iState = " " + tag.getElementsByTagName("state")[0].firstChild.nodeValue;
-		}
-		
-		if (iType == "topTab")
-		{
-			var iClass = "toptab";
-			var luokkac = "topTabContainer";
-			var luokkat = "topTabText";
-		}
-		else
-		{
-			var iClass = "bottomtab";
-			var luokkac = "tabContainer";
-			var luokkat = "tabText";
-		}
-
-		var span = document.createElement("span");
-		
-		//var iValue = tag.getElementsByTagName("value")[0].firstChild.nodeValue;
-		var iValue = gamePointer.getDescription( iId );
-		if (iValue == false && iValue != " ")
-		{
-		  iValue = "%" + iId;
-		}
-		
-		var containerDiv = document.createElement("div");
-		containerDiv.className = luokkac + iState;
-		
-		var kValue = "";
-		if ( iValue.length == 1 )
-		{
-			span.appendChild(document.createTextNode(iValue));
-			kValue = iValue;
-		}
-		else
-		{
-			for (var k=0; k<iValue.length; k++)
-			{
-			  span.appendChild(document.createTextNode(iValue[k]));	
-			  span.appendChild(document.createElement('br'));
-
-              kValue = kValue + iValue[k] + "\n";			  
-		  
-			}
-		}		
-		
-		span.className = luokkat;
-		
-	
-		containerDiv.appendChild(span);
-		
-
-
-		div.appendChild(containerDiv);
-
-
-
-
-		
-		div.className = iClass;
-		div.id = iId;
-		
-		if ( (iId == "tabBottomManagersOffice") && (gamePointer.getScreenState() == MANAGERS_OFFICE)) 
-		{
-			$(div).addClass("selected");
-		} 
-		
-		if ( (iClass == "bottomtab" || iClass == "toptab") && !( browserPointer.isFullScreen() ) )
-		{
-			taustat.push( $(div) ); //let's store the tab div
-			//$(div).addClass('r640x480');
-		}
+            var xdiv = document.createElement("div");
+            xdiv.id = "hidden-resizer";
+            $(xdiv).css({"border":"1px solid", "z-index":"1", "top":"0", "left":"0", "position":"absolute", "background":"white", "display":"inline-block", "visibility":"hidden"});
+            document.getElementById('wrapper2').appendChild(xdiv);
+        }
         
-		$(div).addClass("GUIelement");
-		
-		document.getElementById('wrapper2').appendChild(div);
-
-		if ( iClass == "bottomtab" )
-		{
-		    
-			if ( tag.getElementsByTagName("vector")[0] != undefined && (is_ie11 || is_firefox || is_chrome) ) 
-			//css3:n pointer-events toimii vain harvoissa selaimissa
-			{
-                
-				var vec = tag.getElementsByTagName("vector")[0];
-				var vecx = vec.getElementsByTagName("x")[0].firstChild.nodeValue;
-				var vecy = vec.getElementsByTagName("y")[0].firstChild.nodeValue;
-				var vecsize = vec.getElementsByTagName("size")[0].firstChild.nodeValue;
-				var scalex = vec.getElementsByTagName("scalex")[0].firstChild.nodeValue;
-				var scaley = vec.getElementsByTagName("scaley")[0].firstChild.nodeValue;
-				var effect = vec.getElementsByTagName("effect")[0].firstChild.nodeValue;
-				var vect = [ iId, vecx, vecy, vecsize, kValue, span, scalex, scaley, effect ];
-
-                console.log( vect );				
-				vectors.push( vect ); 
-			}		
-		}
-	}
-	
-	// BUTTON
-	
-	var tags = teksti.getElementsByTagName("button");
-	for(var bi = 0; bi < tags.length; bi++) 
-	{ 
-	    
-
-		var div = document.createElement("div");
-		var tag = tags[bi];
-		var iId = tag.getElementsByTagName("id")[0].firstChild.nodeValue;
-		div.id = iId;
-
-	    if ( tag.getElementsByTagName("type")[0] == undefined )
-		{
-			var iType = "";
-		}
-		else
-		{
-			var iType = tag.getElementsByTagName("type")[0].firstChild.nodeValue;
-		}
-		
-		if ( tag.getElementsByTagName("state")[0] == undefined )
-		{
-			var iState = "";
-		}
-		else
-		{
-			var iState = " " + tag.getElementsByTagName("state")[0].firstChild.nodeValue;
-		}
-		
-		if ( iType == "normal" ) // tavanomainen painonappi
-		{
-		
-			div.className = "button GUIelement" + iState;
-
-			//var iValue = tag.getElementsByTagName("value")[0].firstChild.nodeValue;
-			var alt = "";
-			if ( tag.getElementsByTagName("value")[0] != undefined )
-			{
-			  alt = tag.getElementsByTagName("value")[0].firstChild.nodeValue;
-			}
-			
-			var iValue = gamePointer.getDescription( iId + alt );
-			if (iValue == false)
-			{
-			  iValue = "%" + iId + alt;
-			}			
-			
-			var span = document.createElement("span");
-			var text = document.createTextNode(iValue);
-
-			span.appendChild(text);
-			span.id = "text"+iId;
-			
-			span.className = "buttonText";
-			div.appendChild(span);			
-			
-		}
-		else // audio- tai fullscreen -switch-nappi
-		{
-			div.className = "topButton GUIelement" + iState;
-
-		}
-
-		document.getElementById('wrapper2').appendChild(div);
-        
-		if ( $('#hidden-resizer').length == 0 )
+        for (var l=0; l<textList.length; l++)
         {
-			var xdiv = document.createElement("div");
-			xdiv.id = "hidden-resizer";
-			$(xdiv).css("border", "1px solid");
-			$(xdiv).css("z-index", "1");
-			$(xdiv).css("top", "0");
-			$(xdiv).css("left", "0");
-			$(xdiv).css("position", "absolute");
-			$(xdiv).css("background", "white");
-			$(xdiv).css("display", "inline-block");
-			$(xdiv).css("visibility", "hidden");
-			
-			document.getElementById('wrapper2').appendChild(xdiv);
-		}        
-		
-		if ( iType == "normal" ) // tavanomainen painonappi
-		{
-			if ( browserPointer.isFullScreen() == true )
-			{	
-				var elem = $('#'+iId);
-				var span = document.getElementById('text'+iId);
-				var size;
-				var newSize;
-				var desired_width = elem.width()-8; //8px = MARGIN
-				var resizer = $('#hidden-resizer');
-				resizer.html( text.nodeValue );
-				resizer.css("font-family", elem.css("font-family") ); 
-				resizer.css("font-size", elem.css("font-size") ); 
-				resizer.css("font-weight", elem.css("font-weight") ); 	
-				resizer.css("text-shadow", elem.css("text-shadow") ); 	
-				var originalHeight = resizer.height();
-				
-				var wrap2 = document.getElementById('wrapper2');
-				
-				var percentage = parseFloat( 940 / $(wrap2).width() );
-				
-								
-				emSize = false;
-				while(resizer.width() > desired_width ) 
-				{
-					size = parseFloat(resizer.css("font-size"), 10);
-					emSize = parseFloat( (percentage*(size / 10))-0.1 ).toFixed(1)+'em';
-					resizer.css("font-size", emSize );
-					//alert(elem.html() +","+emSize+","+resizer.width()+","+desired_width);
-				}
-				var newHeight = resizer.height();
-				var emDifferenceHeight = (percentage*((originalHeight - newHeight) / 10)).toFixed(1) + 'em';
-				if (emSize != false)
-				{
-					elem.css("font-size", emSize);
-					$(span).css('top', emDifferenceHeight);
-				}
-			}
-		
-			if ( browserPointer.isFullScreen() == false )
-			{	
-				var elem = $('#'+iId);
-				var span = document.getElementById('text'+iId);
-				var size;
-				var newSize;
-				var desired_width = elem.width()-8; //8px = MARGIN
-				var resizer = $('#hidden-resizer');
-				resizer.html( text.nodeValue );
-				resizer.css("font-family", elem.css("font-family") ); 
-				resizer.css("font-size", elem.css("font-size") ); 
-				resizer.css("font-weight", elem.css("font-weight") ); 	
-				resizer.css("text-shadow", elem.css("text-shadow") ); 	
-				var originalHeight = resizer.height();
-				emSize = false;
-				while(resizer.width() > desired_width ) 
-				{
-					size = parseFloat(resizer.css("font-size"), 10);
-					emSize = parseFloat( (size / 10)-0.1 ).toFixed(1)+'em';
-					resizer.css("font-size", emSize );
-				}
-				var newHeight = resizer.height();
-				var emDifferenceHeight = ((originalHeight - newHeight) / 10).toFixed(1) + 'em';
-				if (emSize != false)
-				{
-					elem.css("font-size", emSize);
-					$(span).css('top', emDifferenceHeight);
-				}
-			}
-		}		
-	}
+            var elem = $(textList[l]);
+            var desired_width = elem.width();             
+            var resizer = $('#hidden-resizer');
 
+            resizer.html( elem.html() );    
+            resizer.css({"font-family": elem.css("font-family"), "font-size": elem.css("font-size"), "font-weight": elem.css("font-weight"), "text-shadow": elem.css("text-shadow")}); 
 
-	for (var i=0; i<vectors.length; i++)
-	{
-	    var vect = vectors.pop();
-		textVectors.push(vect);
-		
-	}
+            // SAFE RESIZING LOGIC
+            var currentSizePx = parseFloat(resizer.css("font-size"));
+            var loops = 0;
+            
+            while(resizer.width() > desired_width && loops < 50) 
+            {
+                currentSizePx -= 1;
+                if (currentSizePx < 8) break;
+                resizer.css("font-size", currentSizePx + "px");
+                loops++;
+            }
+            if (loops > 0) elem.css("font-size", currentSizePx + "px");
+        }
+    }
 
-	guiPointer.updateBackground(gamePointer);
+    //BOTTOMTAB and TOPTAB
+    var tags = teksti.getElementsByTagName("tab");
+    for(var i = 0; i < tags.length; i++) 
+    {
+        var div = document.createElement("div");
+        var tag = tags[i];
+        var iId = tag.getElementsByTagName("id")[0].firstChild.nodeValue;
+        var iType = tag.getElementsByTagName("type")[0].firstChild.nodeValue;
+        var iState = (tag.getElementsByTagName("state")[0] == undefined) ? "" : " " + tag.getElementsByTagName("state")[0].firstChild.nodeValue;
+        
+        var iClass = (iType == "topTab") ? "toptab" : "bottomtab";
+        var luokkac = (iType == "topTab") ? "topTabContainer" : "tabContainer";
+        var luokkat = (iType == "topTab") ? "topTabText" : "tabText";
+
+        var span = document.createElement("span");
+        var iValue = gamePointer.getDescription( iId );
+        if (iValue == false && iValue != " ") iValue = "%" + iId;
+        
+        var containerDiv = document.createElement("div");
+        containerDiv.className = luokkac + iState;
+        
+        var kValue = "";
+        if ( iValue.length == 1 )
+        {
+            span.appendChild(document.createTextNode(iValue));
+            kValue = iValue;
+        }
+        else
+        {
+            for (var k=0; k<iValue.length; k++)
+            {
+              span.appendChild(document.createTextNode(iValue[k])); 
+              span.appendChild(document.createElement('br'));
+              kValue += iValue[k] + "\n";             
+            }
+        }       
+        
+        span.className = luokkat;
+        containerDiv.appendChild(span);
+        div.appendChild(containerDiv);
+        
+        div.className = iClass;
+        div.id = iId;
+        
+        if ( (iId == "tabBottomManagersOffice") && (gamePointer.getScreenState() == MANAGERS_OFFICE)) 
+        {
+            $(div).addClass("selected");
+        } 
+        
+        if ( (iClass == "bottomtab" || iClass == "toptab") && !( browserPointer.isFullScreen() ) )
+        {
+            taustat.push( $(div) ); 
+        }
+        
+        $(div).addClass("GUIelement");
+        document.getElementById('wrapper2').appendChild(div);
+
+        if ( iClass == "bottomtab" )
+        {
+            if ( tag.getElementsByTagName("vector")[0] != undefined && (is_ie11 || is_firefox || is_chrome) ) 
+            {
+                var vec = tag.getElementsByTagName("vector")[0];
+                var vecx = vec.getElementsByTagName("x")[0].firstChild.nodeValue;
+                var vecy = vec.getElementsByTagName("y")[0].firstChild.nodeValue;
+                var vecsize = vec.getElementsByTagName("size")[0].firstChild.nodeValue;
+                var scalex = vec.getElementsByTagName("scalex")[0].firstChild.nodeValue;
+                var scaley = vec.getElementsByTagName("scaley")[0].firstChild.nodeValue;
+                var effect = vec.getElementsByTagName("effect")[0].firstChild.nodeValue;
+                var vect = [ iId, vecx, vecy, vecsize, kValue, span, scalex, scaley, effect ];
+                vectors.push( vect ); 
+            }       
+        }
+    }
+    
+    // BUTTON
+    var tags = teksti.getElementsByTagName("button");
+    for(var bi = 0; bi < tags.length; bi++) 
+    { 
+        var div = document.createElement("div");
+        var tag = tags[bi];
+        var iId = tag.getElementsByTagName("id")[0].firstChild.nodeValue;
+        div.id = iId;
+
+        var iType = (tag.getElementsByTagName("type")[0] == undefined) ? "" : tag.getElementsByTagName("type")[0].firstChild.nodeValue;
+        var iState = (tag.getElementsByTagName("state")[0] == undefined) ? "" : " " + tag.getElementsByTagName("state")[0].firstChild.nodeValue;
+        
+        if ( iType == "normal" ) 
+        {
+            div.className = "button GUIelement" + iState;
+            var alt = (tag.getElementsByTagName("value")[0] != undefined) ? tag.getElementsByTagName("value")[0].firstChild.nodeValue : "";
+            
+            var iValue = gamePointer.getDescription( iId + alt );
+            if (iValue == false) iValue = "%" + iId + alt;
+            
+            var span = document.createElement("span");
+            var text = document.createTextNode(iValue);
+            span.appendChild(text);
+            span.id = "text"+iId;
+            span.className = "buttonText";
+            div.appendChild(span);          
+        }
+        else 
+        {
+            div.className = "topButton GUIelement" + iState;
+        }
+
+        document.getElementById('wrapper2').appendChild(div);
+        
+        if ( $('#hidden-resizer').length == 0 )
+        {
+            var xdiv = document.createElement("div");
+            xdiv.id = "hidden-resizer";
+            $(xdiv).css({"border":"1px solid", "z-index":"1", "top":"0", "left":"0", "position":"absolute", "background":"white", "display":"inline-block", "visibility":"hidden"});
+            document.getElementById('wrapper2').appendChild(xdiv);
+        }        
+        
+        if ( iType == "normal" ) 
+        {
+            var elem = $('#'+iId);
+            var spanElem = document.getElementById('text'+iId);
+            var desired_width = elem.width()-8; 
+            var resizer = $('#hidden-resizer');
+            resizer.html( text.nodeValue );
+            resizer.css({"font-family": elem.css("font-family"), "font-size": elem.css("font-size"), "font-weight": elem.css("font-weight"), "text-shadow": elem.css("text-shadow")}); 
+            var originalHeight = resizer.height();
+
+            // SAFE RESIZING LOGIC FOR BUTTONS
+            var currentSizePx = parseFloat(resizer.css("font-size"));
+            var loops = 0;
+            
+            while(resizer.width() > desired_width && loops < 50) 
+            {
+                currentSizePx -= 1;
+                if (currentSizePx < 8) break;
+                resizer.css("font-size", currentSizePx + "px");
+                loops++;
+            }
+            
+            if (loops > 0) {
+                var newHeight = resizer.height();
+                var pxDifferenceHeight = ((originalHeight - newHeight) / 2) + 'px'; // Center vertically using px
+                //elem.css("font-size", currentSizePx + "px");
+                //$(spanElem).css('top', pxDifferenceHeight);
+            }
+        }       
+    }
+
+    for (var i=0; i<vectors.length; i++)
+    {
+        var vect = vectors.pop();
+        textVectors.push(vect);
+    }
+
+    guiPointer.updateBackground(gamePointer);
     
 } // end of draw()
+
 
 
 this.drawVectors = function()
@@ -1357,10 +1084,6 @@ this.drawVectors = function()
 	{
 	    var vect = textVectors[i];
 	    //vect : [ iId, vecx, vecy, vecsize, jValue, newSpan, scalex, scaley, effect ]
-		console.log("i: "+i);
-		console.log("textVectors.length: " + textVectors.length);
-		console.log("drawVectors1: "+vect);
-		console.log("drawVectors2: "+vect[0]+","+vect[4]+","+vect[5]);
 		
 	    var olio = $('#'+vect[0]);
 		

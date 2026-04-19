@@ -1,5 +1,4 @@
 <html>
-<!-- Copyright (c) 2013-2014 Lasse Sali. This project is licensed under the MIT License. -->
 	<background>
 	  <id>backgroundLoginContainer</id>
 
@@ -38,6 +37,10 @@
       <!-- Become a Lanista. -->
 	  <text>
 	    <id>textRegisterDescription</id>
+	  </text>
+
+	  <text>
+	    <id>textNotification</id>
 	  </text>
 
 	  <inputfield>

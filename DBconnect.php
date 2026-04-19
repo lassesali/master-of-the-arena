@@ -1,10 +1,10 @@
 <?php
 /*
- * Copyright (c) 2013-2014 Lasse Sali.
+ * Copyright (c) 2013-2026 Lasse Sali.
  * This project is licensed under the MIT License.
  */
 
       include 'DBconfig.php';
-      $con = mysql_connect($host,$user,$pass);
-      $dbs = mysql_select_db($databaseName, $con);
+      $con = mysqli_connect($host, $user, $pass, $databaseName);
+
 ?>

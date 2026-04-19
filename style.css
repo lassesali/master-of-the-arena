@@ -1,6 +1,6 @@
 body {
-	font-size: 10px;
-	background: #101040;
+	font-size: 30px;
+	background: white;
         -webkit-user-select: none;
         -webkit-touch-callout: none;
 }
@@ -19,7 +19,7 @@ body {
 	min-width: 940px;
 	height: 588px;
 	min-height: 588px;
-	background: #101040;
+	background: white;
 	left: 50%;
 	top: 50%;
 	padding: 0;

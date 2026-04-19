@@ -3,55 +3,70 @@
  * regular_login.php
  * Handles regular user login and session tracking.
  */
+header('Content-Type: application/json');
 
 $sessid = session_id();
 
-// Expecting POST for security, not GET
-if (isset($_POST['session']) && isset($_POST['email']) && isset($_POST['password'])) {
+
+// Tarkistetaan, että lomakedata on lähetetty
+if (isset($_POST['email']) && isset($_POST['password'])) {
     
-    $session = strip_tags($_POST['session']);
-    $email = strip_tags($_POST['email']);
+    // Siivotaan sähköposti. Salasanaa EI siivota (strip_tags), jotta erikoismerkit säilyvät.
+    $email = trim(strip_tags($_POST['email']));
     $password = $_POST['password'];
 
-    if ($email != "" && $password != "") {
-        
-        include 'DBconnect.php';
+    if ($email !== "" && $password !== "") {
+        include 'DBconnect.php'; // Dockerissa $host = 'db'
         $tableName = "am_users";
         $loginTableName = "am_login";
 
-        $safe_email = mysql_real_escape_string($email);
+        // 1. Haetaan käyttäjä tietokannasta sähköpostin perusteella (Prepared Statement)
+        $stmt = mysqli_prepare($con, "SELECT ID, user_firstname, user_password FROM $tableName WHERE user_email = ?");
+        mysqli_stmt_bind_param($stmt, "s", $email);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $user_row = mysqli_fetch_assoc($result);
 
-        // Query database for the user
-        $result = mysql_query("SELECT * FROM $tableName WHERE user_email='$safe_email'");          
-        $user_row = mysql_fetch_array($result);
-
-        if ($user_row && $user_row['user_password'] != null) {
+        // 2. Varmennetaan salasana
+        // Jos käyttäjä löytyi ja salasana täsmää tietokannan hashiin:
+        if ($user_row && password_verify($password, $user_row['user_password'])) {
             
-            // Verify the password against the stored bcrypt hash
-            if (crypt($password, $user_row['user_password']) == $user_row['user_password']) {
-                
-                $num = 1; // User found and authenticated
-                $first = mysql_real_escape_string($user_row['user_firstname']);
-                $safe_session = mysql_real_escape_string($session);
+            // 3. TÄRKEIN VAIHE: Asetetaan sessio aktiiviseksi!
+            // Tämä saa checklogin.php:n ja player.php:n tunnistamaan pelaajan.
+            $_SESSION['user_email'] = $email;
+            $_SESSION['user_id'] = $user_row['ID'];
+            
+            $first = $user_row['user_firstname'];
+            $session_id = session_id();
 
-                // Add to Login database, mimicking your Google login flow
-                mysql_query("INSERT INTO $loginTableName (login_sessionid, login_firstname, login_email) VALUES ('$safe_session', '$first', '$safe_email')");
-                // --- CHANGED: Return an array with the firstname ---
-                echo json_encode(array("status" => 1, "firstname" => $user_row['user_firstname']));
-                //echo json_encode($num);
+            // 4. (Valinnainen) Kirjataan kirjautumistapahtuma ylös am_login -tauluun
+            $log_stmt = mysqli_prepare($con, "INSERT INTO $loginTableName (login_sessionid, login_firstname, login_email) VALUES (?, ?, ?)");
+            mysqli_stmt_bind_param($log_stmt, "sss", $session_id, $first, $email);
+            mysqli_stmt_execute($log_stmt);
+            mysqli_stmt_close($log_stmt);
 
-            } else {
-                // Invalid password
-                echo json_encode(false);
-            }
+            // 5. Palautetaan menestys JS-moottorille
+            echo json_encode([
+                "status" => 1, // game.js saattaa odottaa numeroa 1
+                "firstname" => $first,
+                "message" => "Login successful"
+            ]);
+
         } else {
-            // User not found or is a Social-Only login (no password set)
-            echo json_encode(false);
+            // Salasana oli väärin tai käyttäjää ei ole
+            // Emme kerro hakkerille kummasta oli kyse, jotta hän ei voi arvailla sähköposteja.
+            echo json_encode(["status" => 0, "message" => "Väärä sähköpostiosoite tai salasana."]);
         }
+        
+        mysqli_stmt_close($stmt);
+        mysqli_close($con);
+        
     } else {
-        Print "Error: Missing credentials.";
+        echo json_encode(["status" => 0, "message" => "Sähköposti tai salasana puuttuu."]);
     }
 } else {
-    Print "Session or credentials not found. (" . $sessid . ")";
+    echo json_encode(["status" => 0, "message" => "Virheellinen pyyntö."]);
 }
+
+
 ?>

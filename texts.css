@@ -141,10 +141,23 @@ svg
   line-height: 0.8em;
 }
 
+#textNotification {
+  left: 5.625%;
+  top: 78.96333%;
+  width: 31.25%;
+  height: 10%;
+  font-family: Verdana, DejaVu Sans, Kalimati;
+  font-size: 1.6em;
+  font-weight: bold;
+  position: absolute;
+  color: Black;
+  white-space: nowrap;  
+  line-height: 0.8em;
+}
 
 
 #bgContractsManagersofficeText, #textUserLogin, #bgContractsAdditemstocontractText, #bgContractsSelectediteminformationText, 
-#bgContractsTopleveldetailsText, #textWelcome, #textPlayerName, #textUserName, #textPassword, #textRegisterLabel, #textRegisterSubLabel, #textRegisterDescription {
+#bgContractsTopleveldetailsText, #textWelcome, #textPlayerName, #textUserName, #textPassword, #textRegisterLabel, #textRegisterSubLabel, #textRegisterDescription, #textNotification {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
