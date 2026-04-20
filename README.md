@@ -1,4 +1,4 @@
-# 🚀 Master of Arena (v0.3.0 2026 Modernization Upgrade)
+# 🚀 Master of the Arena (v0.3.0 2026 Modernization Upgrade)
 **Branch:** `feature/php8-upgrade` (Built on `feature/native-login`)
 
 ## 📖 Overview
