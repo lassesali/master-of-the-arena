@@ -1,4 +1,7 @@
-<?php session_start(); 
+<?php
+declare(strict_types=1);
+ini_set('zend.exception_ignore_args', '1');
+session_start(); 
 
 /*
  * Copyright (c) 2013-2014 Lasse Sali.
@@ -8,21 +11,23 @@
 $sessid = session_id();
 
 
-if ( isset( $_GET['fullscreen'] ) )
+if ( isset( $_GET['fullscreen'] ) && is_string( $_GET['fullscreen'] ) && $_GET['fullscreen'] === '1' )
 {
-  $fullscreen = strip_tags( $_GET['fullscreen'] );
+  $fullscreen = "1";
 
 }
 
 
 
-if ( isset( $_GET['language'] ) )
+$allowedLanguages = ['English', 'Finnish', 'French', 'German', 'Portuguese', 'Spanish'];
+if ( isset( $_GET['language'] ) && is_string( $_GET['language'] ) && in_array( $_GET['language'], $allowedLanguages, true ) )
 {
-  $language = strip_tags( $_GET['language'] );
+  $language = $_GET['language'];
 
 }
 else
 {
+  http_response_code(400);
   print "Error.";
 }
 

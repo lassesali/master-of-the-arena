@@ -1,4 +1,6 @@
 <?php 
+declare(strict_types=1);
+ini_set('zend.exception_ignore_args', '1');
 session_start(); 
 
 /*
@@ -7,7 +9,7 @@ session_start();
  * Modernized for PHP 8 & Native Login
  */
 
-include 'init.php';
+require_once __DIR__ . '/init.php';
 
 // If $language isn't set by init.php, provide a default to prevent JS errors
 if (!isset($language)) {
